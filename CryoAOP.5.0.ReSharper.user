@@ -1,0 +1,43 @@
+<Configuration>
+  <SettingsComponent>
+    <string />
+    <integer />
+    <boolean>
+      <setting name="SolutionAnalysisEnabled">False</setting>
+    </boolean>
+  </SettingsComponent>
+  <RecentFiles>
+    <RecentFiles>
+      <File id="A9F21F60-C68B-4C35-8260-A0BCC07634F0/d:Properties/f:AssemblyInfo.cs/z:9622376" caret="0" fromTop="0" />
+      <File id="7E4A6612-DE2C-447E-8286-161735974BBA/f:SolutionInfo.cs/l:C!?CryoAOP?SolutionInfo.cs" caret="443" fromTop="9" />
+      <File id="A9F21F60-C68B-4C35-8260-A0BCC07634F0/f:SolutionInfo.cs/l:..?SolutionInfo.cs" caret="348" fromTop="11" />
+      <File id="A9F21F60-C68B-4C35-8260-A0BCC07634F0/d:Properties/f:AssemblyInfo.cs/z:60910732" caret="197" fromTop="4" />
+      <File id="95E6F269-3BF7-4087-8D23-BAB9EAAF600B/d:Properties/f:AssemblyInfo.cs" caret="197" fromTop="4" />
+      <File id="A9F21F60-C68B-4C35-8260-A0BCC07634F0/f:Class1.cs" caret="0" fromTop="0" />
+      <File id="95E6F269-3BF7-4087-8D23-BAB9EAAF600B/f:Class1.cs" caret="70" fromTop="5" />
+    </RecentFiles>
+    <RecentEdits>
+      <File id="A9F21F60-C68B-4C35-8260-A0BCC07634F0/f:Class1.cs" caret="13" fromTop="0" />
+      <File id="95E6F269-3BF7-4087-8D23-BAB9EAAF600B/f:Class1.cs" caret="20" fromTop="0" />
+      <File id="7E4A6612-DE2C-447E-8286-161735974BBA/f:SolutionInfo.cs/l:C!?CryoAOP?SolutionInfo.cs" caret="1422" fromTop="35" />
+      <File id="7E4A6612-DE2C-447E-8286-161735974BBA/f:SolutionInfo.cs/l:C!?CryoAOP?SolutionInfo.cs" caret="480" fromTop="10" />
+      <File id="7E4A6612-DE2C-447E-8286-161735974BBA/f:SolutionInfo.cs/l:C!?CryoAOP?SolutionInfo.cs" caret="334" fromTop="6" />
+      <File id="A9F21F60-C68B-4C35-8260-A0BCC07634F0/f:SolutionInfo.cs/l:..?SolutionInfo.cs" caret="435" fromTop="3" />
+      <File id="A9F21F60-C68B-4C35-8260-A0BCC07634F0/f:SolutionInfo.cs/l:..?SolutionInfo.cs" caret="435" fromTop="8" />
+      <File id="A9F21F60-C68B-4C35-8260-A0BCC07634F0/f:SolutionInfo.cs/l:..?SolutionInfo.cs" caret="315" fromTop="10" />
+      <File id="A9F21F60-C68B-4C35-8260-A0BCC07634F0/d:Properties/f:AssemblyInfo.cs/z:60910732" caret="0" fromTop="4" />
+      <File id="95E6F269-3BF7-4087-8D23-BAB9EAAF600B/d:Properties/f:AssemblyInfo.cs" caret="197" fromTop="4" />
+    </RecentEdits>
+  </RecentFiles>
+  <NAntValidationSettings>
+    <NAntPath value="" />
+  </NAntValidationSettings>
+  <UnitTestRunner>
+    <Providers />
+  </UnitTestRunner>
+  <UnitTestRunnerNUnit>
+    <NUnitInstallDir IsNull="False">
+    </NUnitInstallDir>
+    <UseAddins>Never</UseAddins>
+  </UnitTestRunnerNUnit>
+</Configuration>
