@@ -10,5 +10,10 @@ namespace CryoAOP.Core
         {
             Definition = definition;
         }
+
+        public void CloneAndReplaceMethodCall(string methodPrefix)
+        {
+            
+        }
     }
 }

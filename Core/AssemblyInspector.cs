@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CryoAOP.Core.Exceptions;
+using CryoAOP.Core.Extensions;
 using Mono.Cecil;
 
 namespace CryoAOP.Core
@@ -13,10 +14,14 @@ namespace CryoAOP.Core
         public AssemblyInspector(string assemblyPath)
         {
             if (assemblyPath == null) throw new ArgumentNullException("assemblyPath");
-            this.assemblyPath = assemblyPath;
+            this.assemblyPath = 
+                !assemblyPath.ToLower().EndsWith(".dll") 
+                ? "{0}.dll".FormatWith(assemblyPath) 
+                : assemblyPath;
+
             try
             {
-                Definition = AssemblyDefinition.ReadAssembly(assemblyPath);
+                Definition = AssemblyDefinition.ReadAssembly(this.assemblyPath);
             }
             catch (Exception err)
             {
