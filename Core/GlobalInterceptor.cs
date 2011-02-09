@@ -2,7 +2,7 @@
 {
     public class GlobalInterceptor
     {
-        public static void HandleInvocation()
+        public static void HandleInvocation(Invocation invocation)
         {
         }
     }

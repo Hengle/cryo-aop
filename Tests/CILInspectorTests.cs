@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CryoAOP.Core;
 using CryoAOP.TestAssembly;
 using NUnit.Framework;
 
@@ -14,7 +15,16 @@ namespace CryoAOP.Tests
         public void test()
         {
             var cilType = new MethodInterceptorCILTemplate();
-            cilType.InstanceMethodToBeIntercepted();
+            var methodInspector = 
+                new AssemblyInspector("CryoAOP.TestAssembly")
+                    .FindType(typeof (MethodInterceptorCILTemplate))
+                    .FindMethod("InstanceMethodToBeIntercepted");
+
+            var methodInstructions = 
+                methodInspector
+                    .Definition
+                    .Body
+                    .Instructions;
         }
     }
 }
