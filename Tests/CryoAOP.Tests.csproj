@@ -55,9 +55,11 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="CILInspectorTests.cs" />
     <Compile Include="Extensions\StringExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AssemblyInspectorTests.cs" />
+    <Compile Include="TypeInspectorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\CryoAOP.Core.csproj">
