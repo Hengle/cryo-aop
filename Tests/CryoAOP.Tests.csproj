@@ -55,13 +55,18 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Extensions\StringExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Class1.cs" />
+    <Compile Include="AssemblyInspectorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\CryoAOP.Core.csproj">
       <Project>{A9F21F60-C68B-4C35-8260-A0BCC07634F0}</Project>
       <Name>CryoAOP.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestAssembly\CryoAOP.TestAssembly.csproj">
+      <Project>{0E534898-AA45-405E-9411-9D302F1E4278}</Project>
+      <Name>CryoAOP.TestAssembly</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{7E4A66
 		SolutionInfo.cs = SolutionInfo.cs
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryoAOP.TestAssembly", "TestAssembly\CryoAOP.TestAssembly.csproj", "{0E534898-AA45-405E-9411-9D302F1E4278}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,10 @@ Global
 		{95E6F269-3BF7-4087-8D23-BAB9EAAF600B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95E6F269-3BF7-4087-8D23-BAB9EAAF600B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95E6F269-3BF7-4087-8D23-BAB9EAAF600B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E534898-AA45-405E-9411-9D302F1E4278}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E534898-AA45-405E-9411-9D302F1E4278}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E534898-AA45-405E-9411-9D302F1E4278}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E534898-AA45-405E-9411-9D302F1E4278}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
