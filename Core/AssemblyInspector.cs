@@ -30,20 +30,35 @@ namespace CryoAOP.Core
             }
         }
 
-        public virtual TypeInspector FindType(Type searchType)
+        public virtual TypeInspector FindType(string searchType)
         {
             foreach (var module in Definition.Modules)
             {
                 foreach (var type in module.Types)
                 {
-                    if (type.FullName == searchType.FullName)
-                        return new TypeInspector(type);
+                    if (type.FullName.ToLower().EndsWith(searchType.ToLower()))
+                        return new TypeInspector(this, type);
                 }
             }
 
             throw new TypeNotFoundException(
                 "Could not find type for '{0}' in assembly '{1}'",
-                searchType.FullName, Path.GetFileName(assemblyPath));
+                searchType, Path.GetFileName(assemblyPath));
+        }
+
+        public virtual TypeInspector FindType(Type searchType)
+        {
+            return FindType(searchType.FullName);
+        }
+
+        public virtual void Write(string path)
+        {
+            Definition.Write(path);
+        }
+
+        public override string ToString()
+        {
+            return "{0}".FormatWith(Definition.FullName);
         }
     }
 }

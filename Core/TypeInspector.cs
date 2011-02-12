@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using CryoAOP.Core.Exceptions;
+using CryoAOP.Core.Extensions;
 using Mono.Cecil;
 
 namespace CryoAOP.Core
@@ -7,9 +8,11 @@ namespace CryoAOP.Core
     public class TypeInspector
     {
         public readonly TypeDefinition Definition;
+        public readonly AssemblyInspector AssemblyInspector;
 
-        public TypeInspector(TypeDefinition definition)
+        public TypeInspector(AssemblyInspector assemblyInspector, TypeDefinition definition)
         {
+            AssemblyInspector = assemblyInspector;
             Definition = definition;
         }
 
@@ -25,9 +28,14 @@ namespace CryoAOP.Core
             {
                 foreach (var method in Definition.Methods) 
                     if (method.Name == methodName)
-                        return new MethodInspector(method);
+                        return new MethodInspector(this, method);
             }
             throw new MethodNotFoundException("Could not find method '{0}' in type '{1}'", methodName, Definition.Name);
+        }
+
+        public override string ToString()
+        {
+            return "{0}".FormatWith(Definition.FullName);
         }
     }
 }

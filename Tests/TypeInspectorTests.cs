@@ -15,7 +15,7 @@ namespace CryoAOP.Tests
         public override void Setup_Fixture()
         {
             base.Setup_Fixture();
-            typeThatShouldBeIntercepted = typeof (TypeThatShouldBeIntercepted);
+            typeThatShouldBeIntercepted = typeof(TypeThatShouldBeIntercepted);
             TypeInspector = AssemblyInspector.FindType(typeThatShouldBeIntercepted);
         }
 

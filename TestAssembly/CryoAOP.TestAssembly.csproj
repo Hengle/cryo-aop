@@ -40,7 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MethodInterceptorCILTemplate.cs" />
     <Compile Include="TypeThatShouldBeIntercepted.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

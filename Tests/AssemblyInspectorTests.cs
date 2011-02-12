@@ -9,7 +9,7 @@ namespace CryoAOP.Tests
     public class AssemblyInspectorTests
     {
         private class TypeThatCannotBeFound { }
-        
+
         protected string TestAssembly;
         protected AssemblyInspector AssemblyInspector;
 
@@ -23,9 +23,9 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_find_type_that_should_be_intercepted_in_test_assembly()
         {
-            var typeToFind = typeof (TypeThatShouldBeIntercepted);
+            var typeToFind = typeof(TypeThatShouldBeIntercepted);
             var typeDefinition = AssemblyInspector.FindType(typeToFind);
-            
+
             Assert.That(typeDefinition, Is.Not.Null);
             Assert.That(typeDefinition.Definition.FullName, Is.EqualTo(typeToFind.FullName));
         }
@@ -34,7 +34,7 @@ namespace CryoAOP.Tests
         [ExpectedException(typeof(TypeNotFoundException))]
         public void Should_throw_if_type_not_found()
         {
-            var typeThatCannotBeFound = typeof (TypeThatCannotBeFound);
+            var typeThatCannotBeFound = typeof(TypeThatCannotBeFound);
             AssemblyInspector.FindType(typeThatCannotBeFound);
         }
 
