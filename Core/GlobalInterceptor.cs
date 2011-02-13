@@ -1,9 +1,12 @@
-﻿namespace CryoAOP.Core
+﻿using System.Diagnostics;
+
+namespace CryoAOP.Core
 {
     public class GlobalInterceptor
     {
         public static void HandleInvocation(Invocation invocation)
         {
+            Debugger.Launch();
         }
     }
 }

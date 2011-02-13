@@ -31,12 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\References\Mono\Cecil\0.9.4.0\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb">
-      <HintPath>..\References\Mono\Cecil\0.9.4.0\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\References\NUnit\2.5.5\nunit.framework.dll</HintPath>
     </Reference>
@@ -64,6 +58,10 @@
     <Compile Include="TypeInspectorTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Mono-Cecil\Mono.Cecil.csproj">
+      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
+      <Name>Mono.Cecil</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core\CryoAOP.Core.csproj">
       <Project>{A9F21F60-C68B-4C35-8260-A0BCC07634F0}</Project>
       <Name>CryoAOP.Core</Name>

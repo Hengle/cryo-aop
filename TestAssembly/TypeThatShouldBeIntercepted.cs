@@ -17,10 +17,6 @@ namespace CryoAOP.TestAssembly
 
         public void HavingMethodWithArgsAndNoReturnType(int arg1, string arg2, double arg3)
         {
-            var type = typeof(TypeThatShouldBeIntercepted);
-            var method = type.GetMethod("HavingMethodWithNoArgsAndNoReturnType");
-            var invocation = new MethodInvocation(type, method, arg1, arg2, arg3);
-            GlobalInterceptor.HandleInvocation(invocation);
         }
 
         public string HavingMethodWithArgsAndStringReturnType(int arg1, string arg2, double arg3)

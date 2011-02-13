@@ -7,14 +7,18 @@ using NUnit.Framework;
 namespace CryoAOP.Tests
 {
     [TestFixture]
-    public class TypeInspectorTests : AssemblyInspectorTests
+    public class TypeInspectorTests
     {
+        protected string TestAssembly;
+        protected AssemblyInspector AssemblyInspector;
         protected TypeInspector TypeInspector;
         private Type typeThatShouldBeIntercepted;
 
-        public override void Setup_Fixture()
+        [TestFixtureSetUp]
+        public virtual void Setup_Fixture()
         {
-            base.Setup_Fixture();
+            TestAssembly = "CryoAOP.TestAssembly.dll";
+            AssemblyInspector = new AssemblyInspector(TestAssembly);
             typeThatShouldBeIntercepted = typeof(TypeThatShouldBeIntercepted);
             TypeInspector = AssemblyInspector.FindType(typeThatShouldBeIntercepted);
         }

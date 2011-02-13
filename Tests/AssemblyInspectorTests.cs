@@ -1,4 +1,5 @@
-﻿using CryoAOP.Core;
+﻿using System;
+using CryoAOP.Core;
 using CryoAOP.Core.Exceptions;
 using NUnit.Framework;
 using CryoAOP.TestAssembly;
@@ -28,6 +29,15 @@ namespace CryoAOP.Tests
 
             Assert.That(typeDefinition, Is.Not.Null);
             Assert.That(typeDefinition.Definition.FullName, Is.EqualTo(typeToFind.FullName));
+        }
+
+        [Test]
+        public void Should_find_type_reference()
+        {
+            var inspector = new AssemblyInspector(typeof (Type).Assembly);
+            var typeReference = inspector.Import(typeof (Type));
+
+            Assert.That(typeReference, Is.Not.Null);
         }
 
         [Test]
