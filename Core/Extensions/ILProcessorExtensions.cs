@@ -75,6 +75,34 @@ namespace CryoAOP.Core.Extensions
             processor.Append(instruction);
         }
 
+        public static void Pop(this MethodDefinition method)
+        {
+            var processor = method.Body.GetILProcessor();
+            var instruction = processor.Create(OpCodes.Pop);
+            processor.Append(instruction);
+        }
+
+        public static void Ceq(this MethodDefinition method)
+        {
+            var processor = method.Body.GetILProcessor();
+            var instruction = processor.Create(OpCodes.Ceq);
+            processor.Append(instruction);
+        }
+
+        public static void Brtrue(this MethodDefinition method, Instruction target)
+        {
+            var processor = method.Body.GetILProcessor();
+            var instruction = processor.Create(OpCodes.Brtrue, target);
+            processor.Append(instruction);
+        }
+
+        public static void Stloc(this MethodDefinition method, ushort index)
+        {
+            var processor = method.Body.GetILProcessor();
+            var instruction = processor.Create(OpCodes.Stloc, index);
+            processor.Append(instruction);
+        }
+
         public static void Stloc_0(this MethodDefinition method)
         {
             var processor = method.Body.GetILProcessor();
@@ -100,6 +128,13 @@ namespace CryoAOP.Core.Extensions
         {
             var processor = method.Body.GetILProcessor();
             var instruction = processor.Create(OpCodes.Stloc_3);
+            processor.Append(instruction);
+        }
+
+        public static void Ldloc(this MethodDefinition method, ushort index)
+        {
+            var processor = method.Body.GetILProcessor();
+            var instruction = processor.Create(OpCodes.Ldloc, index);
             processor.Append(instruction);
         }
 

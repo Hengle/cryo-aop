@@ -94,6 +94,11 @@ namespace CryoAOP.Core
             return Definition.MainModule.Import(method);
         }
 
+        public virtual TypeReference Import(TypeDefinition type)
+        {
+            return Definition.MainModule.Import(type);
+        }
+
         public virtual MethodReference Import(Type searchType, string methodName)
         {
             var typeReference = Import(searchType);

@@ -50,13 +50,25 @@ namespace CryoAOP.Core
             interceptorMethod.Body.Variables.Add(v_2);
             var v_3 = new VariableDefinition("V_3", TypeInspector.AssemblyInspector.Import(typeof(Object[])));
             interceptorMethod.Body.Variables.Add(v_3);
+            var v_4 = new VariableDefinition("V_4", TypeInspector.AssemblyInspector.Import(typeof(Boolean)));
+            interceptorMethod.Body.Variables.Add(v_4);
+
+            // Interceptor: If has return type add to local variables
+            if (renamedMethod.ReturnType.Name != "Void")
+            {
+                interceptorMethod.ReturnType = renamedMethod.ReturnType;
+                var v_5 = new VariableDefinition("V_5", interceptorMethod.ReturnType);
+                interceptorMethod.Body.Variables.Add(v_5);
+            }
             interceptorMethod.Body.InitLocals = true;
 
+            // Interceptor: Method return instruction 
+            var endOfMethodInstruction = interceptorMethod.Body.GetILProcessor().Create(OpCodes.Nop);
+            
             // Interceptor: Insert interception IL
             interceptorMethod.Nop();
             
             // Interceptor: Resolve type from handle uses V_0
-
             interceptorMethod.Ldtoken(TypeInspector.Definition);
             var getTypeFromHandleMethodReference = TypeInspector.AssemblyInspector.Import(typeof(Type), "GetTypeFromHandle");
             interceptorMethod.Call(getTypeFromHandleMethodReference);
@@ -101,6 +113,16 @@ namespace CryoAOP.Core
             interceptorMethod.Ldloc_2();
             interceptorMethod.Call(methodInterceptorRef);
 
+            // Check if invocation has been cancelled
+            interceptorMethod.Ldloc_2();
+            var methodInvocationGetCanInvoke = TypeInspector.AssemblyInspector.Import(typeof(MethodInvocation), "get_CanInvoke");
+            interceptorMethod.Callvirt(methodInvocationGetCanInvoke);
+            interceptorMethod.Ldc_I4_0();
+            interceptorMethod.Ceq();
+            interceptorMethod.Stloc(4);
+            interceptorMethod.Ldloc(4);
+            interceptorMethod.Brtrue(endOfMethodInstruction);
+
             // Insert IL call from clone to renamed method
             interceptorMethod.Ldarg_0();
             foreach (var parameter in interceptorMethod.Parameters)
@@ -110,7 +132,39 @@ namespace CryoAOP.Core
             }
 
             interceptorMethod.Call(renamedMethod);
+            if (interceptorMethod.ReturnType.Name != "Void")
+                interceptorMethod.Stloc(5);
+
             interceptorMethod.Nop();
+
+            // Set return type on MethodInvocation 
+            if (interceptorMethod.ReturnType.Name != "Void")
+            {
+                interceptorMethod.Ldloc_2();
+                interceptorMethod.Ldloc(5);
+                var methodInvocationSetReturnType = TypeInspector.AssemblyInspector.Import(typeof (MethodInvocation), "set_Result");
+                interceptorMethod.Callvirt(methodInvocationSetReturnType);
+            }
+
+            // Continue the invocation by changing state
+            interceptorMethod.Ldloc_2();
+            var methodInvocationContinue = TypeInspector.AssemblyInspector.Import(typeof(MethodInvocation), "ContinueInvocation");
+            interceptorMethod.Call(methodInvocationContinue);
+
+            // Do post invocation call 
+            interceptorMethod.Ldloc_2();
+            interceptorMethod.Call(methodInterceptorRef);
+
+            // End of method
+            interceptorMethod
+                .Body
+                .GetILProcessor()
+                .Append(endOfMethodInstruction);
+
+
+            if (interceptorMethod.ReturnType.Name != "Void")
+                interceptorMethod.Ldloc(5);
+
             interceptorMethod.Ret();
 
         }

@@ -11,6 +11,7 @@ namespace CryoAOP.Tests
     public class MethodInspectorTests
     {
         private const string interceptedAssembly = "CryoAOP.TestAssembly_Intercepted.dll";
+        private const string methodToBeIntercepted = "HavingMethodWithArgsAndStringReturnType";
 
         [Test]
         public void Should_intercept_method_and_call_using_reflection()
@@ -20,7 +21,7 @@ namespace CryoAOP.Tests
                     {
                         "CryoAOP.TestAssembly",
                         "TypeThatShouldBeIntercepted",
-                        "HavingMethodWithArgsAndNoReturnType"
+                        methodToBeIntercepted
                     }.GetMethod();
 
             methodInspector.InterceptMethod("Test_Intercepted_");
@@ -29,7 +30,7 @@ namespace CryoAOP.Tests
             var assembly = Assembly.LoadFrom(interceptedAssembly);
             var interceptedType = assembly.FindType(typeof (TypeThatShouldBeIntercepted).FullName);
 
-            var methodInfo = interceptedType.GetMethod("HavingMethodWithArgsAndNoReturnType");
+            var methodInfo = interceptedType.GetMethod(methodToBeIntercepted);
             methodInfo.Invoke(1, "2", 3); 
         }
     }
