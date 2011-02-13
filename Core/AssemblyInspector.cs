@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -64,7 +65,22 @@ namespace CryoAOP.Core
         public virtual TypeReference Import(Type searchType)
         {
             var assemblyRef = new AssemblyInspector(searchType.Assembly);
-            var type = assemblyRef.Definition.MainModule.Types.Where(t => t.Name == searchType.Name).FirstOrDefault();
+            TypeDefinition type = null;
+            foreach (var currentType in assemblyRef.Definition.MainModule.Types)
+            {
+                
+                if (searchType.IsArray && currentType.Name == searchType.BaseType.Name)
+                {
+                    type = currentType;
+                    break;
+                }
+                
+                if (currentType.Name == searchType.Name)
+                {
+                    type = currentType;
+                    break;
+                }
+            }
 
             if (type == null)
                 throw new TypeNotFoundException("Could not find type '{0}'", searchType.FullName);
