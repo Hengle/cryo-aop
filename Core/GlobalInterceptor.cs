@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.IO;
+using CryoAOP.Core.Extensions;
 
 namespace CryoAOP.Core
 {
@@ -6,7 +8,9 @@ namespace CryoAOP.Core
     {
         public static void HandleInvocation(Invocation invocation)
         {
-            Debugger.Launch();
+            using (var r = new StreamWriter(@"c:\out.txt", true))
+                r.WriteLine("{0} -> public static void HandleInvocation(Invocation invocation)"
+                                .FormatWith(DateTime.Now));
         }
     }
 }

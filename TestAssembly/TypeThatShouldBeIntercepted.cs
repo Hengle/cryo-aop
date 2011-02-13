@@ -1,5 +1,5 @@
 ﻿using System;
-using CryoAOP.Core;
+using System.IO;
 using CryoAOP.Core.Extensions;
 
 namespace CryoAOP.TestAssembly
@@ -17,6 +17,9 @@ namespace CryoAOP.TestAssembly
 
         public void HavingMethodWithArgsAndNoReturnType(int arg1, string arg2, double arg3)
         {
+            using (var r = new StreamWriter(@"c:\out.txt", true))
+                r.WriteLine("{0} -> public void HavingMethodWithArgsAndNoReturnType(int arg1, string arg2, double arg3)"
+                    .FormatWith(DateTime.Now));
         }
 
         public string HavingMethodWithArgsAndStringReturnType(int arg1, string arg2, double arg3)
