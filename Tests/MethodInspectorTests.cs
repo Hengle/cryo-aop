@@ -50,6 +50,24 @@ namespace CryoAOP.Tests
         }
 
         [Test]
+        public void Should_intercept_method_and_cancel_invocation_returning_fake_result()
+        {
+            var methodInfo = GetNonGenericMethodInfo("HavingMethodWithArgsAndStringReturnType");
+
+            GlobalInterceptor.MethodIntercepter += (invocation) =>
+            {
+                if (invocation.InvocationType == MethodInvocationType.BeforeInvocation)
+                {
+                    invocation.CancelInvocation();
+                    invocation.Result = "Fake Result";
+                }
+            };
+
+            var result = methodInfo.Invoke(1, "2", 3);
+            Assert.That(result, Is.EqualTo("Fake Result"));
+        }
+
+        [Test]
         public void Should_intercept_method_with_class_args_and_call()
         {
             var interceptCount = 0;
