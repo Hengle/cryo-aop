@@ -113,6 +113,15 @@ namespace CryoAOP.Core
             interceptorMethod.Ldloc_2();
             interceptorMethod.Call(methodInterceptorRef);
 
+            // !Experimental! - If not void push result from interception
+            if (renamedMethod.ReturnType.Name != "Void")
+            {
+                interceptorMethod.Ldloc_2();
+                var methodInvocationGetResult = TypeInspector.AssemblyInspector.Import(typeof(MethodInvocation), "get_Result");
+                interceptorMethod.Callvirt(methodInvocationGetResult);
+                interceptorMethod.Stloc(5);
+            }
+
             // Check if invocation has been cancelled
             interceptorMethod.Ldloc_2();
             var methodInvocationGetCanInvoke = TypeInspector.AssemblyInspector.Import(typeof(MethodInvocation), "get_CanInvoke");
