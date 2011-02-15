@@ -9,6 +9,8 @@ namespace CryoAOP.Tests
     [TestFixture]
     public class MethodInspectorTests
     {
+        private static Assembly assembly;
+
         #region Setup/Teardown
 
         [SetUp]
@@ -25,11 +27,11 @@ namespace CryoAOP.Tests
         public void FixtureSetUp()
         {
             Interception.RegisterType("CryoAOP.TestAssembly", "CryoAOP.TestAssembly.TypeThatShouldBeIntercepted", interceptedOutputAssembly);
+            assembly = Assembly.LoadFrom(interceptedOutputAssembly);
         }
 
         private static MethodInfo GetNonGenericMethodInfo(string nonGenericMethodName)
         {
-            var assembly = Assembly.LoadFrom(interceptedOutputAssembly);
             var interceptedType = assembly.FindType(typeof (TypeThatShouldBeIntercepted).FullName);
             return interceptedType.GetMethod(nonGenericMethodName);
         }
@@ -45,6 +47,20 @@ namespace CryoAOP.Tests
             var result = methodInfo.Invoke(1, "2", 3);
             Assert.That(interceptCount, Is.EqualTo(2));
             Assert.That(result, Is.Null);
+        }
+
+        [Test]
+        public void Should_intercept_method_with_class_args_and_call()
+        {
+            var interceptCount = 0;
+            var methodInfo = GetNonGenericMethodInfo("HavingMethodWithClassArgsAndClassReturnType");
+            var args = assembly.CreateInstance("CryoAOP.TestAssembly.MethodParameterClass");
+
+            GlobalInterceptor.MethodIntercepter += (invocation) => { interceptCount++; };
+
+            var result = methodInfo.Invoke(args);
+            Assert.That(interceptCount, Is.EqualTo(2));
+            Assert.That(result, Is.Not.Null);
         }
 
         [Test]
