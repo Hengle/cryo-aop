@@ -28,6 +28,25 @@ namespace CryoAOP.Tests
         }
 
         [Test]
+        public void Should_intercept_method_and_call()
+        {
+            var assembly = Assembly.LoadFrom(interceptedOutputAssembly);
+            var interceptedType = assembly.FindType(typeof(TypeThatShouldBeIntercepted).FullName);
+            var methodInfo = interceptedType.GetMethod("HavingMethodWithArgsAndStringReturnType");
+
+            int interceptCount = 0;
+
+            GlobalInterceptor.MethodIntercepter += (invocation) =>
+            {
+                interceptCount++;
+            };
+
+            var result = methodInfo.Invoke(1, "2", 3);
+            Assert.That(interceptCount, Is.EqualTo(2));
+            Assert.That(result, Is.EqualTo("1, 2, 3"));
+        }
+
+        [Test]
         public void Should_intercept_method_and_call_using_reflection_changing_return_value()
         {
             var assembly = Assembly.LoadFrom(interceptedOutputAssembly);
