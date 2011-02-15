@@ -27,51 +27,30 @@ namespace CryoAOP.Tests
             Interception.RegisterType("CryoAOP.TestAssembly", "CryoAOP.TestAssembly.TypeThatShouldBeIntercepted", interceptedOutputAssembly);
         }
 
+        private static MethodInfo GetNonGenericMethodInfo(string nonGenericMethodName)
+        {
+            var assembly = Assembly.LoadFrom(interceptedOutputAssembly);
+            var interceptedType = assembly.FindType(typeof (TypeThatShouldBeIntercepted).FullName);
+            return interceptedType.GetMethod(nonGenericMethodName);
+        }
+
         [Test]
         public void Should_intercept_method_and_call()
         {
-            var assembly = Assembly.LoadFrom(interceptedOutputAssembly);
-            var interceptedType = assembly.FindType(typeof(TypeThatShouldBeIntercepted).FullName);
-            var methodInfo = interceptedType.GetMethod("HavingMethodWithArgsAndNoReturnType");
+            var interceptCount = 0;
+            var methodInfo = GetNonGenericMethodInfo("HavingMethodWithArgsAndNoReturnType");
 
-            int interceptCount = 0;
-
-            GlobalInterceptor.MethodIntercepter += (invocation) =>
-            {
-                interceptCount++;
-            };
+            GlobalInterceptor.MethodIntercepter += (invocation) => { interceptCount++; };
 
             var result = methodInfo.Invoke(1, "2", 3);
             Assert.That(interceptCount, Is.EqualTo(2));
             Assert.That(result, Is.Null);
-            
-        }
-
-        [Test]
-        public void Should_intercept_method_and_call_with_result()
-        {
-            var assembly = Assembly.LoadFrom(interceptedOutputAssembly);
-            var interceptedType = assembly.FindType(typeof(TypeThatShouldBeIntercepted).FullName);
-            var methodInfo = interceptedType.GetMethod("HavingMethodWithArgsAndStringReturnType");
-
-            int interceptCount = 0;
-
-            GlobalInterceptor.MethodIntercepter += (invocation) =>
-            {
-                interceptCount++;
-            };
-
-            var result = methodInfo.Invoke(1, "2", 3);
-            Assert.That(interceptCount, Is.EqualTo(2));
-            Assert.That(result, Is.EqualTo("1, 2, 3"));
         }
 
         [Test]
         public void Should_intercept_method_and_call_using_reflection_changing_return_value()
         {
-            var assembly = Assembly.LoadFrom(interceptedOutputAssembly);
-            var interceptedType = assembly.FindType(typeof (TypeThatShouldBeIntercepted).FullName);
-            var methodInfo = interceptedType.GetMethod("HavingMethodWithArgsAndStringReturnType");
+            var methodInfo = GetNonGenericMethodInfo("HavingMethodWithArgsAndStringReturnType");
 
             GlobalInterceptor.MethodIntercepter += (invocation) =>
                                                        {
@@ -81,6 +60,19 @@ namespace CryoAOP.Tests
 
             var result = methodInfo.Invoke(1, "2", 3);
             Assert.That(result, Is.EqualTo("Intercepted Result"));
+        }
+
+        [Test]
+        public void Should_intercept_method_and_call_with_result()
+        {
+            var interceptCount = 0;
+            var methodInfo = GetNonGenericMethodInfo("HavingMethodWithArgsAndStringReturnType");
+
+            GlobalInterceptor.MethodIntercepter += (invocation) => { interceptCount++; };
+
+            var result = methodInfo.Invoke(1, "2", 3);
+            Assert.That(interceptCount, Is.EqualTo(2));
+            Assert.That(result, Is.EqualTo("1, 2, 3"));
         }
     }
 }
