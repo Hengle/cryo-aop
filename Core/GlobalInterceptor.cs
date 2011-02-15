@@ -1,15 +1,23 @@
-﻿using System.Windows.Forms;
-using CryoAOP.Core.Extensions;
+﻿using System;
 
 namespace CryoAOP.Core
 {
     public class GlobalInterceptor
     {
+        public static event Action<MethodInvocation> MethodIntercepter;
+
         public static void HandleInvocation(Invocation invocation)
         {
-            var methodInvocation = (MethodInvocation) invocation;
-            MessageBox.Show("-> GlobalInterceptor::HandleInvocation(Invocation={0})".FormatWith(methodInvocation));
-            //methodInvocation.CancelInvocation();
+            if (invocation is MethodInvocation && MethodIntercepter != null)
+            {
+                var methodInvocation = (MethodInvocation) invocation;
+                MethodIntercepter(methodInvocation);
+            }
+        }
+
+        public static void ClearAll()
+        {
+            MethodIntercepter = null;
         }
     }
 }

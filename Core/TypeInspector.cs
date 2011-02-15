@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Linq;
+using System.Reflection;
 using CryoAOP.Core.Exceptions;
 using CryoAOP.Core.Extensions;
 using Mono.Cecil;
@@ -14,6 +16,17 @@ namespace CryoAOP.Core
         {
             AssemblyInspector = assemblyInspector;
             Definition = definition;
+        }
+
+        public virtual void InterceptAllMethods()
+        {
+            var methodPrefix = "_{0}_".FormatWith(Guid.NewGuid().ToString("N"));
+            foreach (var method in Definition.Methods.ToList())
+            {
+                var methodInspector = FindMethod(method.Name);
+                if (!methodInspector.Definition.IsConstructor)
+                    methodInspector.InterceptMethod(methodPrefix);
+            }
         }
 
         public virtual MethodInspector FindMethod(MethodInfo searchMethod)

@@ -163,7 +163,15 @@ namespace CryoAOP.Core
 
 
             if (interceptorMethod.ReturnType.Name != "Void")
-                interceptorMethod.Ldloc(5);
+            {
+                // Experimental loading result from invocation
+                interceptorMethod.Ldloc_2();
+                var methodInvocationSetReturnType = TypeInspector.AssemblyInspector.Import(typeof(MethodInvocation), "get_Result");
+                interceptorMethod.Callvirt(methodInvocationSetReturnType);
+
+                
+                // interceptorMethod.Ldloc(5);
+            }
 
             interceptorMethod.Ret();
 

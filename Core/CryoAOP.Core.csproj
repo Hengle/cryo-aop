@@ -55,6 +55,7 @@
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="GlobalInterceptor.cs" />
+    <Compile Include="Interception.cs" />
     <Compile Include="MethodInspector.cs" />
     <Compile Include="MethodInvocation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
