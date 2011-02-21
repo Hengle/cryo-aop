@@ -207,9 +207,12 @@ namespace CryoAOP.Core
                 il.Append(il.Create(OpCodes.Ldarg, (ushort)(argIndex + 1)));
             }
 
-            il.Append(il.Create(OpCodes.Call, renamedMethod));
+            if (renamedMethod.HasGenericParameters)
+                il.Append(il.Create(OpCodes.Call, renamedMethod.MakeGeneric(interceptorMethod.GenericParameters.ToArray())));
+            else
+                il.Append(il.Create(OpCodes.Call, renamedMethod));
 
-            // Interceptor: Store method return value
+            // Interceptor: Store method return value);)
             if (interceptorMethod.ReturnType.Name != "Void")
                 il.Append(il.Create(OpCodes.Stloc, 5));
 

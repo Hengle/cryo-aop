@@ -47,12 +47,7 @@ namespace CryoAOP.TestAssembly
 
         public void CallToGenericMethod<T>()
         {
-            int i = 2 + 3;
-            var s = i.ToString();
-
             GenericMethod<T>();
-
-            Console.WriteLine();
         }
     }
 
