@@ -32,7 +32,10 @@ namespace CryoAOP.Core
 
             try
             {
-                Definition = AssemblyDefinition.ReadAssembly(this.assemblyPath);
+                Definition = AssemblyDefinition
+                    .ReadAssembly(
+                        this.assemblyPath, 
+                        new ReaderParameters(ReadingMode.Immediate));
             }
             catch (Exception err)
             {

@@ -15,7 +15,7 @@ namespace CryoAOP.Core
             }
         }
 
-        public static void ClearAll()
+        public static void Clear()
         {
             MethodIntercepter = null;
         }

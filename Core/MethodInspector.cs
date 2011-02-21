@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using CryoAOP.Core.Extensions;
@@ -10,8 +10,8 @@ namespace CryoAOP.Core
 {
     public class MethodInspector
     {
-        public readonly TypeInspector TypeInspector;
         public readonly MethodDefinition Definition;
+        public readonly TypeInspector TypeInspector;
 
         public MethodInspector(TypeInspector typeInspector, MethodDefinition definition)
         {
@@ -24,33 +24,70 @@ namespace CryoAOP.Core
             TypeInspector.AssemblyInspector.Write(assemblyPath);
         }
 
-        public void InterceptMethod(string methodPrefix)
+        public void InterceptMethod(string methodPrefix = null)
         {
+            // Generate prefix
+            if (methodPrefix == null)
+                methodPrefix = "_{0}_".FormatWith(Guid.NewGuid().ToString("N"));
+
             // Create new Method 
             var interceptorMethod = new MethodDefinition(Definition.Name, Definition.Attributes, Definition.ReturnType);
             Definition.DeclaringType.Methods.Add(interceptorMethod);
-            
+
             // Rename existing method 
             var renamedMethod = Definition;
             renamedMethod.Name = "{0}{1}".FormatWith(methodPrefix, renamedMethod.Name);
 
+            // Copy attributes
+            CloneMethodProperties(interceptorMethod, renamedMethod);
+
+            // Copy calling convention
+            interceptorMethod.CallingConvention = renamedMethod.CallingConvention;
+
+            // Copy method semantics 
+            interceptorMethod.SemanticsAttributes = renamedMethod.SemanticsAttributes;
+
+            // Copy attributes 
+            renamedMethod.CustomAttributes.ToList().ForEach(a => interceptorMethod.CustomAttributes.Add(a));
+
+            // Copy security declarations 
+            renamedMethod.SecurityDeclarations.ToList().ForEach(s => interceptorMethod.SecurityDeclarations.Add(s));
+
+            // Copy pinvoke info, dont do this! Sets method body to null!
+            //interceptorMethod.PInvokeInfo = renamedMethod.PInvokeInfo;
+            
             // Copy parameters across
-            if (Definition.HasParameters)
-                foreach (var parameter in Definition.Parameters)
-                 interceptorMethod.Parameters.Add(parameter);   
+            if (renamedMethod.HasParameters)
+                foreach (var parameter in renamedMethod.Parameters.ToList())
+                    interceptorMethod.Parameters.Add(parameter);
+
+            // Copy generic parameters across -> Move to clone factory
+            if (renamedMethod.HasGenericParameters)
+            {
+                foreach (var genericParameter in renamedMethod.GenericParameters.ToList())
+                {
+                    if (genericParameter != null)
+                    {
+                        var newGenericParameter = new GenericParameter(genericParameter.Name, interceptorMethod);
+                        interceptorMethod.GenericParameters.Add(newGenericParameter);
+                        CloneGenericParameterProperties(genericParameter, newGenericParameter);
+                        //Console.WriteLine(genericParameter.InstanceDiff(newGenericParameter));
+                    }
+                }
+            }
 
             // Insert interceptor code
-            
+
             // Interceptor: Insert variables 
-            var v_0 = new VariableDefinition("V_0", TypeInspector.AssemblyInspector.Import(typeof(Type)));
+            var v_0 = new VariableDefinition("V_0", TypeInspector.AssemblyInspector.Import(typeof (Type)));
             interceptorMethod.Body.Variables.Add(v_0);
-            var v_1 = new VariableDefinition("V_1", TypeInspector.AssemblyInspector.Import(typeof(MethodInfo)));
+            var v_1 = new VariableDefinition("V_1", TypeInspector.AssemblyInspector.Import(typeof (MethodInfo)));
             interceptorMethod.Body.Variables.Add(v_1);
-            var v_2 = new VariableDefinition("V_2", TypeInspector.AssemblyInspector.Import(typeof(MethodInvocation)));
+            var v_2 = new VariableDefinition("V_2", TypeInspector.AssemblyInspector.Import(typeof (MethodInvocation)));
             interceptorMethod.Body.Variables.Add(v_2);
-            var v_3 = new VariableDefinition("V_3", TypeInspector.AssemblyInspector.Import(typeof(Object[])));
+            var v_3 = new VariableDefinition("V_3", TypeInspector.AssemblyInspector.Import(typeof (Object[])));
             interceptorMethod.Body.Variables.Add(v_3);
-            var v_4 = new VariableDefinition("V_4", TypeInspector.AssemblyInspector.Import(typeof(Boolean)));
+            var v_4 = new VariableDefinition("V_4", TypeInspector.AssemblyInspector.Import(typeof (Boolean)));
             interceptorMethod.Body.Variables.Add(v_4);
 
             // Interceptor: If has return type add to local variables
@@ -60,130 +97,242 @@ namespace CryoAOP.Core
                 var v_5 = new VariableDefinition("V_5", interceptorMethod.ReturnType);
                 interceptorMethod.Body.Variables.Add(v_5);
             }
-            interceptorMethod.Body.InitLocals = true;
+
+            // Interceptor: Init locals?
+            interceptorMethod.Body.InitLocals = renamedMethod.Body.InitLocals;
 
             // Interceptor: Method return instruction 
             var endOfMethodInstruction = interceptorMethod.Body.GetILProcessor().Create(OpCodes.Nop);
-            
-            // Interceptor: Insert interception IL
-            interceptorMethod.Nop();
-            
+
+            // Interceptor: Get IL Processor
+            var il = interceptorMethod.Body.GetILProcessor();
+
             // Interceptor: Resolve type from handle uses V_0
-            interceptorMethod.Ldtoken(TypeInspector.Definition);
-            var getTypeFromHandleMethodReference = TypeInspector.AssemblyInspector.Import(typeof(Type), "GetTypeFromHandle");
-            interceptorMethod.Call(getTypeFromHandleMethodReference);
-            interceptorMethod.Stloc_0();
+            il.Append(new[]
+                          {
+                              il.Create(OpCodes.Nop),
+                              il.Create(OpCodes.Ldtoken, TypeInspector.Definition),
+                              il.Create(OpCodes.Call, Import(typeof (Type), "GetTypeFromHandle")),
+                              il.Create(OpCodes.Stloc_0)
+                          });
 
             // Interceptor: Get the method info 
-            interceptorMethod.Ldloc_0();
-            interceptorMethod.Ldstr(interceptorMethod.Name);
-            var getMethodMethodReference = TypeInspector.AssemblyInspector.Import(typeof(Type), "GetMethod,String");
-            interceptorMethod.Callvirt(getMethodMethodReference);
-            interceptorMethod.Stloc_1();
+            il.Append(new[]
+                          {
+                              il.Create(OpCodes.Ldloc_0),
+                              il.Create(OpCodes.Ldstr, interceptorMethod.Name),
+                              il.Create(OpCodes.Callvirt, Import(typeof (Type), "GetMethod,String")),
+                              il.Create(OpCodes.Stloc_1)
+                          });
+
 
             // Interceptor: Initialise object array for param values 
-            interceptorMethod.Ldc_I4_S((sbyte)interceptorMethod.Parameters.Count);
-            var objectReference = TypeInspector.AssemblyInspector.Import(typeof(Object));
-            interceptorMethod.Newarr(objectReference);
-            interceptorMethod.Stloc_3();
+            il.Append(new[]
+                          {
+                              il.Create(OpCodes.Ldc_I4, interceptorMethod.Parameters.Count),
+                              il.Create(OpCodes.Newarr, Import(typeof (Object))),
+                              il.Create(OpCodes.Stloc_3)
+                          });
 
             foreach (var parameter in interceptorMethod.Parameters)
             {
-                interceptorMethod.Ldloc_3();
                 var argIndex = interceptorMethod.Parameters.IndexOf(parameter);
-                interceptorMethod.Ldc_I4_S((sbyte)argIndex);
-                interceptorMethod.Ldarg((ushort)(argIndex + 1));
+
+                // Interceptor: Load the argument for array
+                il.Append(new[]
+                              {
+                                  il.Create(OpCodes.Ldloc_3),
+                                  il.Create(OpCodes.Ldc_I4, argIndex),
+                                  il.Create(OpCodes.Ldarg, argIndex + 1),
+                              });
+
+                // Interceptor: Box up value types
                 if (parameter.ParameterType.IsValueType)
-                    interceptorMethod.Box(parameter.ParameterType);
-                interceptorMethod.Stelem_ref();
+                    il.Append(il.Create(OpCodes.Box, parameter.ParameterType));
+
+                // Intreceptor: Allocate to array
+                il.Append(il.Create(OpCodes.Stelem_Ref));
             }
 
             // Inteceptor: Initialise Method Invocation
             var methodInvocationTypRef = TypeInspector.AssemblyInspector.Import(typeof(MethodInvocation));
             var methodInvocationConstructor = methodInvocationTypRef.Resolve().Methods.Where(m => m.IsConstructor).First();
-            var methodInvocationConstructorReference = TypeInspector.AssemblyInspector.Import(methodInvocationConstructor);
-            interceptorMethod.Ldloc_0();
-            interceptorMethod.Ldloc_1();
-            interceptorMethod.Ldloc_3();
-            interceptorMethod.NewObj(methodInvocationConstructorReference);
-            interceptorMethod.Stloc_2();
+
+            il.Append(new[]
+                          {
+                              il.Create(OpCodes.Ldloc_0),
+                              il.Create(OpCodes.Ldloc_1),
+                              il.Create(OpCodes.Ldloc_3),
+                              il.Create(OpCodes.Newobj, Import(methodInvocationConstructor)),
+                              il.Create(OpCodes.Stloc_2)
+                          });
 
             // Interceptor: Call interceptor method 
-            var methodInterceptorRef = TypeInspector.AssemblyInspector.Import(typeof(GlobalInterceptor), "HandleInvocation");
-            interceptorMethod.Ldloc_2();
-            interceptorMethod.Call(methodInterceptorRef);
+            il.Append(new[]
+                          {
+                              il.Create(OpCodes.Ldloc_2),
+                              il.Create(OpCodes.Call, Import(typeof (GlobalInterceptor), "HandleInvocation"))
+                          });
 
-            // !Experimental! - If not void push result from interception
+
+            // Interceptor: If not void push result from interception
             if (renamedMethod.ReturnType.Name != "Void")
             {
-                interceptorMethod.Ldloc_2();
-                var methodInvocationGetResult = TypeInspector.AssemblyInspector.Import(typeof(MethodInvocation), "get_Result");
-                interceptorMethod.Callvirt(methodInvocationGetResult);
-                interceptorMethod.Stloc(5);
+                il.Append(new[]
+                              {
+                                  il.Create(OpCodes.Ldloc_2),
+                                  il.Create(OpCodes.Callvirt, Import(typeof (MethodInvocation), "get_Result")),
+                                  il.Create(OpCodes.Stloc, 5)
+                              });
             }
 
-            // Check if invocation has been cancelled
-            interceptorMethod.Ldloc_2();
-            var methodInvocationGetCanInvoke = TypeInspector.AssemblyInspector.Import(typeof(MethodInvocation), "get_CanInvoke");
-            interceptorMethod.Callvirt(methodInvocationGetCanInvoke);
-            interceptorMethod.Ldc_I4_0();
-            interceptorMethod.Ceq();
-            interceptorMethod.Stloc(4);
-            interceptorMethod.Ldloc(4);
-            interceptorMethod.Brtrue(endOfMethodInstruction);
+            // Interceptor: Check if invocation has been cancelled
+            il.Append(new[]
+                          {
+                              il.Create(OpCodes.Ldloc_2),
+                              il.Create(OpCodes.Callvirt, Import(typeof (MethodInvocation), "get_CanInvoke")),
+                              il.Create(OpCodes.Ldc_I4_0),
+                              il.Create(OpCodes.Ceq),
+                              il.Create(OpCodes.Stloc, 4),
+                              il.Create(OpCodes.Ldloc, 4),
+                              il.Create(OpCodes.Brtrue, endOfMethodInstruction)
+                          });
 
-            // Insert IL call from clone to renamed method
-            interceptorMethod.Ldarg_0();
+            // Interceptor: Insert IL call from clone to renamed method
+            il.Append(il.Create(OpCodes.Ldarg_0));
+
             foreach (var parameter in interceptorMethod.Parameters)
             {
                 var argIndex = interceptorMethod.Parameters.IndexOf(parameter);
-                interceptorMethod.Ldarg((ushort)(argIndex+1));
+                il.Append(il.Create(OpCodes.Ldarg, (ushort)(argIndex + 1)));
             }
 
-            interceptorMethod.Call(renamedMethod);
+            il.Append(il.Create(OpCodes.Call, renamedMethod));
+
+            // Interceptor: Store method return value
             if (interceptorMethod.ReturnType.Name != "Void")
-                interceptorMethod.Stloc(5);
+                il.Append(il.Create(OpCodes.Stloc, 5));
 
-            interceptorMethod.Nop();
+            il.Append(il.Create(OpCodes.Nop));
 
-            // Set return type on MethodInvocation 
-            if (interceptorMethod.ReturnType.Name != "Void")
-            {
-                interceptorMethod.Ldloc_2();
-                interceptorMethod.Ldloc(5);
-                var methodInvocationSetReturnType = TypeInspector.AssemblyInspector.Import(typeof (MethodInvocation), "set_Result");
-                interceptorMethod.Callvirt(methodInvocationSetReturnType);
-            }
-
-            // Continue the invocation by changing state
-            interceptorMethod.Ldloc_2();
-            var methodInvocationContinue = TypeInspector.AssemblyInspector.Import(typeof(MethodInvocation), "ContinueInvocation");
-            interceptorMethod.Call(methodInvocationContinue);
-
-            // Do post invocation call 
-            interceptorMethod.Ldloc_2();
-            interceptorMethod.Call(methodInterceptorRef);
-
-            // End of method
-            interceptorMethod
-                .Body
-                .GetILProcessor()
-                .Append(endOfMethodInstruction);
-
-
+            // Interceptor: Set return type on MethodInvocation 
             if (interceptorMethod.ReturnType.Name != "Void")
             {
-                // Experimental loading result from invocation
-                interceptorMethod.Ldloc_2();
-                var methodInvocationSetReturnType = TypeInspector.AssemblyInspector.Import(typeof(MethodInvocation), "get_Result");
-                interceptorMethod.Callvirt(methodInvocationSetReturnType);
-
-                
-                // interceptorMethod.Ldloc(5);
+                il.Append(new[]
+                              {
+                                  il.Create(OpCodes.Ldloc_2),
+                                  il.Create(OpCodes.Ldloc, 5),
+                                  il.Create(OpCodes.Callvirt, Import(typeof (MethodInvocation), "set_Result"))
+                              });
             }
 
-            interceptorMethod.Ret();
+            // Interceptor: Continue the invocation by changing state
+            il.Append(new[]
+                          {
+                              il.Create(OpCodes.Ldloc_2),
+                              il.Create(OpCodes.Call, Import(typeof (MethodInvocation), "ContinueInvocation"))
+                          });
 
+            // Interceptor: Do post invocation call 
+            il.Append(new[]
+                          {
+                              il.Create(OpCodes.Ldloc_2),
+                              il.Create(OpCodes.Call, Import(typeof (GlobalInterceptor), "HandleInvocation"))
+                          });
+
+            // Interceptor: End of method
+            il.Append(endOfMethodInstruction);
+
+
+            // Interceptor: Loading the result from the invocation 
+            if (interceptorMethod.ReturnType.Name != "Void")
+            {
+                il.Append(new[]
+                              {
+                                  il.Create(OpCodes.Ldloc_2),
+                                  il.Create(OpCodes.Callvirt, Import(typeof (MethodInvocation), "get_Result"))
+                              });
+            }
+
+            il.Append(il.Create(OpCodes.Ret));
+
+            // TODO: Debug code, remove it!
+            //Console.WriteLine(renamedMethod.InstanceDiff(interceptorMethod));
+        }
+
+        // TODO: Move to clone factory
+        private static void CloneGenericParameterProperties(GenericParameter genericParameter, GenericParameter newGenericParameter)
+        {
+            newGenericParameter.Attributes = genericParameter.Attributes;
+            genericParameter.Constraints.ForEach(gp => newGenericParameter.Constraints.Add(gp));
+            genericParameter.CustomAttributes.ForEach(ca => newGenericParameter.CustomAttributes.Add(ca));
+            newGenericParameter.DeclaringType = genericParameter.DeclaringType;
+            genericParameter.GenericParameters.ForEach(gp => newGenericParameter.GenericParameters.Add(gp));
+            newGenericParameter.HasDefaultConstructorConstraint = genericParameter.HasDefaultConstructorConstraint;
+            newGenericParameter.IsContravariant = genericParameter.IsContravariant;
+            newGenericParameter.IsCovariant = genericParameter.IsCovariant;
+            newGenericParameter.IsNonVariant = genericParameter.IsNonVariant;
+            //newGenericParameter.MetadataToken = genericParameter.MetadataToken;
+        }
+
+        // TODO: Move to clone factory
+        private static void CloneMethodProperties(MethodDefinition interceptorMethod, MethodDefinition renamedMethod)
+        {
+            interceptorMethod.IsAbstract = renamedMethod.IsAbstract;
+            interceptorMethod.IsAddOn = renamedMethod.IsAddOn;
+            interceptorMethod.IsAssembly = renamedMethod.IsAssembly;
+            interceptorMethod.IsCheckAccessOnOverride = renamedMethod.IsCheckAccessOnOverride;
+            interceptorMethod.IsCompilerControlled = renamedMethod.IsCompilerControlled;
+            interceptorMethod.IsFamily = renamedMethod.IsFamily;
+            interceptorMethod.IsFamilyAndAssembly = renamedMethod.IsFamilyAndAssembly;
+            interceptorMethod.IsFamilyOrAssembly = renamedMethod.IsFamilyOrAssembly;
+            interceptorMethod.IsFinal = renamedMethod.IsFinal;
+            interceptorMethod.IsFire = renamedMethod.IsFire;
+            interceptorMethod.IsForwardRef = renamedMethod.IsForwardRef;
+            interceptorMethod.IsGetter = renamedMethod.IsGetter;
+            interceptorMethod.IsHideBySig = renamedMethod.IsHideBySig;
+            interceptorMethod.IsIL = renamedMethod.IsIL;
+            interceptorMethod.IsInternalCall = renamedMethod.IsInternalCall;
+            interceptorMethod.IsManaged = renamedMethod.IsManaged;
+            interceptorMethod.IsNative = renamedMethod.IsNative;
+            interceptorMethod.IsNewSlot = renamedMethod.IsNewSlot;
+            interceptorMethod.IsPInvokeImpl = renamedMethod.IsPInvokeImpl;
+            interceptorMethod.IsPreserveSig = renamedMethod.IsPreserveSig;
+            interceptorMethod.IsPrivate = renamedMethod.IsPrivate;
+            interceptorMethod.IsPublic = renamedMethod.IsPublic;
+            interceptorMethod.IsRemoveOn = renamedMethod.IsRemoveOn;
+            interceptorMethod.IsReuseSlot = renamedMethod.IsReuseSlot;
+            interceptorMethod.IsRuntime = renamedMethod.IsRuntime;
+            interceptorMethod.IsRuntimeSpecialName = renamedMethod.IsRuntimeSpecialName;
+            interceptorMethod.IsSetter = renamedMethod.IsSetter;
+            interceptorMethod.IsSpecialName = renamedMethod.IsSpecialName;
+            interceptorMethod.IsStatic = renamedMethod.IsStatic;
+            interceptorMethod.IsSynchronized = renamedMethod.IsSynchronized;
+            interceptorMethod.IsUnmanaged = renamedMethod.IsUnmanaged;
+            interceptorMethod.IsUnmanagedExport = renamedMethod.IsUnmanagedExport;
+            interceptorMethod.IsVirtual = renamedMethod.IsVirtual;
+            interceptorMethod.NoInlining = renamedMethod.NoInlining;
+            interceptorMethod.NoOptimization = renamedMethod.NoOptimization;
+        }
+
+        public virtual TypeReference Import(Type searchType)
+        {
+            return TypeInspector.AssemblyInspector.Import(searchType);
+        }
+
+        public virtual MethodReference Import(MethodDefinition method)
+        {
+            return TypeInspector.AssemblyInspector.Import(method);
+        }
+
+        public virtual TypeReference Import(TypeDefinition type)
+        {
+            return TypeInspector.AssemblyInspector.Import(type);
+        }
+
+        public virtual MethodReference Import(Type searchType, string methodName)
+        {
+            return TypeInspector.AssemblyInspector.Import(searchType, methodName);
         }
 
         public override string ToString()

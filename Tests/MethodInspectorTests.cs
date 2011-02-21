@@ -1,7 +1,12 @@
-﻿using System.Reflection;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using CryoAOP.Core;
 using CryoAOP.Core.Extensions;
 using CryoAOP.TestAssembly;
+using Mono.Cecil;
+using Mono.Cecil.PE;
 using NUnit.Framework;
 
 namespace CryoAOP.Tests
@@ -16,7 +21,7 @@ namespace CryoAOP.Tests
         [SetUp]
         public void SetUp()
         {
-            GlobalInterceptor.ClearAll();
+            GlobalInterceptor.Clear();
         }
 
         #endregion
@@ -26,14 +31,22 @@ namespace CryoAOP.Tests
         [TestFixtureSetUp]
         public void FixtureSetUp()
         {
-            Interception.RegisterType("CryoAOP.TestAssembly", "CryoAOP.TestAssembly.TypeThatShouldBeIntercepted", interceptedOutputAssembly);
+            Interception.RegisterType("CryoAOP.TestAssembly", "CryoAOP.TestAssembly.TypeThatShouldBeIntercepted", "GenericMethod", interceptedOutputAssembly);
+            //Interception.RegisterType("CryoAOP.TestAssembly", "CryoAOP.TestAssembly.TypeThatShouldBeIntercepted", interceptedOutputAssembly);
             assembly = Assembly.LoadFrom(interceptedOutputAssembly);
         }
 
         private static MethodInfo GetNonGenericMethodInfo(string nonGenericMethodName)
         {
-            var interceptedType = assembly.FindType(typeof (TypeThatShouldBeIntercepted).FullName);
+            var interceptedType = assembly.FindType(typeof(TypeThatShouldBeIntercepted).FullName);
             return interceptedType.GetMethod(nonGenericMethodName);
+        }
+
+        private static MethodInfo GetGenericMethodInfo(string nonGenericMethodName, Type genericTypeParameter)
+        {
+            var interceptedType = assembly.FindType(typeof(TypeThatShouldBeIntercepted).FullName);
+            MethodInfo genericMethodInfo = interceptedType.GetMethod(nonGenericMethodName);
+            return genericMethodInfo.MakeGenericMethod(genericTypeParameter);
         }
 
         [Test]
@@ -89,6 +102,40 @@ namespace CryoAOP.Tests
             var result = methodInfo.Invoke(1, "2", 3);
             Assert.That(interceptCount, Is.EqualTo(2));
             Assert.That(result, Is.EqualTo("1, 2, 3"));
+        }
+
+        [Test]
+        public void Should_call_to_generic_method()
+        {
+            var interceptorCount = 0;
+            var methodInfo = GetGenericMethodInfo("GenericMethod", typeof(MethodParameterClass));
+
+            GlobalInterceptor.MethodIntercepter += (invocation) => { interceptorCount++; };
+
+            methodInfo.Invoke();
+            Assert.That(interceptorCount, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void load_sections_from_image()
+        {
+            var assembly = AssemblyDefinition.ReadAssembly("CryoAOP.TestAssembly.dll");
+            var type = assembly.MainModule.Types.Where(t => t.Name == "TypeThatShouldBeIntercepted").First();
+            var method = type.Methods.Where(m => m.Name == "GenericMethod").First();
+
+
+            using (FileStream fileStream = File.OpenRead("CryoAOP.TestAssembly.dll"))
+            {
+                var image = ImageReader.ReadImageFrom(fileStream);
+
+                foreach(var section in image.Sections)
+                {
+                    if (section.VirtualAddress == method.RVA)
+                    {
+                        
+                    }
+                }
+            }
         }
     }
 }

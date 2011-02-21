@@ -51,6 +51,7 @@
     <Compile Include="Exceptions\FormattableExceptionBase.cs" />
     <Compile Include="Exceptions\TypeReferenceNotFoundException.cs" />
     <Compile Include="Extensions\CryoAOPExtensions.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\ILProcessorExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />

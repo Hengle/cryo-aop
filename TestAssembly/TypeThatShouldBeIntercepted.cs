@@ -1,4 +1,5 @@
-﻿using CryoAOP.Core;
+﻿using System;
+using CryoAOP.Core;
 using CryoAOP.Core.Extensions;
 
 namespace CryoAOP.TestAssembly
@@ -39,9 +40,19 @@ namespace CryoAOP.TestAssembly
             return new MethodParameterClass();
         }
 
-        public T GenericMethod<T>()
+        public void GenericMethod<T>()
         {
-            return default(T);
+            //return default(T);
+        }
+
+        public void CallToGenericMethod<T>()
+        {
+            int i = 2 + 3;
+            var s = i.ToString();
+
+            GenericMethod<T>();
+
+            Console.WriteLine();
         }
     }
 
