@@ -42,12 +42,24 @@ namespace CryoAOP.TestAssembly
 
         public void GenericMethod<T>()
         {
-            //return default(T);
         }
 
-        public void CallToGenericMethod<T>()
+        public void GenericMethodWithGenericParameters<T>(T t)
         {
-            GenericMethod<T>();
+        }
+
+        public T GenericMethodWithGenericParametersAndGenericReturnType<T>(T t)
+        {
+            return t;
+        }
+
+        public void GenericMethodWithGenericParametersAndValueTypeArgs<T>(T t, int i, double j)
+        {
+        }
+
+        public double GenericMethodWithGenericParamsAndValueReturnType<T>(T t, int i, double j)
+        {
+            return j;
         }
     }
 

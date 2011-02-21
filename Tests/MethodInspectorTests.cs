@@ -135,120 +135,75 @@ namespace CryoAOP.Tests
             Assert.That(interceptorCount, Is.EqualTo(2));
         }
 
-        /*
         [Test]
-        public void should_emit_call_to_generic_properly()
+        public void Should_call_to_generic_method_with_generic_parameters()
         {
-            var assembly = AssemblyDefinition.ReadAssembly("CryoAOP.TestAssembly.dll");
-            var type = assembly.MainModule.Types.Where(t => t.Name == "TypeThatShouldBeIntercepted").First();
-            var renamedMethod = type.Methods.Where(m => m.Name == "GenericMethod").First();
+            var interceptorCount = 0;
+            var methodInfo = GetGenericMethodInfo("GenericMethodWithGenericParameters", typeof (MethodParameterClass));
 
-            // Create new method 
-            MethodDefinition methodThatShouldReplaceOriginal = new MethodDefinition(renamedMethod.Name, renamedMethod.Attributes, renamedMethod.ReturnType);
-            renamedMethod.DeclaringType.Methods.Add(methodThatShouldReplaceOriginal);
+            GlobalInterceptor.MethodIntercepter += (invocation) => { interceptorCount++; };
 
-            // Rename existing method 
-            renamedMethod.Name = string.Format("{0}_Clone", renamedMethod.Name);
+            methodInfo.Invoke(new MethodParameterClass());
+            Assert.That(interceptorCount, Is.EqualTo(2));
+        }
 
-            // Copy vars and stuff
-            methodThatShouldReplaceOriginal.CallingConvention = renamedMethod.CallingConvention;
-            methodThatShouldReplaceOriginal.SemanticsAttributes = renamedMethod.SemanticsAttributes;
-            renamedMethod.CustomAttributes.ToList().ForEach(a => methodThatShouldReplaceOriginal.CustomAttributes.Add(a));
-            renamedMethod.SecurityDeclarations.ToList().ForEach(s => methodThatShouldReplaceOriginal.SecurityDeclarations.Add(s));
+        [Test]
+        public void Should_call_to_generic_method_with_generic_parameters_and_generic_return_type()
+        {
+            var interceptorCount = 0;
+            var methodInfo = GetGenericMethodInfo("GenericMethodWithGenericParametersAndGenericReturnType", typeof(MethodParameterClass));
 
-            methodThatShouldReplaceOriginal.IsAbstract = renamedMethod.IsAbstract;
-            methodThatShouldReplaceOriginal.IsAddOn = renamedMethod.IsAddOn;
-            methodThatShouldReplaceOriginal.IsAssembly = renamedMethod.IsAssembly;
-            methodThatShouldReplaceOriginal.IsCheckAccessOnOverride = renamedMethod.IsCheckAccessOnOverride;
-            methodThatShouldReplaceOriginal.IsCompilerControlled = renamedMethod.IsCompilerControlled;
-            methodThatShouldReplaceOriginal.IsFamily = renamedMethod.IsFamily;
-            methodThatShouldReplaceOriginal.IsFamilyAndAssembly = renamedMethod.IsFamilyAndAssembly;
-            methodThatShouldReplaceOriginal.IsFamilyOrAssembly = renamedMethod.IsFamilyOrAssembly;
-            methodThatShouldReplaceOriginal.IsFinal = renamedMethod.IsFinal;
-            methodThatShouldReplaceOriginal.IsFire = renamedMethod.IsFire;
-            methodThatShouldReplaceOriginal.IsForwardRef = renamedMethod.IsForwardRef;
-            methodThatShouldReplaceOriginal.IsGetter = renamedMethod.IsGetter;
-            methodThatShouldReplaceOriginal.IsHideBySig = renamedMethod.IsHideBySig;
-            methodThatShouldReplaceOriginal.IsIL = renamedMethod.IsIL;
-            methodThatShouldReplaceOriginal.IsInternalCall = renamedMethod.IsInternalCall;
-            methodThatShouldReplaceOriginal.IsManaged = renamedMethod.IsManaged;
-            methodThatShouldReplaceOriginal.IsNative = renamedMethod.IsNative;
-            methodThatShouldReplaceOriginal.IsNewSlot = renamedMethod.IsNewSlot;
-            methodThatShouldReplaceOriginal.IsPInvokeImpl = renamedMethod.IsPInvokeImpl;
-            methodThatShouldReplaceOriginal.IsPreserveSig = renamedMethod.IsPreserveSig;
-            methodThatShouldReplaceOriginal.IsPrivate = renamedMethod.IsPrivate;
-            methodThatShouldReplaceOriginal.IsPublic = renamedMethod.IsPublic;
-            methodThatShouldReplaceOriginal.IsRemoveOn = renamedMethod.IsRemoveOn;
-            methodThatShouldReplaceOriginal.IsReuseSlot = renamedMethod.IsReuseSlot;
-            methodThatShouldReplaceOriginal.IsRuntime = renamedMethod.IsRuntime;
-            methodThatShouldReplaceOriginal.IsRuntimeSpecialName = renamedMethod.IsRuntimeSpecialName;
-            methodThatShouldReplaceOriginal.IsSetter = renamedMethod.IsSetter;
-            methodThatShouldReplaceOriginal.IsSpecialName = renamedMethod.IsSpecialName;
-            methodThatShouldReplaceOriginal.IsStatic = renamedMethod.IsStatic;
-            methodThatShouldReplaceOriginal.IsSynchronized = renamedMethod.IsSynchronized;
-            methodThatShouldReplaceOriginal.IsUnmanaged = renamedMethod.IsUnmanaged;
-            methodThatShouldReplaceOriginal.IsUnmanagedExport = renamedMethod.IsUnmanagedExport;
-            methodThatShouldReplaceOriginal.IsVirtual = renamedMethod.IsVirtual;
-            methodThatShouldReplaceOriginal.NoInlining = renamedMethod.NoInlining;
-            methodThatShouldReplaceOriginal.NoOptimization = renamedMethod.NoOptimization;
+            GlobalInterceptor.MethodIntercepter += (invocation) => { interceptorCount++; };
 
-            // Copy parameters across
-            if (renamedMethod.HasParameters)
-                foreach (var parameter in renamedMethod.Parameters.ToList())
-                    methodThatShouldReplaceOriginal.Parameters.Add(parameter);
+            var parameterClass = new MethodParameterClass();
+            var result = methodInfo.Invoke(parameterClass);
+            Assert.That(interceptorCount, Is.EqualTo(2));
+            Assert.That(result, Is.EqualTo(parameterClass));
+        }
 
+        [Test]
+        public void Should_call_to_generic_with_generic_parameters_and_value_types()
+        {
+            int i = 0;
+            double j = 0;
+            var interceptorCount = 0;
+            var methodInfo = GetGenericMethodInfo("GenericMethodWithGenericParametersAndValueTypeArgs", typeof(MethodParameterClass));
 
-            // Copy generic parameters across
-            if (renamedMethod.HasGenericParameters)
+            GlobalInterceptor.MethodIntercepter += (invocation) =>
+                                                       {
+                                                           i = (int)invocation.ParameterValues[1];
+                                                           j = (double)invocation.ParameterValues[2];
+                                                           interceptorCount++;
+                                                       };
+
+            var parameterClass = new MethodParameterClass();
+            methodInfo.Invoke(parameterClass, 1, 2);
+            Assert.That(i, Is.EqualTo(1));
+            Assert.That(j, Is.EqualTo(2));
+            Assert.That(interceptorCount, Is.EqualTo(2));
+        }
+
+        [Test, Ignore("The return type being assigned to the method invocation needs to be revised ... wrong!")]
+        public void Should_call_generic_with_all_kinds_of_parameters_and_return_a_value_type()
+        {
+            int i = 0;
+            double j = 0;
+            var interceptorCount = 0;
+            var methodInfo = GetGenericMethodInfo("GenericMethodWithGenericParamsAndValueReturnType", typeof(MethodParameterClass));
+
+            GlobalInterceptor.MethodIntercepter += (invocation) =>
             {
-                foreach (var genericParameter in renamedMethod.GenericParameters.ToList())
-                {
-                    if (genericParameter != null)
-                    {
-                        var newGenericParameter = new GenericParameter(genericParameter.Name, methodThatShouldReplaceOriginal);
-                        methodThatShouldReplaceOriginal.GenericParameters.Add(newGenericParameter);
-                        newGenericParameter.Attributes = genericParameter.Attributes;
-                        genericParameter.Constraints.ForEach(gp => newGenericParameter.Constraints.Add(gp));
-                        genericParameter.CustomAttributes.ForEach(ca => newGenericParameter.CustomAttributes.Add(ca));
-                        newGenericParameter.DeclaringType = genericParameter.DeclaringType;
-                        genericParameter.GenericParameters.ForEach(gp => newGenericParameter.GenericParameters.Add(gp));
-                        newGenericParameter.HasDefaultConstructorConstraint = genericParameter.HasDefaultConstructorConstraint;
-                        newGenericParameter.IsContravariant = genericParameter.IsContravariant;
-                        newGenericParameter.IsCovariant = genericParameter.IsCovariant;
-                        newGenericParameter.IsNonVariant = genericParameter.IsNonVariant;
-                    }
-                }
-            }
+                i = (int)invocation.ParameterValues[1];
+                j = (double)invocation.ParameterValues[2];
+                interceptorCount++;
+            };
 
-            // Get IL processor and emit call to renamed clone
-            var il = methodThatShouldReplaceOriginal.Body.GetILProcessor();
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Call, renamedMethod.MakeGeneric(methodThatShouldReplaceOriginal.GenericParameters.ToArray()));
-            il.Emit(OpCodes.Ret);
-
-            assembly.Write("Foo.dll");
-        }
-        */
-
-    }
-
-    /*
-    public static class Foo
-    {
-        public static MethodReference MakeGeneric(this MethodReference method, params TypeReference[] args)
-        {
-            if (args.Length == 0)
-                return method;
-
-            if (method.GenericParameters.Count != args.Length)
-                throw new ArgumentException("Invalid number of generic type arguments supplied");
-
-            var genericTypeRef = new GenericInstanceMethod(method);
-            foreach (var arg in args)
-                genericTypeRef.GenericArguments.Add(arg);
-
-            return genericTypeRef;
+            var parameterClass = new MethodParameterClass();
+            var result = methodInfo.Invoke(parameterClass, 1, 2);
+            Assert.That(i, Is.EqualTo(1));
+            Assert.That(j, Is.EqualTo(2));
+            Assert.That(result, Is.EqualTo(j));
+            Assert.That(interceptorCount, Is.EqualTo(2));
         }
     }
-     * */
 }
