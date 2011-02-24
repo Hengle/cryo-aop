@@ -5,6 +5,13 @@ namespace CryoAOP.Core.Factories
 {
     public class MethodCloneFactory
     {
+        private readonly IdentityNameFactory identityFactory;
+
+        public MethodCloneFactory()
+        {
+            identityFactory = new IdentityNameFactory();
+        }
+
         public MethodDefinition Clone(MethodDefinition sourceMethod)
         {
             var clonedMethod = new MethodDefinition(sourceMethod.Name, sourceMethod.Attributes, sourceMethod.ReturnType);
@@ -25,7 +32,7 @@ namespace CryoAOP.Core.Factories
             // Copy security declarations 
             sourceMethod.SecurityDeclarations.ToList().ForEach(s => clonedMethod.SecurityDeclarations.Add(s));
 
-            return sourceMethod;
+            return clonedMethod;
         }
 
         private static void CloneMethodProperties(MethodDefinition interceptorMethod, MethodDefinition renamedMethod)

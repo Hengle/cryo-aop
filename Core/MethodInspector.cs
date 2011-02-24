@@ -12,12 +12,14 @@ namespace CryoAOP.Core
     {
         public readonly MethodDefinition Definition;
         public readonly TypeInspector TypeInspector;
+        private readonly MethodCloneFactory cloneFactory;
         private readonly IdentityNameFactory identityFactory;
 
         public MethodInspector(TypeInspector typeInspector, MethodDefinition definition)
         {
             Definition = definition;
             TypeInspector = typeInspector;
+            cloneFactory = new MethodCloneFactory();
             identityFactory = new IdentityNameFactory();
         }
 
@@ -29,27 +31,12 @@ namespace CryoAOP.Core
         public void InterceptMethod()
         {
             // Create new Method 
-            var interceptorMethod = new MethodDefinition(Definition.Name, Definition.Attributes, Definition.ReturnType);
-            Definition.DeclaringType.Methods.Add(interceptorMethod);
+            var interceptorMethod = cloneFactory.Clone(Definition);
+
+            var renamedMethod = Definition;
 
             // Rename existing method 
-            var renamedMethod = Definition;
-            renamedMethod.Name = identityFactory.GenerateIdentityName(Definition.Name);;
-
-            // Copy attributes
-            CloneMethodProperties(interceptorMethod, renamedMethod);
-
-            // Copy calling convention
-            interceptorMethod.CallingConvention = renamedMethod.CallingConvention;
-
-            // Copy method semantics 
-            interceptorMethod.SemanticsAttributes = renamedMethod.SemanticsAttributes;
-
-            // Copy attributes 
-            renamedMethod.CustomAttributes.ToList().ForEach(a => interceptorMethod.CustomAttributes.Add(a));
-
-            // Copy security declarations 
-            renamedMethod.SecurityDeclarations.ToList().ForEach(s => interceptorMethod.SecurityDeclarations.Add(s));
+            renamedMethod.Name = identityFactory.GenerateIdentityName(Definition.Name); ;
 
             // Copy pinvoke info, dont do this! Sets method body to null!
             //interceptorMethod.PInvokeInfo = renamedMethod.PInvokeInfo;
