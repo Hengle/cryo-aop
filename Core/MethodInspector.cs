@@ -13,14 +13,16 @@ namespace CryoAOP.Core
         public readonly MethodDefinition Definition;
         public readonly TypeInspector TypeInspector;
         private readonly MethodCloneFactory cloneFactory;
-        private readonly IdentityNameFactory identityFactory;
+        private readonly AssemblyImportFactory importFactory;
+        private readonly IdentityAliasFactory identityFactory;
 
         public MethodInspector(TypeInspector typeInspector, MethodDefinition definition)
         {
             Definition = definition;
             TypeInspector = typeInspector;
             cloneFactory = new MethodCloneFactory();
-            identityFactory = new IdentityNameFactory();
+            identityFactory = new IdentityAliasFactory();
+            importFactory = new AssemblyImportFactory(TypeInspector.AssemblyInspector.Definition);
         }
 
         public void Write(string assemblyPath)
@@ -30,49 +32,22 @@ namespace CryoAOP.Core
 
         public void InterceptMethod()
         {
-            // Create new Method 
-            var interceptorMethod = cloneFactory.Clone(Definition);
-
             var renamedMethod = Definition;
-
-            // Rename existing method 
+            var interceptorMethod = cloneFactory.Clone(Definition);
             renamedMethod.Name = identityFactory.GenerateIdentityName(Definition.Name); ;
-
-            // Copy pinvoke info, dont do this! Sets method body to null!
-            //interceptorMethod.PInvokeInfo = renamedMethod.PInvokeInfo;
-
-            // Copy parameters across
-            if (renamedMethod.HasParameters)
-                foreach (var parameter in renamedMethod.Parameters.ToList())
-                    interceptorMethod.Parameters.Add(parameter);
-
-            // Copy generic parameters across -> Move to clone factory
-            if (renamedMethod.HasGenericParameters)
-            {
-                foreach (var genericParameter in renamedMethod.GenericParameters.ToList())
-                {
-                    if (genericParameter != null)
-                    {
-                        var newGenericParameter = new GenericParameter(genericParameter.Name, interceptorMethod);
-                        interceptorMethod.GenericParameters.Add(newGenericParameter);
-                        CloneGenericParameterProperties(genericParameter, newGenericParameter);
-                        //Console.WriteLine(genericParameter.InstanceDiff(newGenericParameter));
-                    }
-                }
-            }
 
             // Insert interceptor code
 
             // Interceptor: Insert variables 
-            var v_0 = new VariableDefinition("V_0", TypeInspector.AssemblyInspector.Import(typeof (Type)));
+            var v_0 = new VariableDefinition("V_0", importFactory.Import(typeof (Type)));
             interceptorMethod.Body.Variables.Add(v_0);
-            var v_1 = new VariableDefinition("V_1", TypeInspector.AssemblyInspector.Import(typeof (MethodInfo)));
+            var v_1 = new VariableDefinition("V_1", importFactory.Import(typeof (MethodInfo)));
             interceptorMethod.Body.Variables.Add(v_1);
-            var v_2 = new VariableDefinition("V_2", TypeInspector.AssemblyInspector.Import(typeof (MethodInvocation)));
+            var v_2 = new VariableDefinition("V_2", importFactory.Import(typeof (MethodInvocation)));
             interceptorMethod.Body.Variables.Add(v_2);
-            var v_3 = new VariableDefinition("V_3", TypeInspector.AssemblyInspector.Import(typeof (Object[])));
+            var v_3 = new VariableDefinition("V_3", importFactory.Import(typeof (Object[])));
             interceptorMethod.Body.Variables.Add(v_3);
-            var v_4 = new VariableDefinition("V_4", TypeInspector.AssemblyInspector.Import(typeof (Boolean)));
+            var v_4 = new VariableDefinition("V_4", importFactory.Import(typeof (Boolean)));
             interceptorMethod.Body.Variables.Add(v_4);
 
             // Interceptor: If has return type add to local variables
@@ -97,7 +72,7 @@ namespace CryoAOP.Core
                           {
                               il.Create(OpCodes.Nop),
                               il.Create(OpCodes.Ldtoken, TypeInspector.Definition),
-                              il.Create(OpCodes.Call, Import(typeof (Type), "GetTypeFromHandle")),
+                              il.Create(OpCodes.Call, importFactory.Import(typeof (Type), "GetTypeFromHandle")),
                               il.Create(OpCodes.Stloc_0)
                           });
 
@@ -106,7 +81,7 @@ namespace CryoAOP.Core
                           {
                               il.Create(OpCodes.Ldloc_0),
                               il.Create(OpCodes.Ldstr, interceptorMethod.Name),
-                              il.Create(OpCodes.Callvirt, Import(typeof (Type), "GetMethod,String")),
+                              il.Create(OpCodes.Callvirt, importFactory.Import(typeof (Type), "GetMethod,String")),
                               il.Create(OpCodes.Stloc_1)
                           });
 
@@ -115,7 +90,7 @@ namespace CryoAOP.Core
             il.Append(new[]
                           {
                               il.Create(OpCodes.Ldc_I4, interceptorMethod.Parameters.Count),
-                              il.Create(OpCodes.Newarr, Import(typeof (Object))),
+                              il.Create(OpCodes.Newarr, importFactory.Import(typeof (Object))),
                               il.Create(OpCodes.Stloc_3)
                           });
 
@@ -140,7 +115,7 @@ namespace CryoAOP.Core
             }
 
             // Inteceptor: Initialise Method Invocation
-            var methodInvocationTypRef = TypeInspector.AssemblyInspector.Import(typeof (MethodInvocation));
+            var methodInvocationTypRef = importFactory.Import(typeof (MethodInvocation));
             var methodInvocationConstructor = methodInvocationTypRef.Resolve().Methods.Where(m => m.IsConstructor).First();
 
             il.Append(new[]
@@ -148,7 +123,7 @@ namespace CryoAOP.Core
                               il.Create(OpCodes.Ldloc_0),
                               il.Create(OpCodes.Ldloc_1),
                               il.Create(OpCodes.Ldloc_3),
-                              il.Create(OpCodes.Newobj, Import(methodInvocationConstructor)),
+                              il.Create(OpCodes.Newobj, importFactory.Import(methodInvocationConstructor)),
                               il.Create(OpCodes.Stloc_2)
                           });
 
@@ -156,7 +131,7 @@ namespace CryoAOP.Core
             il.Append(new[]
                           {
                               il.Create(OpCodes.Ldloc_2),
-                              il.Create(OpCodes.Call, Import(typeof (GlobalInterceptor), "HandleInvocation"))
+                              il.Create(OpCodes.Call, importFactory.Import(typeof (GlobalInterceptor), "HandleInvocation"))
                           });
 
 
@@ -166,7 +141,7 @@ namespace CryoAOP.Core
                 il.Append(new[]
                               {
                                   il.Create(OpCodes.Ldloc_2),
-                                  il.Create(OpCodes.Callvirt, Import(typeof (MethodInvocation), "get_Result")),
+                                  il.Create(OpCodes.Callvirt, importFactory.Import(typeof (MethodInvocation), "get_Result")),
                                   il.Create(OpCodes.Stloc, 5)
                               });
             }
@@ -175,7 +150,7 @@ namespace CryoAOP.Core
             il.Append(new[]
                           {
                               il.Create(OpCodes.Ldloc_2),
-                              il.Create(OpCodes.Callvirt, Import(typeof (MethodInvocation), "get_CanInvoke")),
+                              il.Create(OpCodes.Callvirt, importFactory.Import(typeof (MethodInvocation), "get_CanInvoke")),
                               il.Create(OpCodes.Ldc_I4_0),
                               il.Create(OpCodes.Ceq),
                               il.Create(OpCodes.Stloc, 4),
@@ -217,7 +192,7 @@ namespace CryoAOP.Core
                                       il.Create(OpCodes.Ldloc_2),
                                       il.Create(OpCodes.Ldloc, 5),
                                       il.Create(OpCodes.Box, renamedMethod.ReturnType),
-                                      il.Create(OpCodes.Callvirt, Import(typeof (MethodInvocation), "set_Result"))
+                                      il.Create(OpCodes.Callvirt, importFactory.Import(typeof (MethodInvocation), "set_Result"))
                                   });
                 }
                 else
@@ -226,7 +201,7 @@ namespace CryoAOP.Core
                                   {
                                       il.Create(OpCodes.Ldloc_2),
                                       il.Create(OpCodes.Ldloc, 5),
-                                      il.Create(OpCodes.Callvirt, Import(typeof (MethodInvocation), "set_Result"))
+                                      il.Create(OpCodes.Callvirt, importFactory.Import(typeof (MethodInvocation), "set_Result"))
                                   });
                 }
             }
@@ -235,17 +210,17 @@ namespace CryoAOP.Core
             il.Append(new[]
                           {
                               il.Create(OpCodes.Ldloc_2),
-                              il.Create(OpCodes.Call, Import(typeof (MethodInvocation), "ContinueInvocation"))
+                              il.Create(OpCodes.Call, importFactory.Import(typeof (MethodInvocation), "ContinueInvocation"))
                           });
 
             // Interceptor: Do post invocation call 
             il.Append(new[]
                           {
                               il.Create(OpCodes.Ldloc_2),
-                              il.Create(OpCodes.Call, Import(typeof (GlobalInterceptor), "HandleInvocation"))
+                              il.Create(OpCodes.Call, importFactory.Import(typeof (GlobalInterceptor), "HandleInvocation"))
                           });
 
-            // Interceptor: End of method
+            // Interceptor: End of method, doing this in advance for branching ?CancelInvocation?.
             il.Append(endOfMethodInstruction);
 
 
@@ -257,7 +232,7 @@ namespace CryoAOP.Core
                     il.Append(new[]
                                   {
                                       il.Create(OpCodes.Ldloc_2),
-                                      il.Create(OpCodes.Callvirt, Import(typeof (MethodInvocation), "get_Result")),
+                                      il.Create(OpCodes.Callvirt, importFactory.Import(typeof (MethodInvocation), "get_Result")),
                                       il.Create(OpCodes.Unbox_Any, interceptorMethod.ReturnType),
                                       il.Create(OpCodes.Stloc, 5),
                                       il.Create(OpCodes.Ldloc, 5)
@@ -268,91 +243,13 @@ namespace CryoAOP.Core
                     il.Append(new[]
                                   {
                                       il.Create(OpCodes.Ldloc_2),
-                                      il.Create(OpCodes.Callvirt, Import(typeof (MethodInvocation), "get_Result")),
+                                      il.Create(OpCodes.Callvirt, importFactory.Import(typeof (MethodInvocation), "get_Result")),
                                   });
                 }
 
             }
 
             il.Append(il.Create(OpCodes.Ret));
-
-            // TODO: Debug code, remove it!
-            //Console.WriteLine(renamedMethod.InstanceDiff(interceptorMethod));
-        }
-
-        // TODO: Move to clone factory
-        private static void CloneGenericParameterProperties(GenericParameter genericParameter, GenericParameter newGenericParameter)
-        {
-            newGenericParameter.Attributes = genericParameter.Attributes;
-            genericParameter.Constraints.ForEach(gp => newGenericParameter.Constraints.Add(gp));
-            genericParameter.CustomAttributes.ForEach(ca => newGenericParameter.CustomAttributes.Add(ca));
-            newGenericParameter.DeclaringType = genericParameter.DeclaringType;
-            genericParameter.GenericParameters.ForEach(gp => newGenericParameter.GenericParameters.Add(gp));
-            newGenericParameter.HasDefaultConstructorConstraint = genericParameter.HasDefaultConstructorConstraint;
-            newGenericParameter.IsContravariant = genericParameter.IsContravariant;
-            newGenericParameter.IsCovariant = genericParameter.IsCovariant;
-            newGenericParameter.IsNonVariant = genericParameter.IsNonVariant;
-            //newGenericParameter.MetadataToken = genericParameter.MetadataToken;
-        }
-
-        // TODO: Move to clone factory
-        private static void CloneMethodProperties(MethodDefinition interceptorMethod, MethodDefinition renamedMethod)
-        {
-            interceptorMethod.IsAbstract = renamedMethod.IsAbstract;
-            interceptorMethod.IsAddOn = renamedMethod.IsAddOn;
-            interceptorMethod.IsAssembly = renamedMethod.IsAssembly;
-            interceptorMethod.IsCheckAccessOnOverride = renamedMethod.IsCheckAccessOnOverride;
-            interceptorMethod.IsCompilerControlled = renamedMethod.IsCompilerControlled;
-            interceptorMethod.IsFamily = renamedMethod.IsFamily;
-            interceptorMethod.IsFamilyAndAssembly = renamedMethod.IsFamilyAndAssembly;
-            interceptorMethod.IsFamilyOrAssembly = renamedMethod.IsFamilyOrAssembly;
-            interceptorMethod.IsFinal = renamedMethod.IsFinal;
-            interceptorMethod.IsFire = renamedMethod.IsFire;
-            interceptorMethod.IsForwardRef = renamedMethod.IsForwardRef;
-            interceptorMethod.IsGetter = renamedMethod.IsGetter;
-            interceptorMethod.IsHideBySig = renamedMethod.IsHideBySig;
-            interceptorMethod.IsIL = renamedMethod.IsIL;
-            interceptorMethod.IsInternalCall = renamedMethod.IsInternalCall;
-            interceptorMethod.IsManaged = renamedMethod.IsManaged;
-            interceptorMethod.IsNative = renamedMethod.IsNative;
-            interceptorMethod.IsNewSlot = renamedMethod.IsNewSlot;
-            interceptorMethod.IsPInvokeImpl = renamedMethod.IsPInvokeImpl;
-            interceptorMethod.IsPreserveSig = renamedMethod.IsPreserveSig;
-            interceptorMethod.IsPrivate = renamedMethod.IsPrivate;
-            interceptorMethod.IsPublic = renamedMethod.IsPublic;
-            interceptorMethod.IsRemoveOn = renamedMethod.IsRemoveOn;
-            interceptorMethod.IsReuseSlot = renamedMethod.IsReuseSlot;
-            interceptorMethod.IsRuntime = renamedMethod.IsRuntime;
-            interceptorMethod.IsRuntimeSpecialName = renamedMethod.IsRuntimeSpecialName;
-            interceptorMethod.IsSetter = renamedMethod.IsSetter;
-            interceptorMethod.IsSpecialName = renamedMethod.IsSpecialName;
-            interceptorMethod.IsStatic = renamedMethod.IsStatic;
-            interceptorMethod.IsSynchronized = renamedMethod.IsSynchronized;
-            interceptorMethod.IsUnmanaged = renamedMethod.IsUnmanaged;
-            interceptorMethod.IsUnmanagedExport = renamedMethod.IsUnmanagedExport;
-            interceptorMethod.IsVirtual = renamedMethod.IsVirtual;
-            interceptorMethod.NoInlining = renamedMethod.NoInlining;
-            interceptorMethod.NoOptimization = renamedMethod.NoOptimization;
-        }
-
-        public virtual TypeReference Import(Type searchType)
-        {
-            return TypeInspector.AssemblyInspector.Import(searchType);
-        }
-
-        public virtual MethodReference Import(MethodDefinition method)
-        {
-            return TypeInspector.AssemblyInspector.Import(method);
-        }
-
-        public virtual TypeReference Import(TypeDefinition type)
-        {
-            return TypeInspector.AssemblyInspector.Import(type);
-        }
-
-        public virtual MethodReference Import(Type searchType, string methodName)
-        {
-            return TypeInspector.AssemblyInspector.Import(searchType, methodName);
         }
 
         public override string ToString()

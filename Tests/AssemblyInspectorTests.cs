@@ -1,6 +1,7 @@
 ﻿using System;
 using CryoAOP.Core;
 using CryoAOP.Core.Exceptions;
+using CryoAOP.Core.Factories;
 using NUnit.Framework;
 using CryoAOP.TestAssembly;
 
@@ -13,12 +14,14 @@ namespace CryoAOP.Tests
 
         protected string TestAssembly;
         protected AssemblyInspector AssemblyInspector;
+        protected AssemblyImportFactory ImportFactory;
 
         [TestFixtureSetUp]
         public virtual void Setup_Fixture()
         {
             TestAssembly = "CryoAOP.TestAssembly.dll";
             AssemblyInspector = new AssemblyInspector(TestAssembly);
+            ImportFactory = new AssemblyImportFactory(AssemblyInspector.Definition);
         }
 
         [Test]
@@ -35,7 +38,7 @@ namespace CryoAOP.Tests
         public void Should_find_type_reference()
         {
             var inspector = new AssemblyInspector(typeof (Type).Assembly);
-            var typeReference = inspector.Import(typeof (Type));
+            var typeReference = ImportFactory.Import(typeof (Type));
 
             Assert.That(typeReference, Is.Not.Null);
         }

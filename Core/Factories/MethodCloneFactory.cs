@@ -1,78 +1,105 @@
 ﻿using System.Linq;
+using CryoAOP.Core.Extensions;
 using Mono.Cecil;
 
 namespace CryoAOP.Core.Factories
 {
     public class MethodCloneFactory
     {
-        private readonly IdentityNameFactory identityFactory;
-
-        public MethodCloneFactory()
-        {
-            identityFactory = new IdentityNameFactory();
-        }
-
         public MethodDefinition Clone(MethodDefinition sourceMethod)
         {
             var clonedMethod = new MethodDefinition(sourceMethod.Name, sourceMethod.Attributes, sourceMethod.ReturnType);
             sourceMethod.DeclaringType.Methods.Add(clonedMethod);
 
-            // Clone method properties 
             CloneMethodProperties(clonedMethod, sourceMethod);
-
-            // Copy calling convention
-            clonedMethod.CallingConvention = sourceMethod.CallingConvention;
-
-            // Copy method semantics 
-            clonedMethod.SemanticsAttributes = sourceMethod.SemanticsAttributes;
-
-            // Copy attributes 
-            sourceMethod.CustomAttributes.ToList().ForEach(a => clonedMethod.CustomAttributes.Add(a));
-
-            // Copy security declarations 
-            sourceMethod.SecurityDeclarations.ToList().ForEach(s => clonedMethod.SecurityDeclarations.Add(s));
+            CloneMethodAttributes(clonedMethod, sourceMethod);
+            CloneMethodParameters(sourceMethod, clonedMethod);
+            CloneGenericParameters(sourceMethod, clonedMethod);
 
             return clonedMethod;
         }
 
-        private static void CloneMethodProperties(MethodDefinition interceptorMethod, MethodDefinition renamedMethod)
+        private static void CloneMethodParameters(MethodDefinition sourceMethod, MethodDefinition clonedMethod)
         {
-            interceptorMethod.IsAbstract = renamedMethod.IsAbstract;
-            interceptorMethod.IsAddOn = renamedMethod.IsAddOn;
-            interceptorMethod.IsAssembly = renamedMethod.IsAssembly;
-            interceptorMethod.IsCheckAccessOnOverride = renamedMethod.IsCheckAccessOnOverride;
-            interceptorMethod.IsCompilerControlled = renamedMethod.IsCompilerControlled;
-            interceptorMethod.IsFamily = renamedMethod.IsFamily;
-            interceptorMethod.IsFamilyAndAssembly = renamedMethod.IsFamilyAndAssembly;
-            interceptorMethod.IsFamilyOrAssembly = renamedMethod.IsFamilyOrAssembly;
-            interceptorMethod.IsFinal = renamedMethod.IsFinal;
-            interceptorMethod.IsFire = renamedMethod.IsFire;
-            interceptorMethod.IsForwardRef = renamedMethod.IsForwardRef;
-            interceptorMethod.IsGetter = renamedMethod.IsGetter;
-            interceptorMethod.IsHideBySig = renamedMethod.IsHideBySig;
-            interceptorMethod.IsIL = renamedMethod.IsIL;
-            interceptorMethod.IsInternalCall = renamedMethod.IsInternalCall;
-            interceptorMethod.IsManaged = renamedMethod.IsManaged;
-            interceptorMethod.IsNative = renamedMethod.IsNative;
-            interceptorMethod.IsNewSlot = renamedMethod.IsNewSlot;
-            interceptorMethod.IsPInvokeImpl = renamedMethod.IsPInvokeImpl;
-            interceptorMethod.IsPreserveSig = renamedMethod.IsPreserveSig;
-            interceptorMethod.IsPrivate = renamedMethod.IsPrivate;
-            interceptorMethod.IsPublic = renamedMethod.IsPublic;
-            interceptorMethod.IsRemoveOn = renamedMethod.IsRemoveOn;
-            interceptorMethod.IsReuseSlot = renamedMethod.IsReuseSlot;
-            interceptorMethod.IsRuntime = renamedMethod.IsRuntime;
-            interceptorMethod.IsRuntimeSpecialName = renamedMethod.IsRuntimeSpecialName;
-            interceptorMethod.IsSetter = renamedMethod.IsSetter;
-            interceptorMethod.IsSpecialName = renamedMethod.IsSpecialName;
-            interceptorMethod.IsStatic = renamedMethod.IsStatic;
-            interceptorMethod.IsSynchronized = renamedMethod.IsSynchronized;
-            interceptorMethod.IsUnmanaged = renamedMethod.IsUnmanaged;
-            interceptorMethod.IsUnmanagedExport = renamedMethod.IsUnmanagedExport;
-            interceptorMethod.IsVirtual = renamedMethod.IsVirtual;
-            interceptorMethod.NoInlining = renamedMethod.NoInlining;
-            interceptorMethod.NoOptimization = renamedMethod.NoOptimization;
+            if (sourceMethod.HasParameters)
+                foreach (var parameter in sourceMethod.Parameters.ToList())
+                    clonedMethod.Parameters.Add(parameter);
         }
 
+        private static void CloneMethodAttributes(MethodDefinition sourceMethod, MethodDefinition clonedMethod)
+        {
+            clonedMethod.CallingConvention = sourceMethod.CallingConvention;
+            clonedMethod.SemanticsAttributes = sourceMethod.SemanticsAttributes;
+            sourceMethod.CustomAttributes.ToList().ForEach(a => clonedMethod.CustomAttributes.Add(a));
+            sourceMethod.SecurityDeclarations.ToList().ForEach(s => clonedMethod.SecurityDeclarations.Add(s));
+        }
+
+        private static void CloneMethodProperties(MethodDefinition sourceMethod, MethodDefinition clonedMethod)
+        {
+            clonedMethod.IsAbstract = sourceMethod.IsAbstract;
+            clonedMethod.IsAddOn = sourceMethod.IsAddOn;
+            clonedMethod.IsAssembly = sourceMethod.IsAssembly;
+            clonedMethod.IsCheckAccessOnOverride = sourceMethod.IsCheckAccessOnOverride;
+            clonedMethod.IsCompilerControlled = sourceMethod.IsCompilerControlled;
+            clonedMethod.IsFamily = sourceMethod.IsFamily;
+            clonedMethod.IsFamilyAndAssembly = sourceMethod.IsFamilyAndAssembly;
+            clonedMethod.IsFamilyOrAssembly = sourceMethod.IsFamilyOrAssembly;
+            clonedMethod.IsFinal = sourceMethod.IsFinal;
+            clonedMethod.IsFire = sourceMethod.IsFire;
+            clonedMethod.IsForwardRef = sourceMethod.IsForwardRef;
+            clonedMethod.IsGetter = sourceMethod.IsGetter;
+            clonedMethod.IsHideBySig = sourceMethod.IsHideBySig;
+            clonedMethod.IsIL = sourceMethod.IsIL;
+            clonedMethod.IsInternalCall = sourceMethod.IsInternalCall;
+            clonedMethod.IsManaged = sourceMethod.IsManaged;
+            clonedMethod.IsNative = sourceMethod.IsNative;
+            clonedMethod.IsNewSlot = sourceMethod.IsNewSlot;
+            clonedMethod.IsPInvokeImpl = sourceMethod.IsPInvokeImpl;
+            clonedMethod.IsPreserveSig = sourceMethod.IsPreserveSig;
+            clonedMethod.IsPrivate = sourceMethod.IsPrivate;
+            clonedMethod.IsPublic = sourceMethod.IsPublic;
+            clonedMethod.IsRemoveOn = sourceMethod.IsRemoveOn;
+            clonedMethod.IsReuseSlot = sourceMethod.IsReuseSlot;
+            clonedMethod.IsRuntime = sourceMethod.IsRuntime;
+            clonedMethod.IsRuntimeSpecialName = sourceMethod.IsRuntimeSpecialName;
+            clonedMethod.IsSetter = sourceMethod.IsSetter;
+            clonedMethod.IsSpecialName = sourceMethod.IsSpecialName;
+            clonedMethod.IsStatic = sourceMethod.IsStatic;
+            clonedMethod.IsSynchronized = sourceMethod.IsSynchronized;
+            clonedMethod.IsUnmanaged = sourceMethod.IsUnmanaged;
+            clonedMethod.IsUnmanagedExport = sourceMethod.IsUnmanagedExport;
+            clonedMethod.IsVirtual = sourceMethod.IsVirtual;
+            clonedMethod.NoInlining = sourceMethod.NoInlining;
+            clonedMethod.NoOptimization = sourceMethod.NoOptimization;
+        }
+
+        private static void CloneGenericParameters(MethodDefinition sourceMethod, MethodDefinition clonedMethod)
+        {
+            if (sourceMethod.HasGenericParameters)
+            {
+                foreach (var genericParameter in sourceMethod.GenericParameters.ToList())
+                {
+                    if (genericParameter != null)
+                    {
+                        var newGenericParameter = new GenericParameter(genericParameter.Name, clonedMethod);
+                        clonedMethod.GenericParameters.Add(newGenericParameter);
+                        CloneGenericParameterProperties(genericParameter, newGenericParameter);
+                    }
+                }
+            }
+        }
+
+        private static void CloneGenericParameterProperties(GenericParameter genericParameter, GenericParameter newGenericParameter)
+        {
+            newGenericParameter.Attributes = genericParameter.Attributes;
+            genericParameter.Constraints.ForEach(gp => newGenericParameter.Constraints.Add(gp));
+            genericParameter.CustomAttributes.ForEach(ca => newGenericParameter.CustomAttributes.Add(ca));
+            newGenericParameter.DeclaringType = genericParameter.DeclaringType;
+            genericParameter.GenericParameters.ForEach(gp => newGenericParameter.GenericParameters.Add(gp));
+            newGenericParameter.HasDefaultConstructorConstraint = genericParameter.HasDefaultConstructorConstraint;
+            newGenericParameter.IsContravariant = genericParameter.IsContravariant;
+            newGenericParameter.IsCovariant = genericParameter.IsCovariant;
+            newGenericParameter.IsNonVariant = genericParameter.IsNonVariant;
+        }
     }
 }

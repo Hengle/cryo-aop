@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using CryoAOP.Core.Exceptions;
 using CryoAOP.Core.Extensions;
@@ -34,7 +32,7 @@ namespace CryoAOP.Core
             {
                 Definition = AssemblyDefinition
                     .ReadAssembly(
-                        this.assemblyPath, 
+                        this.assemblyPath,
                         new ReaderParameters(ReadingMode.Deferred));
             }
             catch (Exception err)
@@ -63,94 +61,6 @@ namespace CryoAOP.Core
         public virtual TypeInspector FindType(Type searchType)
         {
             return FindType(searchType.FullName);
-        }
-
-        public virtual TypeReference Import(Type searchType)
-        {
-            var assemblyRef = new AssemblyInspector(searchType.Assembly);
-            TypeDefinition type = null;
-            foreach (var currentType in assemblyRef.Definition.MainModule.Types)
-            {
-                
-                if (searchType.IsArray && currentType.Name == searchType.BaseType.Name)
-                {
-                    type = currentType;
-                    break;
-                }
-                
-                if (currentType.Name == searchType.Name)
-                {
-                    type = currentType;
-                    break;
-                }
-            }
-
-            if (type == null)
-                throw new TypeNotFoundException("Could not find type '{0}'", searchType.FullName);
-
-            var typeReference = Definition.MainModule.Import(type);
-            return typeReference;
-        }
-
-        public virtual MethodReference Import(MethodDefinition method)
-        {
-            return Definition.MainModule.Import(method);
-        }
-
-        public virtual TypeReference Import(TypeDefinition type)
-        {
-            return Definition.MainModule.Import(type);
-        }
-
-        public virtual MethodReference Import(Type searchType, string methodName)
-        {
-            var typeReference = Import(searchType);
-
-            foreach (var method in typeReference.Resolve().Methods)
-            {
-                var methodParts = methodName.Split(',');
-                var searchMethodName = methodParts[0];
-
-                if (method.Name == searchMethodName)
-                {
-                    if (methodName.Contains(","))
-                    {
-                        foreach (var paramterType in methodParts)
-                        {
-                            if (paramterType == searchMethodName)
-                                continue;
-
-                            var isMatch = true;
-                            foreach (var parameters in method.Parameters)
-                            {
-                                if (parameters.ParameterType.Name != paramterType)
-                                {
-                                    isMatch = false;
-                                    break;
-                                }
-                            }
-
-                            if (isMatch)
-                            {
-                                var methodReference = Definition.MainModule.Import(method);
-                                return methodReference;
-                            }
-
-                        }
-                    }
-                    else
-                    {
-                        var methodReference = Definition.MainModule.Import(method);
-                        return methodReference;
-                    }
-                }
-            }
-
-
-            throw new MethodNotFoundException(
-                "Could not find method '{0}' on type '{1}'", 
-                methodName, searchType.Name);
-
         }
 
         public virtual void Write(string path)
