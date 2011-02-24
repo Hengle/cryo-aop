@@ -32,7 +32,7 @@ namespace CryoAOP.Tests
         [TestFixtureSetUp]
         public void FixtureSetUp()
         {
-            //Interception.RegisterType("CryoAOP.TestAssembly", "CryoAOP.TestAssembly.TypeThatShouldBeIntercepted", "GenericMethod", interceptedOutputAssembly);
+            //Interception.RegisterType("CryoAOP.TestAssembly", "CryoAOP.TestAssembly.TypeThatShouldBeIntercepted", "GenericMethodWithGenericParamsAndValueReturnType", interceptedOutputAssembly);
             Interception.RegisterType("CryoAOP.TestAssembly", "CryoAOP.TestAssembly.TypeThatShouldBeIntercepted", interceptedOutputAssembly);
             assembly = Assembly.LoadFrom(interceptedOutputAssembly);
         }
@@ -183,7 +183,7 @@ namespace CryoAOP.Tests
             Assert.That(interceptorCount, Is.EqualTo(2));
         }
 
-        [Test, Ignore("The return type being assigned to the method invocation needs to be revised ... wrong!")]
+        [Test]//, Ignore("The return type being assigned to the method invocation needs to be revised ... wrong!")]
         public void Should_call_generic_with_all_kinds_of_parameters_and_return_a_value_type()
         {
             int i = 0;

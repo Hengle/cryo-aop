@@ -37,7 +37,12 @@ namespace CryoAOP.Core
             get { return parameterValues; }
         }
 
-        public object Result { get; set; }
+        private object result;
+        public object Result
+        {
+            get { return result; }
+            set { result = value; }
+        }
 
         public virtual void ContinueInvocation()
         {

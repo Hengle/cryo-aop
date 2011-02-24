@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using CryoAOP.Core.Extensions;
@@ -55,7 +54,7 @@ namespace CryoAOP.Core
 
             // Copy pinvoke info, dont do this! Sets method body to null!
             //interceptorMethod.PInvokeInfo = renamedMethod.PInvokeInfo;
-            
+
             // Copy parameters across
             if (renamedMethod.HasParameters)
                 foreach (var parameter in renamedMethod.Parameters.ToList())
@@ -155,7 +154,7 @@ namespace CryoAOP.Core
             }
 
             // Inteceptor: Initialise Method Invocation
-            var methodInvocationTypRef = TypeInspector.AssemblyInspector.Import(typeof(MethodInvocation));
+            var methodInvocationTypRef = TypeInspector.AssemblyInspector.Import(typeof (MethodInvocation));
             var methodInvocationConstructor = methodInvocationTypRef.Resolve().Methods.Where(m => m.IsConstructor).First();
 
             il.Append(new[]
@@ -204,7 +203,7 @@ namespace CryoAOP.Core
             foreach (var parameter in interceptorMethod.Parameters)
             {
                 var argIndex = interceptorMethod.Parameters.IndexOf(parameter);
-                il.Append(il.Create(OpCodes.Ldarg, (ushort)(argIndex + 1)));
+                il.Append(il.Create(OpCodes.Ldarg, (ushort) (argIndex + 1)));
             }
 
             if (renamedMethod.HasGenericParameters)
@@ -214,19 +213,36 @@ namespace CryoAOP.Core
 
             // Interceptor: Store method return value);)
             if (interceptorMethod.ReturnType.Name != "Void")
+            {
                 il.Append(il.Create(OpCodes.Stloc, 5));
+            }
 
             il.Append(il.Create(OpCodes.Nop));
 
-            // Interceptor: Set return type on MethodInvocation 
+
+            // Interceptor: Set return type on MethodInvocation )
             if (interceptorMethod.ReturnType.Name != "Void")
             {
-                il.Append(new[]
-                              {
-                                  il.Create(OpCodes.Ldloc_2),
-                                  il.Create(OpCodes.Ldloc, 5),
-                                  il.Create(OpCodes.Callvirt, Import(typeof (MethodInvocation), "set_Result"))
-                              });
+                if (renamedMethod.ReturnType.IsValueType)
+                {
+                    // ! Experimental ! - Works!
+                    il.Append(new[]
+                                  {
+                                      il.Create(OpCodes.Ldloc_2),
+                                      il.Create(OpCodes.Ldloc, 5),
+                                      il.Create(OpCodes.Box, renamedMethod.ReturnType),
+                                      il.Create(OpCodes.Callvirt, Import(typeof (MethodInvocation), "set_Result"))
+                                  });
+                }
+                else
+                {
+                    il.Append(new[]
+                                  {
+                                      il.Create(OpCodes.Ldloc_2),
+                                      il.Create(OpCodes.Ldloc, 5),
+                                      il.Create(OpCodes.Callvirt, Import(typeof (MethodInvocation), "set_Result"))
+                                  });
+                }
             }
 
             // Interceptor: Continue the invocation by changing state
@@ -250,11 +266,26 @@ namespace CryoAOP.Core
             // Interceptor: Loading the result from the invocation 
             if (interceptorMethod.ReturnType.Name != "Void")
             {
-                il.Append(new[]
-                              {
-                                  il.Create(OpCodes.Ldloc_2),
-                                  il.Create(OpCodes.Callvirt, Import(typeof (MethodInvocation), "get_Result"))
-                              });
+                if (renamedMethod.ReturnType.IsValueType)
+                {
+                    il.Append(new[]
+                                  {
+                                      il.Create(OpCodes.Ldloc_2),
+                                      il.Create(OpCodes.Callvirt, Import(typeof (MethodInvocation), "get_Result")),
+                                      il.Create(OpCodes.Unbox_Any, interceptorMethod.ReturnType),
+                                      il.Create(OpCodes.Stloc, 5),
+                                      il.Create(OpCodes.Ldloc, 5)
+                                  });
+                }
+                else
+                {
+                    il.Append(new[]
+                                  {
+                                      il.Create(OpCodes.Ldloc_2),
+                                      il.Create(OpCodes.Callvirt, Import(typeof (MethodInvocation), "get_Result")),
+                                  });
+                }
+
             }
 
             il.Append(il.Create(OpCodes.Ret));
