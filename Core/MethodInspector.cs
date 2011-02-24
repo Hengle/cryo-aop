@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using CryoAOP.Core.Extensions;
+using CryoAOP.Core.Factories;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
@@ -11,11 +12,13 @@ namespace CryoAOP.Core
     {
         public readonly MethodDefinition Definition;
         public readonly TypeInspector TypeInspector;
+        private readonly IdentityNameFactory identityFactory;
 
         public MethodInspector(TypeInspector typeInspector, MethodDefinition definition)
         {
-            TypeInspector = typeInspector;
             Definition = definition;
+            TypeInspector = typeInspector;
+            identityFactory = new IdentityNameFactory();
         }
 
         public void Write(string assemblyPath)
@@ -23,19 +26,15 @@ namespace CryoAOP.Core
             TypeInspector.AssemblyInspector.Write(assemblyPath);
         }
 
-        public void InterceptMethod(string methodPrefix = null)
+        public void InterceptMethod()
         {
-            // Generate prefix
-            if (methodPrefix == null)
-                methodPrefix = "_{0}_".FormatWith(Guid.NewGuid().ToString("N"));
-
             // Create new Method 
             var interceptorMethod = new MethodDefinition(Definition.Name, Definition.Attributes, Definition.ReturnType);
             Definition.DeclaringType.Methods.Add(interceptorMethod);
 
             // Rename existing method 
             var renamedMethod = Definition;
-            renamedMethod.Name = "{0}{1}".FormatWith(methodPrefix, renamedMethod.Name);
+            renamedMethod.Name = identityFactory.GenerateIdentityName(Definition.Name);;
 
             // Copy attributes
             CloneMethodProperties(interceptorMethod, renamedMethod);

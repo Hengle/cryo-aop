@@ -20,12 +20,11 @@ namespace CryoAOP.Core
 
         public virtual void InterceptAllMethods()
         {
-            var methodPrefix = "_{0}_".FormatWith(Guid.NewGuid().ToString("N"));
             foreach (var method in Definition.Methods.ToList())
             {
                 var methodInspector = FindMethod(method.Name);
                 if (!methodInspector.Definition.IsConstructor)
-                    methodInspector.InterceptMethod(methodPrefix);
+                    methodInspector.InterceptMethod();
             }
         }
 
