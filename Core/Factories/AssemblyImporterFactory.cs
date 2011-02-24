@@ -84,11 +84,9 @@ namespace CryoAOP.Core.Factories
                     break;
                 }
 
-                if (currentType.Name == searchType.Name)
-                {
-                    type = currentType;
-                    break;
-                }
+                if (currentType.Name != searchType.Name) continue;
+                type = currentType;
+                break;
             }
 
             if (type == null)
