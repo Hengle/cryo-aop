@@ -73,12 +73,8 @@ namespace CryoAOP.TestAssembly
             return i;
         }
 
-        public double CallToGenericMethodWithGenericParamsAndValueReturnType<T>(T t, int i, double j)
+        public void GenericMethodWithTwoGenericParameters<I, J>(I i, J j)
         {
-            var val =GenericMethodWithGenericParamsAndValueReturnType<T>(t, i, j);
-            var invocation = new MethodInvocation(null, null, null);
-            invocation.Result = val;
-            return (double)invocation.Result;
         }
     }
 

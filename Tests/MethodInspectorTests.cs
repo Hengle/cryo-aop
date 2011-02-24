@@ -43,7 +43,7 @@ namespace CryoAOP.Tests
             return interceptedType.GetMethod(nonGenericMethodName);
         }
 
-        private static MethodInfo GetGenericMethodInfo(string nonGenericMethodName, Type genericTypeParameter)
+        private static MethodInfo GetGenericMethodInfo(string nonGenericMethodName, params Type[] genericTypeParameter)
         {
             var interceptedType = assembly.FindType(typeof(TypeThatShouldBeIntercepted).FullName);
             MethodInfo genericMethodInfo = interceptedType.GetMethod(nonGenericMethodName);
@@ -243,6 +243,25 @@ namespace CryoAOP.Tests
 
             var k = (int)methodInfo.AutoInstanceInvoke(1, j);
             Assert.That(k, Is.EqualTo(i));
+        }
+
+        [Test, Ignore] // See, PanicStationFixture ... this is possible ... 
+        public void Should_call_generic_method_with_two_generic_parameters()
+        {
+            int i = 1;
+            var j = new MethodParameterClass();
+            var interceptorCount = 0;
+            var methodInfo = GetGenericMethodInfo("GenericMethodWithTwoGenericParameters", typeof(int), typeof(MethodParameterClass));
+
+            GlobalInterceptor.MethodIntercepter += (invocation) =>
+            {
+                Assert.That(i == (int)invocation.ParameterValues[0]);
+                Assert.That(j == (MethodParameterClass)invocation.ParameterValues[1]);
+
+                interceptorCount++;
+            };
+
+            methodInfo.AutoInstanceInvoke(i, j);
         }
     }
 }
