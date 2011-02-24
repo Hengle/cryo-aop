@@ -14,14 +14,14 @@ namespace CryoAOP.Tests
 
         protected string TestAssembly;
         protected AssemblyInspector AssemblyInspector;
-        protected AssemblyImportFactory ImportFactory;
+        protected AssemblyImporterFactory ImporterFactory;
 
         [TestFixtureSetUp]
         public virtual void Setup_Fixture()
         {
             TestAssembly = "CryoAOP.TestAssembly.dll";
             AssemblyInspector = new AssemblyInspector(TestAssembly);
-            ImportFactory = new AssemblyImportFactory(AssemblyInspector.Definition);
+            ImporterFactory = new AssemblyImporterFactory(AssemblyInspector.Definition);
         }
 
         [Test]
@@ -38,7 +38,7 @@ namespace CryoAOP.Tests
         public void Should_find_type_reference()
         {
             var inspector = new AssemblyInspector(typeof (Type).Assembly);
-            var typeReference = ImportFactory.Import(typeof (Type));
+            var typeReference = ImporterFactory.Import(typeof (Type));
 
             Assert.That(typeReference, Is.Not.Null);
         }
