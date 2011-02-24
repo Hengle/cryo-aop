@@ -58,7 +58,7 @@ namespace CryoAOP.Tests
 
             GlobalInterceptor.MethodIntercepter += (invocation) => { interceptCount++; };
 
-            var result = methodInfo.Invoke(1, "2", 3);
+            var result = methodInfo.AutoInstanceInvoke(1, "2", 3);
             Assert.That(interceptCount, Is.EqualTo(2));
             Assert.That(result, Is.Null);
         }
@@ -77,7 +77,7 @@ namespace CryoAOP.Tests
                 }
             };
 
-            var result = methodInfo.Invoke(1, "2", 3);
+            var result = methodInfo.AutoInstanceInvoke(1, "2", 3);
             Assert.That(result, Is.EqualTo("Fake Result"));
         }
 
@@ -90,7 +90,7 @@ namespace CryoAOP.Tests
 
             GlobalInterceptor.MethodIntercepter += (invocation) => { interceptCount++; };
 
-            var result = methodInfo.Invoke(args);
+            var result = methodInfo.AutoInstanceInvoke(args);
             Assert.That(interceptCount, Is.EqualTo(2));
             Assert.That(result, Is.Not.Null);
         }
@@ -106,7 +106,7 @@ namespace CryoAOP.Tests
                                                                invocation.Result = "Intercepted Result";
                                                        };
 
-            var result = methodInfo.Invoke(1, "2", 3);
+            var result = methodInfo.AutoInstanceInvoke(1, "2", 3);
             Assert.That(result, Is.EqualTo("Intercepted Result"));
         }
 
@@ -118,7 +118,7 @@ namespace CryoAOP.Tests
 
             GlobalInterceptor.MethodIntercepter += (invocation) => { interceptCount++; };
 
-            var result = methodInfo.Invoke(1, "2", 3);
+            var result = methodInfo.AutoInstanceInvoke(1, "2", 3);
             Assert.That(interceptCount, Is.EqualTo(2));
             Assert.That(result, Is.EqualTo("1, 2, 3"));
         }
@@ -131,7 +131,7 @@ namespace CryoAOP.Tests
 
             GlobalInterceptor.MethodIntercepter += (invocation) => { interceptorCount++; };
 
-            methodInfo.Invoke();
+            methodInfo.AutoInstanceInvoke();
             Assert.That(interceptorCount, Is.EqualTo(2));
         }
 
@@ -143,7 +143,7 @@ namespace CryoAOP.Tests
 
             GlobalInterceptor.MethodIntercepter += (invocation) => { interceptorCount++; };
 
-            methodInfo.Invoke(new MethodParameterClass());
+            methodInfo.AutoInstanceInvoke(new MethodParameterClass());
             Assert.That(interceptorCount, Is.EqualTo(2));
         }
 
@@ -156,7 +156,7 @@ namespace CryoAOP.Tests
             GlobalInterceptor.MethodIntercepter += (invocation) => { interceptorCount++; };
 
             var parameterClass = new MethodParameterClass();
-            var result = methodInfo.Invoke(parameterClass);
+            var result = methodInfo.AutoInstanceInvoke(parameterClass);
             Assert.That(interceptorCount, Is.EqualTo(2));
             Assert.That(result, Is.EqualTo(parameterClass));
         }
@@ -177,13 +177,13 @@ namespace CryoAOP.Tests
                                                        };
 
             var parameterClass = new MethodParameterClass();
-            methodInfo.Invoke(parameterClass, 1, 2);
+            methodInfo.AutoInstanceInvoke(parameterClass, 1, 2);
             Assert.That(i, Is.EqualTo(1));
             Assert.That(j, Is.EqualTo(2));
             Assert.That(interceptorCount, Is.EqualTo(2));
         }
 
-        [Test]//, Ignore("The return type being assigned to the method invocation needs to be revised ... wrong!")]
+        [Test]
         public void Should_call_generic_with_all_kinds_of_parameters_and_return_a_value_type()
         {
             int i = 0;
@@ -199,11 +199,50 @@ namespace CryoAOP.Tests
             };
 
             var parameterClass = new MethodParameterClass();
-            var result = methodInfo.Invoke(parameterClass, 1, 2);
+            var result = methodInfo.AutoInstanceInvoke(parameterClass, 1, 2);
             Assert.That(i, Is.EqualTo(1));
             Assert.That(j, Is.EqualTo(2));
             Assert.That(result, Is.EqualTo(j));
             Assert.That(interceptorCount, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void Should_call_generic_method_where_value_type_is_first_parameter()
+        {
+            int i = 1;
+            var j = new MethodParameterClass();
+            var interceptorCount = 0;
+            var methodInfo = GetGenericMethodInfo("GenericMethodWithInvertedParams", typeof(MethodParameterClass));
+
+            GlobalInterceptor.MethodIntercepter += (invocation) =>
+            {
+                Assert.That(i == (int)invocation.ParameterValues[0]);
+                Assert.That(j == (MethodParameterClass)invocation.ParameterValues[1]);
+
+                interceptorCount++;
+            };
+
+            methodInfo.AutoInstanceInvoke(1, j);
+        }
+
+        [Test]
+        public void Should_call_generic_method_where_value_type_is_first_parameter_and_has_value_return_type()
+        {
+            int i = 1;
+            var j = new MethodParameterClass();
+            var interceptorCount = 0;
+            var methodInfo = GetGenericMethodInfo("GenericMethodWithInvertedParamsAndValueReturnType", typeof(MethodParameterClass));
+
+            GlobalInterceptor.MethodIntercepter += (invocation) =>
+            {
+                Assert.That(i == (int)invocation.ParameterValues[0]);
+                Assert.That(j == (MethodParameterClass)invocation.ParameterValues[1]);
+
+                interceptorCount++;
+            };
+
+            var k = (int)methodInfo.AutoInstanceInvoke(1, j);
+            Assert.That(k, Is.EqualTo(i));
         }
     }
 }

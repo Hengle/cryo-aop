@@ -14,14 +14,14 @@ namespace CryoAOP.Core
         public readonly TypeInspector TypeInspector;
         private readonly MethodCloneFactory cloneFactory;
         private readonly AssemblyImporterFactory importerFactory;
-        private readonly IdentityAliasFactory identityFactory;
+        private readonly StringAliasFactory stringAliasFactory;
 
         public MethodInspector(TypeInspector typeInspector, MethodDefinition definition)
         {
             Definition = definition;
             TypeInspector = typeInspector;
             cloneFactory = new MethodCloneFactory();
-            identityFactory = new IdentityAliasFactory();
+            stringAliasFactory = new StringAliasFactory();
             importerFactory = new AssemblyImporterFactory(TypeInspector.AssemblyInspector.Definition);
         }
 
@@ -34,7 +34,7 @@ namespace CryoAOP.Core
         {
             var renamedMethod = Definition;
             var interceptorMethod = cloneFactory.Clone(Definition);
-            renamedMethod.Name = identityFactory.GenerateIdentityName(Definition.Name); ;
+            renamedMethod.Name = stringAliasFactory.GenerateIdentityName(Definition.Name); ;
 
             // Insert interceptor code
 

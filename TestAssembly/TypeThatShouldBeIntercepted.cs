@@ -63,6 +63,16 @@ namespace CryoAOP.TestAssembly
             return j;
         }
 
+        public void GenericMethodWithInvertedParams<T>(int i, T t)
+        {
+
+        }
+
+        public int GenericMethodWithInvertedParamsAndValueReturnType<T>(int i, T t)
+        {
+            return i;
+        }
+
         public double CallToGenericMethodWithGenericParamsAndValueReturnType<T>(T t, int i, double j)
         {
             var val =GenericMethodWithGenericParamsAndValueReturnType<T>(t, i, j);

@@ -27,7 +27,7 @@ namespace CryoAOP.Core.Extensions
             return type;
         }
 
-        public static object Invoke(this MethodInfo method, params object[] args)
+        public static object AutoInstanceInvoke(this MethodInfo method, params object[] args)
         {
             var type = method.DeclaringType;
             var instance = type.Assembly.CreateInstance(type.FullName);

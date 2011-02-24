@@ -56,7 +56,7 @@
     <Compile Include="Extensions\MethodReferenceExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Factories\IdentityAliasFactory.cs" />
+    <Compile Include="Factories\StringAliasFactory.cs" />
     <Compile Include="Factories\AssemblyImporterFactory.cs" />
     <Compile Include="Factories\MethodCloneFactory.cs" />
     <Compile Include="GlobalInterceptor.cs" />
