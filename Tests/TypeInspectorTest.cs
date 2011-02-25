@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace CryoAOP.Tests
 {
     [TestFixture]
-    public class TypeInspectorTests
+    public class TypeInspectorTest
     {
         protected string TestAssembly;
         protected AssemblyInspector AssemblyInspector;

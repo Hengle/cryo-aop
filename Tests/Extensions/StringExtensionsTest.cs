@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace CryoAOP.Tests.Extensions
 {
     [TestFixture]
-    public class StringExtensionsTests
+    public class StringExtensionsTest
     {
         [Test]
         public void Should_format_string_correctly()

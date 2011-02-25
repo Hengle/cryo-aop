@@ -19,7 +19,7 @@ namespace CryoAOP.Tests
         }
     }
 
-    public class PanicStationFixture
+    public class PanicStationTest
     {
         [Test]
         public void should_emit_call_to_generic_properly()

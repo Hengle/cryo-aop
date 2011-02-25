@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace CryoAOP.Tests
 {
-    public static class MethodInspectorTestsExtensions
+    public static class MethodInspectorTestExtensions
     {
         public static MethodInfo GetNonGenericMethodInfo(this Assembly assembly, string nonGenericMethodName)
         {
@@ -22,38 +22,38 @@ namespace CryoAOP.Tests
             return genericMethodInfo.MakeGenericMethod(genericTypeParameter);
         }
 
-        public static void AssertResultsFor(this Assembly assembly, NonGenericInfo nonGenericInfo)
+        public static void AssertResultsFor(this Assembly assembly, MethodInspectorTestMethodInfo info)
         {
             MethodInfo methodInfo;
             var interceptCount = 0;
             MethodInvocation methodInvocation = null;
-            if (nonGenericInfo is GenericInfo)
+            if (info is MethodInspectorTestMethodGenericInfo)
             {
-                var genericInfo = ((GenericInfo) nonGenericInfo);
+                var genericInfo = ((MethodInspectorTestMethodGenericInfo) info);
                 methodInfo = assembly.GetGenericMethodInfo(genericInfo.MethodName, genericInfo.GenericTypes);
             }
             else 
-                methodInfo = assembly.GetNonGenericMethodInfo(nonGenericInfo.MethodName);
+                methodInfo = assembly.GetNonGenericMethodInfo(info.MethodName);
 
             GlobalInterceptor.MethodIntercepter +=
                 (i) =>
                 {
-                    if (nonGenericInfo.Invocation != null)
-                        nonGenericInfo.Invocation(i);
+                    if (info.Invocation != null)
+                        info.Invocation(i);
 
                     methodInvocation = i;
                     interceptCount++;
                 };
 
-            var result = methodInfo.AutoInstanceInvoke(nonGenericInfo.MethodArgs);
+            var result = methodInfo.AutoInstanceInvoke(info.MethodArgs);
 
             Assert.That(
                 interceptCount,
                 Is.EqualTo(methodInvocation.InvocationCancelled ? 1 : 2),
                 "Either pre- or post- invocation failed, interception count should be 2 unless the invocation was cancelled ... ");
             
-            if (nonGenericInfo.Assertion != null)
-                nonGenericInfo.Assertion(result);
+            if (info.Assertion != null)
+                info.Assertion(result);
         }
     }
 }

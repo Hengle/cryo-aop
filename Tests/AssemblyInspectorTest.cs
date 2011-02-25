@@ -8,7 +8,7 @@ using CryoAOP.TestAssembly;
 namespace CryoAOP.Tests
 {
     [TestFixture]
-    public class AssemblyInspectorTests
+    public class AssemblyInspectorTest
     {
         private class TypeThatCannotBeFound { }
 

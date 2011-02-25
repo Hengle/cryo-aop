@@ -3,14 +3,14 @@ using CryoAOP.Core;
 
 namespace CryoAOP.Tests
 {
-    public class NonGenericInfo
+    public class MethodInspectorTestMethodInfo
     {
         private readonly string methodName;
         private readonly object[] methodArgs;
         private readonly Action<MethodInvocation> invocation;
         private readonly Action<object> assertion;
 
-        public NonGenericInfo(string methodName, object[] methodArgs, Action<MethodInvocation> invocation = null, Action<object> assertion = null)
+        public MethodInspectorTestMethodInfo(string methodName, object[] methodArgs, Action<MethodInvocation> invocation = null, Action<object> assertion = null)
         {
             this.methodName = methodName;
             this.methodArgs = methodArgs;
