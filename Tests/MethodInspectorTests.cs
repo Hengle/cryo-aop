@@ -1,13 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using CryoAOP.Core;
 using CryoAOP.Core.Extensions;
 using CryoAOP.TestAssembly;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
-using Mono.Cecil.PE;
 using NUnit.Framework;
 
 namespace CryoAOP.Tests
@@ -15,8 +9,6 @@ namespace CryoAOP.Tests
     [TestFixture]
     public class MethodInspectorTests
     {
-        private static Assembly assembly;
-
         #region Setup/Teardown
 
         [SetUp]
@@ -26,6 +18,8 @@ namespace CryoAOP.Tests
         }
 
         #endregion
+
+        private static Assembly assembly;
 
         private const string interceptedOutputAssembly = "CryoAOP.TestAssembly_Intercepted.dll";
 
@@ -37,231 +31,282 @@ namespace CryoAOP.Tests
             assembly = Assembly.LoadFrom(interceptedOutputAssembly);
         }
 
-        private static MethodInfo GetNonGenericMethodInfo(string nonGenericMethodName)
-        {
-            var interceptedType = assembly.FindType(typeof(TypeThatShouldBeIntercepted).FullName);
-            return interceptedType.GetMethod(nonGenericMethodName);
-        }
-
-        private static MethodInfo GetGenericMethodInfo(string nonGenericMethodName, params Type[] genericTypeParameter)
-        {
-            var interceptedType = assembly.FindType(typeof(TypeThatShouldBeIntercepted).FullName);
-            MethodInfo genericMethodInfo = interceptedType.GetMethod(nonGenericMethodName);
-            return genericMethodInfo.MakeGenericMethod(genericTypeParameter);
-        }
-
-        [Test]
-        public void Should_intercept_method_and_call()
-        {
-            var interceptCount = 0;
-            var methodInfo = GetNonGenericMethodInfo("HavingMethodWithArgsAndNoReturnType");
-
-            GlobalInterceptor.MethodIntercepter += (invocation) => { interceptCount++; };
-
-            var result = methodInfo.AutoInstanceInvoke(1, "2", 3);
-            Assert.That(interceptCount, Is.EqualTo(2));
-            Assert.That(result, Is.Null);
-        }
-
-        [Test]
-        public void Should_intercept_method_and_cancel_invocation_returning_fake_result()
-        {
-            var methodInfo = GetNonGenericMethodInfo("HavingMethodWithArgsAndStringReturnType");
-
-            GlobalInterceptor.MethodIntercepter += (invocation) =>
-            {
-                if (invocation.InvocationType == MethodInvocationType.BeforeInvocation)
-                {
-                    invocation.CancelInvocation();
-                    invocation.Result = "Fake Result";
-                }
-            };
-
-            var result = methodInfo.AutoInstanceInvoke(1, "2", 3);
-            Assert.That(result, Is.EqualTo("Fake Result"));
-        }
-
-        [Test]
-        public void Should_intercept_method_with_class_args_and_call()
-        {
-            var interceptCount = 0;
-            var methodInfo = GetNonGenericMethodInfo("HavingMethodWithClassArgsAndClassReturnType");
-            var args = assembly.CreateInstance("CryoAOP.TestAssembly.MethodParameterClass");
-
-            GlobalInterceptor.MethodIntercepter += (invocation) => { interceptCount++; };
-
-            var result = methodInfo.AutoInstanceInvoke(args);
-            Assert.That(interceptCount, Is.EqualTo(2));
-            Assert.That(result, Is.Not.Null);
-        }
-
-        [Test]
-        public void Should_intercept_method_and_call_using_reflection_changing_return_value()
-        {
-            var methodInfo = GetNonGenericMethodInfo("HavingMethodWithArgsAndStringReturnType");
-
-            GlobalInterceptor.MethodIntercepter += (invocation) =>
-                                                       {
-                                                           if (invocation.InvocationType == MethodInvocationType.AfterInvocation)
-                                                               invocation.Result = "Intercepted Result";
-                                                       };
-
-            var result = methodInfo.AutoInstanceInvoke(1, "2", 3);
-            Assert.That(result, Is.EqualTo("Intercepted Result"));
-        }
-
-        [Test]
-        public void Should_intercept_method_and_call_with_result()
-        {
-            var interceptCount = 0;
-            var methodInfo = GetNonGenericMethodInfo("HavingMethodWithArgsAndStringReturnType");
-
-            GlobalInterceptor.MethodIntercepter += (invocation) => { interceptCount++; };
-
-            var result = methodInfo.AutoInstanceInvoke(1, "2", 3);
-            Assert.That(interceptCount, Is.EqualTo(2));
-            Assert.That(result, Is.EqualTo("1, 2, 3"));
-        }
-
-        [Test]
-        public void Should_call_to_generic_method()
-        {
-            var interceptorCount = 0;
-            var methodInfo = GetGenericMethodInfo("GenericMethod", typeof(MethodParameterClass));
-
-            GlobalInterceptor.MethodIntercepter += (invocation) => { interceptorCount++; };
-
-            methodInfo.AutoInstanceInvoke();
-            Assert.That(interceptorCount, Is.EqualTo(2));
-        }
-
-        [Test]
-        public void Should_call_to_generic_method_with_generic_parameters()
-        {
-            var interceptorCount = 0;
-            var methodInfo = GetGenericMethodInfo("GenericMethodWithGenericParameters", typeof (MethodParameterClass));
-
-            GlobalInterceptor.MethodIntercepter += (invocation) => { interceptorCount++; };
-
-            methodInfo.AutoInstanceInvoke(new MethodParameterClass());
-            Assert.That(interceptorCount, Is.EqualTo(2));
-        }
-
-        [Test]
-        public void Should_call_to_generic_method_with_generic_parameters_and_generic_return_type()
-        {
-            var interceptorCount = 0;
-            var methodInfo = GetGenericMethodInfo("GenericMethodWithGenericParametersAndGenericReturnType", typeof(MethodParameterClass));
-
-            GlobalInterceptor.MethodIntercepter += (invocation) => { interceptorCount++; };
-
-            var parameterClass = new MethodParameterClass();
-            var result = methodInfo.AutoInstanceInvoke(parameterClass);
-            Assert.That(interceptorCount, Is.EqualTo(2));
-            Assert.That(result, Is.EqualTo(parameterClass));
-        }
-
-        [Test]
-        public void Should_call_to_generic_with_generic_parameters_and_value_types()
-        {
-            int i = 0;
-            double j = 0;
-            var interceptorCount = 0;
-            var methodInfo = GetGenericMethodInfo("GenericMethodWithGenericParametersAndValueTypeArgs", typeof(MethodParameterClass));
-
-            GlobalInterceptor.MethodIntercepter += (invocation) =>
-                                                       {
-                                                           i = (int)invocation.ParameterValues[1];
-                                                           j = (double)invocation.ParameterValues[2];
-                                                           interceptorCount++;
-                                                       };
-
-            var parameterClass = new MethodParameterClass();
-            methodInfo.AutoInstanceInvoke(parameterClass, 1, 2);
-            Assert.That(i, Is.EqualTo(1));
-            Assert.That(j, Is.EqualTo(2));
-            Assert.That(interceptorCount, Is.EqualTo(2));
-        }
-
-        [Test]
-        public void Should_call_generic_with_all_kinds_of_parameters_and_return_a_value_type()
-        {
-            int i = 0;
-            double j = 0;
-            var interceptorCount = 0;
-            var methodInfo = GetGenericMethodInfo("GenericMethodWithGenericParamsAndValueReturnType", typeof(MethodParameterClass));
-
-            GlobalInterceptor.MethodIntercepter += (invocation) =>
-            {
-                i = (int)invocation.ParameterValues[1];
-                j = (double)invocation.ParameterValues[2];
-                interceptorCount++;
-            };
-
-            var parameterClass = new MethodParameterClass();
-            var result = methodInfo.AutoInstanceInvoke(parameterClass, 1, 2);
-            Assert.That(i, Is.EqualTo(1));
-            Assert.That(j, Is.EqualTo(2));
-            Assert.That(result, Is.EqualTo(j));
-            Assert.That(interceptorCount, Is.EqualTo(2));
-        }
-
         [Test]
         public void Should_call_generic_method_where_value_type_is_first_parameter()
         {
-            int i = 1;
-            var j = new MethodParameterClass();
-            var interceptorCount = 0;
-            var methodInfo = GetGenericMethodInfo("GenericMethodWithInvertedParams", typeof(MethodParameterClass));
+            var a = 1;
+            var b = new MethodParameterClass();
 
-            GlobalInterceptor.MethodIntercepter += (invocation) =>
-            {
-                Assert.That(i == (int)invocation.ParameterValues[0]);
-                Assert.That(j == (MethodParameterClass)invocation.ParameterValues[1]);
+            var info =
+                new GenericInfo(
+                    methodName: "GenericMethodWithInvertedParams",
+                    genericTypes: new[] {typeof (MethodParameterClass)},
+                    methodArgs: new object[] {1, b},
+                    invocation: (invocation) =>
+                                    {
+                                        Assert.That(a, Is.EqualTo((int) invocation.ParameterValues[0]));
+                                        Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
+                                    },
+                    assertion: (result) => { });
 
-                interceptorCount++;
-            };
 
-            methodInfo.AutoInstanceInvoke(1, j);
+            assembly.AssertResultsFor(info);
         }
 
         [Test]
         public void Should_call_generic_method_where_value_type_is_first_parameter_and_has_value_return_type()
         {
-            int i = 1;
-            var j = new MethodParameterClass();
-            var interceptorCount = 0;
-            var methodInfo = GetGenericMethodInfo("GenericMethodWithInvertedParamsAndValueReturnType", typeof(MethodParameterClass));
+            var a = 1;
+            var b = new MethodParameterClass();
 
-            GlobalInterceptor.MethodIntercepter += (invocation) =>
-            {
-                Assert.That(i == (int)invocation.ParameterValues[0]);
-                Assert.That(j == (MethodParameterClass)invocation.ParameterValues[1]);
+            var info =
+                new GenericInfo(
+                    methodName: "GenericMethodWithInvertedParamsAndValueReturnType",
+                    genericTypes: new[] {typeof (MethodParameterClass)},
+                    methodArgs: new object[] {1, b},
+                    invocation: (invocation) =>
+                                    {
+                                        Assert.That(a, Is.EqualTo((int) invocation.ParameterValues[0]));
+                                        Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
+                                    },
+                    assertion: (result) => { Assert.That(result, Is.EqualTo(a)); });
 
-                interceptorCount++;
-            };
 
-            var k = (int)methodInfo.AutoInstanceInvoke(1, j);
-            Assert.That(k, Is.EqualTo(i));
+            assembly.AssertResultsFor(info);
         }
 
         [Test, Ignore] // See, PanicStationFixture ... this is possible ... 
         public void Should_call_generic_method_with_two_generic_parameters()
         {
-            int i = 1;
+            var i = 1;
             var j = new MethodParameterClass();
             var interceptorCount = 0;
-            var methodInfo = GetGenericMethodInfo("GenericMethodWithTwoGenericParameters", typeof(int), typeof(MethodParameterClass));
+            var methodInfo = assembly.GetGenericMethodInfo("GenericMethodWithTwoGenericParameters", typeof (int), typeof (MethodParameterClass));
 
             GlobalInterceptor.MethodIntercepter += (invocation) =>
-            {
-                Assert.That(i == (int)invocation.ParameterValues[0]);
-                Assert.That(j == (MethodParameterClass)invocation.ParameterValues[1]);
+                                                       {
+                                                           Assert.That(i == (int) invocation.ParameterValues[0]);
+                                                           Assert.That(j == invocation.ParameterValues[1]);
 
-                interceptorCount++;
-            };
+                                                           interceptorCount++;
+                                                       };
 
             methodInfo.AutoInstanceInvoke(i, j);
+        }
+
+        [Test]
+        public void Should_call_generic_with_all_kinds_of_parameters_and_return_a_value_type()
+        {
+            int a = 1;
+            double b = 2;
+            var parameterClass = new MethodParameterClass();
+
+            var info =
+                new GenericInfo(
+                    methodName: "GenericMethodWithGenericParamsAndValueReturnType",
+                    genericTypes: new[] {typeof (MethodParameterClass)},
+                    methodArgs: new object[] {parameterClass, a, b},
+                    invocation: (invocation) =>
+                                    {
+                                        Assert.That(a == (int) invocation.ParameterValues[1]);
+                                        Assert.That(b == (double) invocation.ParameterValues[2]);
+                                    },
+                    assertion: (result) =>
+                                   {
+                                       Assert.That(result, Is.EqualTo(b));
+                                   });
+
+
+            assembly.AssertResultsFor(info);
+        }
+
+        [Test]
+        public void Should_call_to_generic_method()
+        {
+            var info =
+                new GenericInfo(
+                    methodName: "GenericMethod",
+                    genericTypes: new[] { typeof(MethodParameterClass) });
+            
+            assembly.AssertResultsFor(info);
+        }
+
+        [Test]
+        public void Should_call_to_generic_method_with_generic_parameters()
+        {
+            var info =
+                new GenericInfo(
+                    methodName: "GenericMethodWithGenericParameters",
+                    genericTypes: new[] { typeof(MethodParameterClass) }, 
+                    methodArgs: new[] { new MethodParameterClass() });
+
+            assembly.AssertResultsFor(info);
+        }
+
+        [Test]
+        public void Should_call_to_generic_method_with_generic_parameters_and_generic_return_type()
+        {
+            var parameterClass = new MethodParameterClass();
+
+            var info =
+                new GenericInfo(
+                    methodName: "GenericMethodWithGenericParametersAndGenericReturnType",
+                    genericTypes: new[] { typeof(MethodParameterClass) },
+                    methodArgs: new object[] { parameterClass },
+                    invocation: (invocation) =>
+                    {
+                    },
+                    assertion: (result) =>
+                    {
+                        Assert.That(result, Is.EqualTo(parameterClass));
+                    });
+
+
+            assembly.AssertResultsFor(info);
+        }
+
+        [Test]
+        public void Should_call_to_generic_with_generic_parameters_and_value_types()
+        {
+            var a = 1;
+            double b = 2;
+            var parameterClass = new MethodParameterClass();
+
+            var info =
+                new GenericInfo(
+                    methodName: "GenericMethodWithGenericParametersAndValueTypeArgs",
+                    genericTypes: new[] { typeof(MethodParameterClass) },
+                    methodArgs: new object[] { parameterClass, a, b },
+                    invocation: (invocation) =>
+                    {
+                        Assert.That(a, Is.EqualTo( (int) invocation.ParameterValues[1]));
+                        Assert.That(b, Is.EqualTo( (double) invocation.ParameterValues[2]));
+                    },
+                    assertion: (result) =>
+                    {
+                        Assert.That(result, Is.Null);
+                    });
+
+
+            assembly.AssertResultsFor(info);
+        }
+
+        [Test]
+        public void Should_intercept_method_and_call()
+        {
+            int a = 1;
+            string b = "2";
+            double c = 3;
+
+            var info =
+                new NonGenericInfo(
+                    methodName: "HavingMethodWithArgsAndNoReturnType",
+                    methodArgs: new object[] { a,b,c },
+                    invocation: (invocation) =>
+                    {
+                        Assert.That(a, Is.EqualTo((int)invocation.ParameterValues[0]));
+                        Assert.That(b, Is.EqualTo((string)invocation.ParameterValues[1]));
+                        Assert.That(c, Is.EqualTo((double)invocation.ParameterValues[2]));
+                    },
+                    assertion: (result) =>
+                    {
+                        Assert.That(result, Is.Null);
+                    });
+
+            assembly.AssertResultsFor(info);
+        }
+
+        [Test]
+        public void Should_intercept_method_and_call_using_reflection_changing_return_value()
+        {
+            int a = 1;
+            string b = "2";
+            double c = 3;
+
+            var info =
+                new NonGenericInfo(
+                    methodName: "HavingMethodWithArgsAndStringReturnType",
+                    methodArgs: new object[] { a, b, c },
+                    invocation: (invocation) =>
+                    {
+                        Assert.That(a, Is.EqualTo((int)invocation.ParameterValues[0]));
+                        Assert.That(b, Is.EqualTo((string)invocation.ParameterValues[1]));
+                        Assert.That(c, Is.EqualTo((double)invocation.ParameterValues[2]));
+                        
+                        invocation.Result = "Intercepted Result";
+                    },
+                    assertion: (result) =>
+                    {
+                        Assert.That(result, Is.EqualTo("Intercepted Result"));
+                    });
+
+            assembly.AssertResultsFor(info);
+        }
+
+        [Test]
+        public void Should_intercept_method_and_call_with_result()
+        {
+            int a = 1;
+            string b = "2";
+            double c = 3;
+
+            var info =
+                new NonGenericInfo(
+                    methodName: "HavingMethodWithArgsAndStringReturnType",
+                    methodArgs: new object[] { a, b, c },
+                    invocation: (invocation) =>
+                    {
+                        Assert.That(a, Is.EqualTo((int)invocation.ParameterValues[0]));
+                        Assert.That(b, Is.EqualTo((string)invocation.ParameterValues[1]));
+                        Assert.That(c, Is.EqualTo((double)invocation.ParameterValues[2]));
+                    },
+                    assertion: (result) =>
+                    {
+                        Assert.That(result, Is.EqualTo("1, 2, 3"));
+                    });
+
+            assembly.AssertResultsFor(info);
+        }
+
+        [Test]
+        public void Should_intercept_method_and_cancel_invocation_returning_fake_result()
+        {
+            int a = 1;
+            string b = "2";
+            double c = 3;
+
+            var info =
+                new NonGenericInfo(
+                    methodName: "HavingMethodWithArgsAndStringReturnType",
+                    methodArgs: new object[] { a, b, c },
+                    invocation: (invocation) =>
+                    {
+                        Assert.That(a, Is.EqualTo((int)invocation.ParameterValues[0]));
+                        Assert.That(b, Is.EqualTo((string)invocation.ParameterValues[1]));
+                        Assert.That(c, Is.EqualTo((double)invocation.ParameterValues[2]));
+
+                        invocation.CancelInvocation();
+                        invocation.Result = "Fake Result";
+                    },
+                    assertion: (result) =>
+                    {
+                        Assert.That(result, Is.EqualTo("Fake Result"));
+                    });
+
+            assembly.AssertResultsFor(info);
+        }
+
+        [Test]
+        public void Should_intercept_method_with_class_args_and_call()
+        {
+            var param = assembly.CreateInstance(typeof (MethodParameterClass).FullName);
+
+            var info =
+                new NonGenericInfo(
+                    methodName: "HavingMethodWithClassArgsAndClassReturnType",
+                    methodArgs: new[] { param });
+
+            assembly.AssertResultsFor(info);
         }
     }
 }

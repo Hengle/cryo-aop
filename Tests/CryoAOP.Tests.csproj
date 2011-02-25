@@ -51,6 +51,9 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="GenericInfo.cs" />
+    <Compile Include="MethodInspectorTestsExtensions.cs" />
+    <Compile Include="NonGenericInfo.cs" />
     <Compile Include="PanicStationFixture.cs" />
     <Compile Include="MethodInspectorTests.cs" />
     <Compile Include="Extensions\StringExtensionsTests.cs" />

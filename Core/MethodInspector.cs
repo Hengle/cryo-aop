@@ -161,18 +161,16 @@ namespace CryoAOP.Core
             // Interceptor: Insert IL call from clone to renamed method
             il.Append(il.Create(OpCodes.Ldarg_0));
 
-            foreach (var parameter in interceptorMethod.Parameters)
-            {
-                var argIndex = interceptorMethod.Parameters.IndexOf(parameter);
-                il.Append(il.Create(OpCodes.Ldarg, (ushort) (argIndex + 1)));
-            }
+            //  Interceptor: Load args for method call
+            foreach (var parameter in interceptorMethod.Parameters.ToList())
+                il.Append(il.Create(OpCodes.Ldarg, parameter));
 
             if (renamedMethod.HasGenericParameters)
                 il.Append(il.Create(OpCodes.Call, renamedMethod.MakeGeneric(interceptorMethod.GenericParameters.ToArray())));
             else
                 il.Append(il.Create(OpCodes.Call, renamedMethod));
 
-            // Interceptor: Store method return value);)
+            // Interceptor: Store method return value
             if (interceptorMethod.ReturnType.Name != "Void")
             {
                 il.Append(il.Create(OpCodes.Stloc, 5));
@@ -181,12 +179,11 @@ namespace CryoAOP.Core
             il.Append(il.Create(OpCodes.Nop));
 
 
-            // Interceptor: Set return type on MethodInvocation )
+            // Interceptor: Set return type on MethodInvocation 
             if (interceptorMethod.ReturnType.Name != "Void")
             {
                 if (renamedMethod.ReturnType.IsValueType)
                 {
-                    // ! Experimental ! - Works!
                     il.Append(new[]
                                   {
                                       il.Create(OpCodes.Ldloc_2),

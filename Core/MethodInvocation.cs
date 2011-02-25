@@ -23,9 +23,10 @@ namespace CryoAOP.Core
         }
 
         public Type Type { private set; get; }
-        public MethodInfo Method { private set; get; }
-        public MethodInvocationType InvocationType { private set; get; }
         public bool CanInvoke { private set; get; }
+        public MethodInfo Method { private set; get; }
+        public bool InvocationCancelled { private set; get; }
+        public MethodInvocationType InvocationType { private set; get; }
 
         public ParameterInfo[] Parameters
         {
@@ -53,6 +54,7 @@ namespace CryoAOP.Core
         public virtual void CancelInvocation()
         {
             CanInvoke = false;
+            InvocationCancelled = InvocationType == MethodInvocationType.BeforeInvocation;
         }
 
         public override string ToString()

@@ -13,7 +13,7 @@ namespace CryoAOP.Tests
 {
     public class ClassWithClonedMethod
     {
-        public void GenericMethod<T, J>(T t, J j)
+        public void GenericMethod<T, J>(int i, T t, J j)
         {
             //return default(T);
         }
@@ -74,6 +74,7 @@ namespace CryoAOP.Tests
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldarg_1);
             il.Emit(OpCodes.Ldarg_2);
+            il.Emit(OpCodes.Ldarg_3);
             il.Emit(OpCodes.Call, renamedMethod.MakeGeneric(methodThatShouldReplaceOriginal.GenericParameters.ToArray()));
             il.Emit(OpCodes.Ret);
 
@@ -81,7 +82,7 @@ namespace CryoAOP.Tests
 
             var fooAssembly = Assembly.LoadFrom("Foo.dll");
             var methodInfo = GetGenericMethodInfo(fooAssembly, "ClassWithClonedMethod", "GenericMethod", typeof(int), typeof(string));
-            AutoInstanceInvoke(methodInfo, 1, "Foo");
+            AutoInstanceInvoke(methodInfo, 1, 1, "Foo");
         }
 
         public static Type FindType(Assembly assembly, string typeName)
