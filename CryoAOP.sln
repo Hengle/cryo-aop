@@ -262,6 +262,7 @@ Global
 		{A9C22D19-786A-4C99-BFB6-715F710FA3A9}.net_3_5_Release|x86.ActiveCfg = Release|x86
 		{A9C22D19-786A-4C99-BFB6-715F710FA3A9}.net_3_5_Release|x86.Build.0 = Release|x86
 		{A9C22D19-786A-4C99-BFB6-715F710FA3A9}.net_4_0_Debug|Any CPU.ActiveCfg = Debug|x86
+		{A9C22D19-786A-4C99-BFB6-715F710FA3A9}.net_4_0_Debug|Any CPU.Build.0 = Debug|x86
 		{A9C22D19-786A-4C99-BFB6-715F710FA3A9}.net_4_0_Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{A9C22D19-786A-4C99-BFB6-715F710FA3A9}.net_4_0_Debug|Mixed Platforms.Build.0 = Debug|x86
 		{A9C22D19-786A-4C99-BFB6-715F710FA3A9}.net_4_0_Debug|x86.ActiveCfg = Debug|x86

@@ -2,6 +2,20 @@ namespace CryoAOP.Core
 {
     public class Interception
     {
+        public static void RegisterAssembly(string assemblyPath, MethodInterceptionScope interceptionScope, string outputAssembly = null)
+        {
+            var assemblyInspector = new AssemblyInspector(assemblyPath);
+            foreach (var module in assemblyInspector.Definition.Modules)
+            {
+                foreach (var type in module.Types)
+                {
+                    var typeInspector = new TypeInspector(assemblyInspector, type);
+                    typeInspector.InterceptAllMethods(interceptionScope);
+                }
+            }
+            assemblyInspector.Write(outputAssembly ?? assemblyPath);
+        }
+
         public static void RegisterType(string assemblyPath, string fullTypeName, string outputAssembly = null)
         {
             RegisterType(assemblyPath, fullTypeName, MethodInterceptionScope.Shallow, outputAssembly);
