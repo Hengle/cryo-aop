@@ -103,11 +103,11 @@ namespace CryoAOP.Core
                               {
                                   il.Create(OpCodes.Ldloc_3),
                                   il.Create(OpCodes.Ldc_I4, argIndex),
-                                  il.Create(OpCodes.Ldarg, argIndex + 1),
+                                  il.Create(OpCodes.Ldarg, parameter),
                               });
 
                 // Interceptor: Box up value types
-                if (parameter.ParameterType.IsValueType)
+                if (parameter.ParameterType.IsValueType || parameter.ParameterType.IsGenericParameter)
                     il.Append(il.Create(OpCodes.Box, parameter.ParameterType));
 
                 // Intreceptor: Allocate to array
@@ -159,7 +159,8 @@ namespace CryoAOP.Core
                           });
 
             // Interceptor: Insert IL call from clone to renamed method
-            il.Append(il.Create(OpCodes.Ldarg_0));
+            if (!renamedMethod.IsStatic)
+                il.Append(il.Create(OpCodes.Ldarg_0));
 
             //  Interceptor: Load args for method call
             foreach (var parameter in interceptorMethod.Parameters.ToList())
@@ -175,9 +176,6 @@ namespace CryoAOP.Core
             {
                 il.Append(il.Create(OpCodes.Stloc, 5));
             }
-
-            il.Append(il.Create(OpCodes.Nop));
-
 
             // Interceptor: Set return type on MethodInvocation 
             if (interceptorMethod.ReturnType.Name != "Void")
@@ -231,8 +229,6 @@ namespace CryoAOP.Core
                                       il.Create(OpCodes.Ldloc_2),
                                       il.Create(OpCodes.Callvirt, importerFactory.Import(typeof (MethodInvocation), "get_Result")),
                                       il.Create(OpCodes.Unbox_Any, interceptorMethod.ReturnType),
-                                      il.Create(OpCodes.Stloc, 5),
-                                      il.Create(OpCodes.Ldloc, 5)
                                   });
                 }
                 else

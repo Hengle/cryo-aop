@@ -76,6 +76,32 @@ namespace CryoAOP.TestAssembly
         public void GenericMethodWithTwoGenericParameters<I, J>(I i, J j)
         {
         }
+
+        public static void StaticMethodWithNoArgsAndNoReturnType()
+        {
+            
+        }
+
+        public static void StaticMethodWithArgsAndNoReturnType(int i)
+        {
+            
+        }
+
+        public static void StaticMethodWithGenericAndValueTypeArgsAndNoReturnType<T>(int i, T t)
+        {
+
+        }
+
+        public static int StaticMethodWithGenericAndValueTypeArgsAndValueReturnType<T>(int i, T t)
+        {
+            return i;
+        }
+
+        public static T StaticMethodWithGenericAndValueTypeArgsAndGenericReturnType<T>(int i, T t)
+        {
+            return t;
+        }
+
     }
 
     public class MethodParameterClass

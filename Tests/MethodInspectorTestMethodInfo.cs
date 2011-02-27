@@ -10,7 +10,7 @@ namespace CryoAOP.Tests
         private readonly Action<MethodInvocation> invocation;
         private readonly Action<object> assertion;
 
-        public MethodInspectorTestMethodInfo(string methodName, object[] methodArgs, Action<MethodInvocation> invocation = null, Action<object> assertion = null)
+        public MethodInspectorTestMethodInfo(string methodName, object[] methodArgs = null, Action<MethodInvocation> invocation = null, Action<object> assertion = null)
         {
             this.methodName = methodName;
             this.methodArgs = methodArgs;

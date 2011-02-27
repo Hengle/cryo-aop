@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace CryoAOP.Tests
 {
+    [TestFixture, Explicit]
     public class MethodInspectorTestBase
     {
         #region Setup/Teardown
@@ -35,7 +36,7 @@ namespace CryoAOP.Tests
             get { return "CryoAOP.TestAssembly.TypeThatShouldBeIntercepted"; }
         }
 
-        protected virtual string InterceptMethod
+        protected virtual string DebuggingInterceptorMethod
         {
             get { return null; }
         }
@@ -43,10 +44,10 @@ namespace CryoAOP.Tests
         [TestFixtureSetUp]
         public virtual void FixtureSetUp()
         {
-            if (InterceptMethod == null)
+            if (DebuggingInterceptorMethod == null)
                 Interception.RegisterType(InputAssembly, InterceptType, OutputAssembly);
             else
-                Interception.RegisterType(InputAssembly, InterceptType, InterceptMethod, OutputAssembly);
+                Interception.RegisterType(InputAssembly, InterceptType, DebuggingInterceptorMethod, OutputAssembly);
 
             InterceptedAssembly = Assembly.LoadFrom(OutputAssembly);
         }
@@ -54,7 +55,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_call_generic_method_where_value_type_is_first_parameter()
         {
-            if (InterceptMethod != null) return;
+            if (DebuggingInterceptorMethod != null) return;
 
             var a = 1;
             var b = new MethodParameterClass();
@@ -78,7 +79,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_call_generic_method_where_value_type_is_first_parameter_and_has_value_return_type()
         {
-            if (InterceptMethod != null) return;
+            if (DebuggingInterceptorMethod != null) return;
 
             var a = 1;
             var b = new MethodParameterClass();
@@ -102,7 +103,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_call_generic_with_all_kinds_of_parameters_and_return_a_value_type()
         {
-            if (InterceptMethod != null) return;
+            if (DebuggingInterceptorMethod != null) return;
 
             int a = 1;
             double b = 2;
@@ -130,7 +131,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_call_to_generic_method()
         {
-            if (InterceptMethod != null) return;
+            if (DebuggingInterceptorMethod != null) return;
 
             var info =
                 new MethodInspectorTestMethodGenericInfo(
@@ -143,7 +144,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_call_to_generic_method_with_generic_parameters()
         {
-            if (InterceptMethod != null) return;
+            if (DebuggingInterceptorMethod != null) return;
 
             var info =
                 new MethodInspectorTestMethodGenericInfo(
@@ -157,7 +158,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_call_to_generic_method_with_generic_parameters_and_generic_return_type()
         {
-            if (InterceptMethod != null) return;
+            if (DebuggingInterceptorMethod != null) return;
 
             var parameterClass = new MethodParameterClass();
 
@@ -181,7 +182,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_call_to_generic_with_generic_parameters_and_value_types()
         {
-            if (InterceptMethod != null) return;
+            if (DebuggingInterceptorMethod != null) return;
 
             var a = 1;
             double b = 2;
@@ -209,7 +210,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_intercept_method_and_call()
         {
-            if (InterceptMethod != null) return;
+            if (DebuggingInterceptorMethod != null) return;
             
             int a = 1;
             string b = "2";
@@ -236,7 +237,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_intercept_method_and_call_using_reflection_changing_return_value()
         {
-            if (InterceptMethod != null) return;
+            if (DebuggingInterceptorMethod != null) return;
 
             int a = 1;
             string b = "2";
@@ -265,7 +266,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_intercept_method_and_call_with_result()
         {
-            if (InterceptMethod != null) return;
+            if (DebuggingInterceptorMethod != null) return;
 
             int a = 1;
             string b = "2";
@@ -292,7 +293,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_intercept_method_and_cancel_invocation_returning_fake_result()
         {
-            if (InterceptMethod != null) return;
+            if (DebuggingInterceptorMethod != null) return;
 
             int a = 1;
             string b = "2";
@@ -309,7 +310,7 @@ namespace CryoAOP.Tests
                                         Assert.That(c, Is.EqualTo((double)invocation.ParameterValues[2]));
 
                                         invocation.CancelInvocation();
-                                        //invocation.Result = "Fake Result";
+                                        invocation.Result = "Fake Result";
                                     },
                     assertion: (result) =>
                                    {
@@ -322,7 +323,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_intercept_method_with_class_args_and_call()
         {
-            if (InterceptMethod != null) return;
+            if (DebuggingInterceptorMethod != null) return;
 
             var param = InterceptedAssembly.CreateInstance(typeof (MethodParameterClass).FullName);
 
@@ -330,6 +331,59 @@ namespace CryoAOP.Tests
                 new MethodInspectorTestMethodInfo(
                     methodName: "HavingMethodWithClassArgsAndClassReturnType",
                     methodArgs: new[] { param });
+
+            InterceptedAssembly.AssertResultsFor(info);
+        }
+
+        [Test] 
+        public void Should_call_generic_method_with_two_generic_parameters()
+        {
+            if (DebuggingInterceptorMethod != null) return;
+
+            var a = 1;
+            var b = new MethodParameterClass();
+
+            var info =
+                new MethodInspectorTestMethodGenericInfo(
+                    methodName: "GenericMethodWithTwoGenericParameters",
+                    genericTypes: new[] { typeof(int), typeof(MethodParameterClass) },
+                    methodArgs: new object[] { a, b },
+                    invocation: (invocation) =>
+                                    {
+                                        Assert.That(a, Is.EqualTo((int)invocation.ParameterValues[0]));
+                                        Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
+                                    },
+                    assertion: (result) => { });
+
+
+            InterceptedAssembly.AssertResultsFor(info);
+        }
+
+        [Test]
+        public void Should_invoke_static_method_with_no_params_and_no_return_type()
+        {
+            if (DebuggingInterceptorMethod != null) return;
+
+            var info =
+                new MethodInspectorTestMethodInfo(
+                    methodName: "StaticMethodWithNoArgsAndNoReturnType");
+
+            InterceptedAssembly.AssertResultsFor(info);
+        }
+
+        [Test]
+        public void Should_invoke_static_method_with_some_params_and_no_return_type()
+        {
+            if (DebuggingInterceptorMethod != null) return;
+
+            var info =
+                new MethodInspectorTestMethodInfo(
+                    methodName: "StaticMethodWithArgsAndNoReturnType",
+                    methodArgs: new object[] { 1 }, 
+                    invocation: (invocation) =>
+                                    {
+                                        Assert.That((int)invocation.ParameterValues[0] == 1);
+                                    });
 
             InterceptedAssembly.AssertResultsFor(info);
         }

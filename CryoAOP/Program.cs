@@ -11,9 +11,10 @@ namespace CryoAOP
                 Console.WriteLine("CryoAOP v1.0");
                 Console.WriteLine("Usage: CryoAOP /i input.cryoaop");
                 Console.WriteLine("Where: /i input.cryoaop is of the following format.");
-                Console.WriteLine("<Assembly>, <TypeToIntercept>");
+                Console.WriteLine("Assembly->TypeToIntercept->Method(<overload_specification>)");
                 Console.WriteLine("Example:");
-                Console.WriteLine("FooAssembly.dll, Foo.TypeToIntercept");
+                Console.WriteLine("FooAssembly.dll -> Foo.TypeToIntercept -> MethodToIntercept();");
+                Console.WriteLine("FooAssembly.dll -> Foo.TypeToIntercept -> MethodToIntercept(string,int);");
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using CryoAOP.Core;
+﻿using System;
+using CryoAOP.Core;
 using CryoAOP.Core.Extensions;
 using CryoAOP.TestAssembly;
 using NUnit.Framework;
@@ -8,30 +9,81 @@ namespace CryoAOP.Tests
     [TestFixture]
     public class MethodInspectorTest : MethodInspectorTestBase
     {
-        // ! WARNING ! There is an explicit failing test in the base fixture, it was to test method switching in the test classes see ("Should_intercept_method_and_cancel_invocation_returning_fake_result")
-        protected override string InterceptMethod
+        protected override string DebuggingInterceptorMethod
         {
-             get { return null; }
-            //get { return "GenericMethodWithTwoGenericParameters"; }
+            get { return null; }
+            //get { return "StaticMethodWithGenericAndValueTypeArgsAndNoReturnType"; }
         }
 
-        [Test] // See, PanicStationFixture ... this is possible ... 
-        public void Should_call_generic_method_with_two_generic_parameters()
+        [Test]
+        public void Should_invoke_static_method_with_value_and_generic_with_no_return_type()
         {
-            //var i = 1;
-            //var j = new MethodParameterClass();
-            //var interceptorCount = 0;
-            //var methodInfo = InterceptedAssembly.GetGenericMethodInfo("GenericMethodWithTwoGenericParameters", typeof (int), typeof (MethodParameterClass));
+            if (DebuggingInterceptorMethod != null) return;
 
-            //GlobalInterceptor.MethodIntercepter += (invocation) =>
-            //                                           {
-            //                                               Assert.That(i == (int) invocation.ParameterValues[0]);
-            //                                               Assert.That(j == invocation.ParameterValues[1]);
+            var @genericArg = new MethodParameterClass();
 
-            //                                               interceptorCount++;
-            //                                           };
+            var info =
+                new MethodInspectorTestMethodGenericInfo(
+                    methodName: "StaticMethodWithGenericAndValueTypeArgsAndNoReturnType",
+                    methodArgs: new object[] { 1, genericArg },
+                    genericTypes: new []{ typeof(MethodParameterClass) },
+                    invocation: (invocation) =>
+                    {
+                        Assert.That((int)invocation.ParameterValues[0] == 1);
+                        Assert.That((MethodParameterClass)invocation.ParameterValues[1] == @genericArg);
+                    });
 
-            //methodInfo.AutoInstanceInvoke(i, j);
+            InterceptedAssembly.AssertResultsFor(info);
+        }
+
+        [Test]
+        public void Should_invoke_static_method_with_value_and_generic_with_value_return_type()
+        {
+            if (DebuggingInterceptorMethod != null) return;
+
+            var @genericArg = new MethodParameterClass();
+
+            var info =
+                new MethodInspectorTestMethodGenericInfo(
+                    methodName: "StaticMethodWithGenericAndValueTypeArgsAndValueReturnType",
+                    methodArgs: new object[] { 1, genericArg },
+                    genericTypes: new[] { typeof(MethodParameterClass) },
+                    invocation: (invocation) =>
+                    {
+                        Assert.That((int)invocation.ParameterValues[0] == 1);
+                        Assert.That((MethodParameterClass)invocation.ParameterValues[1] == @genericArg);
+                    },
+                    assertion: (result) =>
+                                   {
+                                       Assert.That((int)result == 1);
+                                   });
+
+            InterceptedAssembly.AssertResultsFor(info);
+        }
+
+        [Test]
+        public void Should_invoke_static_method_with_value_and_generic_with_generic_return_type()
+        {
+            if (DebuggingInterceptorMethod != null) return;
+
+            var @genericArg = new MethodParameterClass();
+
+            var info =
+                new MethodInspectorTestMethodGenericInfo(
+                    methodName: "StaticMethodWithGenericAndValueTypeArgsAndGenericReturnType",
+                    methodArgs: new object[] { 1, genericArg },
+                    genericTypes: new[] { typeof(MethodParameterClass) },
+                    invocation: (invocation) =>
+                    {
+                        Assert.That((int)invocation.ParameterValues[0] == 1);
+                        Assert.That((MethodParameterClass)invocation.ParameterValues[1] == @genericArg);
+                    },
+                    assertion: (result) =>
+                    {
+                        Assert.That((MethodParameterClass)result == @genericArg);
+                    });
+
+            InterceptedAssembly.AssertResultsFor(info);
         }
     }
 }
