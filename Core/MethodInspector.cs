@@ -8,6 +8,12 @@ using Mono.Cecil.Cil;
 
 namespace CryoAOP.Core
 {
+    public enum MethodInterceptionScope
+    {
+        Deep,
+        Shallow
+    }
+
     public class MethodInspector
     {
         public readonly MethodDefinition Definition;
@@ -22,7 +28,7 @@ namespace CryoAOP.Core
             TypeInspector = typeInspector;
             cloneFactory = new MethodCloneFactory();
             stringAliasFactory = new StringAliasFactory();
-            importerFactory = new AssemblyImporterFactory(TypeInspector.AssemblyInspector.Definition);
+            importerFactory = new AssemblyImporterFactory(this);
         }
 
         public void Write(string assemblyPath)
@@ -30,11 +36,11 @@ namespace CryoAOP.Core
             TypeInspector.AssemblyInspector.Write(assemblyPath);
         }
 
-        public void InterceptMethod()
+        public void InterceptMethod(MethodInterceptionScope interceptionScope = MethodInterceptionScope.Shallow)
         {
             var renamedMethod = Definition;
             var interceptorMethod = cloneFactory.Clone(Definition);
-            renamedMethod.Name = stringAliasFactory.GenerateIdentityName(Definition.Name); ;
+            renamedMethod.Name = stringAliasFactory.GenerateIdentityName(Definition.Name);
 
             // Insert interceptor code
 
@@ -66,6 +72,9 @@ namespace CryoAOP.Core
 
             // Interceptor: Get IL Processor
             var il = interceptorMethod.Body.GetILProcessor();
+
+            // Interceptor: Insert interceptor marker
+            CreateInterceptMarker(interceptorMethod);
 
             // Interceptor: Resolve type from handle uses V_0
             il.Append(new[]
@@ -239,10 +248,54 @@ namespace CryoAOP.Core
                                       il.Create(OpCodes.Callvirt, importerFactory.Import(typeof (MethodInvocation), "get_Result")),
                                   });
                 }
-
             }
 
+            // Interceptor: Return
             il.Append(il.Create(OpCodes.Ret));
+
+            // If deep intercept, replace internals with call to renamed method
+            if (interceptionScope == MethodInterceptionScope.Deep)
+            {
+                foreach (var module in TypeInspector.AssemblyInspector.Definition.Modules)
+                {
+                    foreach (var type in module.Types.ToList())
+                    {
+                        foreach (var method in type.Methods.ToList())
+                        {
+                            if (HasInterceptMarker(method)) continue;
+
+                            foreach (var instruction in method.Body.Instructions.ToList())
+                            {
+                                if (instruction.OpCode == OpCodes.Call && instruction.Operand == renamedMethod)
+                                {
+                                    var processor = method.Body.GetILProcessor();
+                                    processor.InsertAfter(instruction, il.Create(OpCodes.Call, interceptorMethod));
+                                    processor.Remove(instruction);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private static bool HasInterceptMarker(MethodDefinition method)
+        {
+            var interceptMarker = method.Body.Instructions.ToList().Take(2).ToArray();
+            var firstInstruction = interceptMarker.First();
+            return 
+                firstInstruction.OpCode == OpCodes.Ldstr 
+                && (firstInstruction.Operand as string) == "CryoAOP -> Intercept";
+        }
+
+        private static void CreateInterceptMarker(MethodDefinition method)
+        {
+            var il = method.Body.GetILProcessor();
+            il.Append(new[]
+                          {
+                              il.Create(OpCodes.Ldstr, "CryoAOP -> Intercept"),
+                              il.Create(OpCodes.Pop)
+                          });
         }
 
         public override string ToString()

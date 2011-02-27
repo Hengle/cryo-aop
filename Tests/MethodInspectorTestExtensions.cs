@@ -9,15 +9,25 @@ namespace CryoAOP.Tests
 {
     public static class MethodInspectorTestExtensions
     {
-        public static MethodInfo GetNonGenericMethodInfo(this Assembly assembly, string nonGenericMethodName)
+        public static MethodInfo GetNonGenericMethodInfo<T>(this Assembly assembly, string nonGenericMethodName)
         {
-            var interceptedType = assembly.FindType(typeof (TypeThatShouldBeIntercepted).FullName);
+            return assembly.GetNonGenericMethodInfo(typeof (T), nonGenericMethodName);
+        }
+
+        public static MethodInfo GetNonGenericMethodInfo(this Assembly assembly, Type type, string nonGenericMethodName)
+        {
+            var interceptedType = assembly.FindType(type.FullName);
             return interceptedType.GetMethod(nonGenericMethodName);
         }
 
-        public static MethodInfo GetGenericMethodInfo(this Assembly assembly, string nonGenericMethodName, params Type[] genericTypeParameter)
+        public static MethodInfo GetGenericMethodInfo<T>(this Assembly assembly, string nonGenericMethodName, params Type[] genericTypeParameter)
         {
-            var interceptedType = assembly.FindType(typeof (TypeThatShouldBeIntercepted).FullName);
+            return assembly.GetGenericMethodInfo(typeof (T), nonGenericMethodName, genericTypeParameter);
+        }
+
+        public static MethodInfo GetGenericMethodInfo(this Assembly assembly, Type type, string nonGenericMethodName, params Type[] genericTypeParameter)
+        {
+            var interceptedType = assembly.FindType(type.FullName);
             var genericMethodInfo = interceptedType.GetMethod(nonGenericMethodName);
             return genericMethodInfo.MakeGenericMethod(genericTypeParameter);
         }
@@ -30,10 +40,10 @@ namespace CryoAOP.Tests
             if (info is MethodInspectorTestMethodGenericInfo)
             {
                 var genericInfo = ((MethodInspectorTestMethodGenericInfo) info);
-                methodInfo = assembly.GetGenericMethodInfo(genericInfo.MethodName, genericInfo.GenericTypes);
+                methodInfo = assembly.GetGenericMethodInfo(genericInfo.Type, genericInfo.MethodName, genericInfo.GenericTypes);
             }
-            else 
-                methodInfo = assembly.GetNonGenericMethodInfo(info.MethodName);
+            else
+                methodInfo = assembly.GetNonGenericMethodInfo(info.Type, info.MethodName);
 
             GlobalInterceptor.MethodIntercepter +=
                 (i) =>

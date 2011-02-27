@@ -19,7 +19,7 @@ namespace CryoAOP.Tests
         {
             TestAssembly = "CryoAOP.TestAssembly.dll";
             AssemblyInspector = new AssemblyInspector(TestAssembly);
-            typeThatShouldBeIntercepted = typeof(TypeThatShouldBeIntercepted);
+            typeThatShouldBeIntercepted = typeof(TestMethodInterceptorType);
             TypeInspector = AssemblyInspector.FindType(typeThatShouldBeIntercepted);
         }
 

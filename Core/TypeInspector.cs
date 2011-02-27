@@ -18,13 +18,13 @@ namespace CryoAOP.Core
             Definition = definition;
         }
 
-        public virtual void InterceptAllMethods()
+        public virtual void InterceptAllMethods(MethodInterceptionScope interceptionScope = MethodInterceptionScope.Shallow)
         {
             foreach (var method in Definition.Methods.ToList())
             {
                 var methodInspector = FindMethod(method.Name);
                 if (!methodInspector.Definition.IsConstructor)
-                    methodInspector.InterceptMethod();
+                    methodInspector.InterceptMethod(interceptionScope);
             }
         }
 

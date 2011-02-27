@@ -42,7 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ILExample.cs" />
-    <Compile Include="TypeThatShouldBeIntercepted.cs" />
+    <Compile Include="TestMethodInterceptorTypeDeepScope.cs" />
+    <Compile Include="TestMethodInterceptorType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

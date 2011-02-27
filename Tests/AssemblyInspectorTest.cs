@@ -27,7 +27,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_find_type_that_should_be_intercepted_in_test_assembly()
         {
-            var typeToFind = typeof(TypeThatShouldBeIntercepted);
+            var typeToFind = typeof(TestMethodInterceptorType);
             var typeDefinition = AssemblyInspector.FindType(typeToFind);
 
             Assert.That(typeDefinition, Is.Not.Null);

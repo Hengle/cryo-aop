@@ -4,11 +4,11 @@ using CryoAOP.Core.Extensions;
 
 namespace CryoAOP.TestAssembly
 {
-    public class TypeThatShouldBeIntercepted
+    public class TestMethodInterceptorType
     {
         public void HavingMethodWithNoArgsAndNoReturnType()
         {
-            var methodInvocation = new MethodInvocation(typeof (TypeThatShouldBeIntercepted), null, null);
+            var methodInvocation = new MethodInvocation(typeof (TestMethodInterceptorType), null, null);
             methodInvocation.CancelInvocation();
 
             if (methodInvocation.CanInvoke)
@@ -32,7 +32,7 @@ namespace CryoAOP.TestAssembly
 
         public void HavingMethodWithClassArgsAndNoReturnType(MethodParameterClass arg1)
         {
-            GlobalInterceptor.HandleInvocation(new MethodInvocation(typeof (TypeThatShouldBeIntercepted), null, null));
+            GlobalInterceptor.HandleInvocation(new MethodInvocation(typeof (TestMethodInterceptorType), null, null));
         }
 
         public MethodParameterClass HavingMethodWithClassArgsAndClassReturnType(MethodParameterClass arg1)
@@ -65,7 +65,6 @@ namespace CryoAOP.TestAssembly
 
         public void GenericMethodWithInvertedParams<T>(int i, T t)
         {
-
         }
 
         public int GenericMethodWithInvertedParamsAndValueReturnType<T>(int i, T t)
@@ -79,17 +78,14 @@ namespace CryoAOP.TestAssembly
 
         public static void StaticMethodWithNoArgsAndNoReturnType()
         {
-            
         }
 
         public static void StaticMethodWithArgsAndNoReturnType(int i)
         {
-            
         }
 
         public static void StaticMethodWithGenericAndValueTypeArgsAndNoReturnType<T>(int i, T t)
         {
-
         }
 
         public static int StaticMethodWithGenericAndValueTypeArgsAndValueReturnType<T>(int i, T t)

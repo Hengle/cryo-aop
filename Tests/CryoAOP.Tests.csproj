@@ -51,12 +51,13 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="MethodInspectorTestMethodGenericInfo.cs" />
     <Compile Include="MethodInspectorTestBase.cs" />
+    <Compile Include="MethodInspectorTestMethodGenericInfo.cs" />
+    <Compile Include="MethodInspectorTest.cs" />
     <Compile Include="MethodInspectorTestExtensions.cs" />
     <Compile Include="MethodInspectorTestMethodInfo.cs" />
     <Compile Include="PanicStationTest.cs" />
-    <Compile Include="MethodInspectorTest.cs" />
+    <Compile Include="MethodInspectorTestDeepScope.cs" />
     <Compile Include="Extensions\StringExtensionsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AssemblyInspectorTest.cs" />

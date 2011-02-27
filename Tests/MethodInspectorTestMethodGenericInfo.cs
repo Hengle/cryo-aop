@@ -7,8 +7,8 @@ namespace CryoAOP.Tests
     {
         private readonly Type[] genericTypes;
 
-        public MethodInspectorTestMethodGenericInfo(string methodName, Type[] genericTypes, object[] methodArgs = null, Action<MethodInvocation> invocation = null, Action<object> assertion = null)
-            : base(methodName, methodArgs, invocation, assertion)
+        public MethodInspectorTestMethodGenericInfo(Type type, string methodName, Type[] genericTypes, object[] methodArgs = null, Action<MethodInvocation> invocation = null, Action<object> assertion = null)
+            : base(type, methodName, methodArgs, invocation, assertion)
         {
             this.genericTypes = genericTypes;
         }

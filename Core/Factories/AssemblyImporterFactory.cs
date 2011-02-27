@@ -13,6 +13,11 @@ namespace CryoAOP.Core.Factories
             this.definition = definition;
         }
 
+        public AssemblyImporterFactory(MethodInspector inspector)
+        {
+            this.definition = inspector.TypeInspector.AssemblyInspector.Definition;
+        }
+
         public virtual MethodReference Import(MethodDefinition method)
         {
             return definition.MainModule.Import(method);
