@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CryoAOP
 {
@@ -24,6 +25,10 @@ namespace CryoAOP
         public List<TypeLine> Types
         {
             get { return types; }
+        }
+        public bool HasTypes
+        {
+            get { return types != null && types.Count > 0; }
         }
 
         public static bool IsAssembly(string line)

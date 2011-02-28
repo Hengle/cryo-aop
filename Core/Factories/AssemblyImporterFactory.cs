@@ -13,9 +13,9 @@ namespace CryoAOP.Core.Factories
             this.definition = definition;
         }
 
-        public AssemblyImporterFactory(MethodInspector inspector)
+        public AssemblyImporterFactory(MethodIntercept intercept)
         {
-            this.definition = inspector.TypeInspector.AssemblyInspector.Definition;
+            this.definition = intercept.TypeIntercept.AssemblyIntercept.Definition;
         }
 
         public virtual MethodReference Import(MethodDefinition method)
@@ -79,7 +79,7 @@ namespace CryoAOP.Core.Factories
 
         public virtual TypeReference Import(Type searchType)
         {
-            var assemblyRef = new AssemblyInspector(searchType.Assembly);
+            var assemblyRef = new AssemblyIntercept(searchType.Assembly);
             TypeDefinition type = null;
             foreach (var currentType in assemblyRef.Definition.MainModule.Types)
             {

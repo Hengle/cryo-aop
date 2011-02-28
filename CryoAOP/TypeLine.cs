@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CryoAOP
 {
@@ -19,6 +20,10 @@ namespace CryoAOP
         public List<MethodLine> Methods
         {
             get { return methods; }
+        }
+        public bool HasMethods
+        {
+            get { return methods != null && methods.Count > 0; }
         }
 
         public static bool IsType(string currentLine)

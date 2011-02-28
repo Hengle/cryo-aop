@@ -45,7 +45,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyInspector.cs" />
+    <Compile Include="AssemblyIntercept.cs" />
     <Compile Include="Exceptions\AssemblyNotFoundException.cs" />
     <Compile Include="Exceptions\MethodNotFoundException.cs" />
     <Compile Include="Exceptions\TypeNotFoundException.cs" />
@@ -60,13 +60,13 @@
     <Compile Include="Factories\StringAliasFactory.cs" />
     <Compile Include="Factories\AssemblyImporterFactory.cs" />
     <Compile Include="Factories\MethodCloneFactory.cs" />
-    <Compile Include="GlobalInterceptor.cs" />
-    <Compile Include="Interception.cs" />
-    <Compile Include="MethodInspector.cs" />
+    <Compile Include="Intercept.Out.cs" />
+    <Compile Include="Intercept.In.cs" />
+    <Compile Include="MethodIntercept.cs" />
     <Compile Include="MethodInvocation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Invocation.cs" />
-    <Compile Include="TypeInspector.cs" />
+    <Compile Include="TypeIntercept.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cecil\Mono.Cecil.csproj">

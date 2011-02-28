@@ -32,7 +32,7 @@ namespace CryoAOP.TestAssembly
 
         public void HavingMethodWithClassArgsAndNoReturnType(MethodParameterClass arg1)
         {
-            GlobalInterceptor.HandleInvocation(new MethodInvocation(typeof (TestMethodInterceptorType), null, null));
+            Intercept.HandleInvocation(new MethodInvocation(typeof (TestMethodInterceptorType), null, null));
         }
 
         public MethodParameterClass HavingMethodWithClassArgsAndClassReturnType(MethodParameterClass arg1)

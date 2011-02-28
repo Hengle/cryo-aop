@@ -33,8 +33,6 @@ namespace CryoAOP
                 return;
             }
 
-            Debugger.Launch();
-
             var currentLineCount = 0;
             var typeLines = new List<TypeLine>();
             var assemblyLines = new List<AssemblyLine>();
@@ -85,12 +83,31 @@ namespace CryoAOP
                 }
             }
 
-            foreach (var type in assemblyLines[0].Types)
+            foreach(var assembly in assemblyLines)
             {
-                foreach (var method in type.Methods)
+                Intercept.LoadAssembly(assembly.InputAssembly);
+
+                if (assembly.HasTypes)
                 {
-                    var s = method.Scope;
+                    foreach(var type in assembly.Types)
+                    {
+                        if (type.HasMethods)
+                        {
+                            foreach (var method in type.Methods)
+                            {
+                                Intercept.InterceptMethod(type.FullTypeName, method.MethodName, method.MethodScope);
+                            }
+                        }
+                        else 
+                            Intercept.InterceptType(type.FullTypeName, type.MethodScope);
+                    }
                 }
+                else
+                {
+                    Intercept.InterceptAll(assembly.MethodScope);
+                }
+
+                Intercept.SaveAssembly(assembly.OutputAssembly);
             }
         }
 

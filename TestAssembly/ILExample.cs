@@ -18,12 +18,12 @@ namespace CryoAOP.TestAssembly
             var method = type.GetMethod("CallToMethod");
             var @params = new object[0];
             var invoke = new MethodInvocation(type, method, @params);
-            GlobalInterceptor.HandleInvocation(invoke);
+            Intercept.HandleInvocation(invoke);
             if (invoke.CanInvoke)
             {
                 Method(i);
                 invoke.ContinueInvocation();
-                GlobalInterceptor.HandleInvocation(invoke);
+                Intercept.HandleInvocation(invoke);
             }
         }
     }
