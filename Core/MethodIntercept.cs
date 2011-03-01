@@ -260,9 +260,16 @@ namespace CryoAOP.Core
                 {
                     foreach (var type in module.Types.ToList())
                     {
+                        if (type.Methods == null || type.Methods.Count == 0) continue;
                         foreach (var method in type.Methods.ToList())
                         {
                             if (HasInterceptMarker(method)) continue;
+                            
+                            if (method == null 
+                                || method.Body == null 
+                                || method.Body.Instructions == null 
+                                || method.Body.Instructions.Count() == 0)
+                                continue;
 
                             foreach (var instruction in method.Body.Instructions.ToList())
                             {
@@ -281,6 +288,9 @@ namespace CryoAOP.Core
 
         private static bool HasInterceptMarker(MethodDefinition method)
         {
+            if (method == null || method.Body == null || method.Body.Instructions.Count <= 2)
+                return false;
+
             var interceptMarker = method.Body.Instructions.ToList().Take(2).ToArray();
             var firstInstruction = interceptMarker.First();
             return 
