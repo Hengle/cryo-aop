@@ -1,12 +1,13 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.Reflection;
 using CryoAOP.Core;
 using NUnit.Framework;
 
 namespace CryoAOP.Tests
 {
-    public class MethodInterceptTestBase
+    public abstract class MethodInterceptTestBase
     {
-        protected static Assembly InterceptedAssembly;
+        protected Assembly InterceptedAssembly;
 
         protected virtual string InputAssembly
         {
@@ -49,7 +50,15 @@ namespace CryoAOP.Tests
                 Intercept.InterceptMethod(InterceptType, DebuggingInterceptorMethod, MethodInterceptionScope);
             
             Intercept.SaveAssembly(OutputAssembly);
-            InterceptedAssembly = Assembly.LoadFrom(OutputAssembly);
+
+            var fileInfo = new FileInfo(OutputAssembly);
+            InterceptedAssembly = Assembly.LoadFile(Path.Combine(fileInfo.Directory.ToString(), fileInfo.Name));
+        }
+
+        [TestFixtureTearDown]
+        public virtual void FixtureTearDown()
+        {
+            InterceptedAssembly = null;
         }
 
         [SetUp]

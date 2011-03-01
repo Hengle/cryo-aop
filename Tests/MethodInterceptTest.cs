@@ -1,4 +1,6 @@
-﻿using CryoAOP.TestAssembly;
+﻿using System;
+using System.Reflection;
+using CryoAOP.TestAssembly;
 using NUnit.Framework;
 
 namespace CryoAOP.Tests

@@ -1,4 +1,5 @@
-﻿using CryoAOP.Core;
+﻿using System.Reflection;
+using CryoAOP.Core;
 using CryoAOP.Core.Extensions;
 using CryoAOP.TestAssembly;
 using NUnit.Framework;
@@ -8,6 +9,11 @@ namespace CryoAOP.Tests
     [TestFixture]
     public class MethodInterceptTestDeepScope : MethodInterceptTestBase
     {
+        protected override string OutputAssembly
+        {
+            get { return "CryoAOP.TestAssembly_Intercepted_Scoped.dll"; }
+        }
+
         protected override string InterceptType
         {
             get { return "CryoAOP.TestAssembly.TestMethodInterceptorTypeDeepScope"; }
