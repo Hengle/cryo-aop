@@ -288,7 +288,10 @@ namespace CryoAOP.Core
 
         private static bool HasInterceptMarker(MethodDefinition method)
         {
-            if (method == null || method.Body == null || method.Body.Instructions.Count <= 2)
+            if (method == null 
+                || method.Body == null 
+                || method.Body.Instructions == null
+                || method.Body.Instructions.Count <= 2)
                 return false;
 
             var interceptMarker = method.Body.Instructions.ToList().Take(2).ToArray();
