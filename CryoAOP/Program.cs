@@ -12,6 +12,8 @@ namespace CryoAOP
     {
         private static void Main(string[] args)
         {
+            //Debugger.Launch();
+
             if (args == null || args.Length == 0)
             {
                 WriteUsage();

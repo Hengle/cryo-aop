@@ -254,6 +254,11 @@ namespace CryoAOP.Core
             il.Append(il.Create(OpCodes.Ret));
 
             // If deep intercept, replace internals with call to renamed method
+            ApplyDeepScope(renamedMethod, interceptorMethod, il, interceptionScope);
+        }
+
+        private void ApplyDeepScope(MethodDefinition renamedMethod, MethodDefinition interceptorMethod, ILProcessor il, MethodInterceptionScope interceptionScope)
+        {
             if (interceptionScope == MethodInterceptionScope.Deep)
             {
                 foreach (var module in TypeIntercept.AssemblyIntercept.Definition.Modules)
