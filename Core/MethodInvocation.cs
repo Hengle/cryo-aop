@@ -9,6 +9,7 @@ namespace CryoAOP.Core
         AfterInvocation
     }
 
+    // TODO: If there is an instance we should really have a property for that
     public class MethodInvocation : Invocation
     {
         private readonly object[] parameterValues;
@@ -38,12 +39,7 @@ namespace CryoAOP.Core
             get { return parameterValues; }
         }
 
-        private object result;
-        public object Result
-        {
-            get { return result; }
-            set { result = value; }
-        }
+        public object Result { get; set; }
 
         public virtual void ContinueInvocation()
         {
