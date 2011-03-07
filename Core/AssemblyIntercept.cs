@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using CryoAOP.Core.Exceptions;
 using CryoAOP.Core.Extensions;
 using Mono.Cecil;
@@ -34,6 +35,9 @@ namespace CryoAOP.Core
                     .ReadAssembly(
                         this.assemblyPath,
                         new ReaderParameters(ReadingMode.Deferred));
+
+                (GlobalAssemblyResolver.Instance as DefaultAssemblyResolver)
+                    .AddSearchDirectory(RuntimeEnvironment.GetRuntimeDirectory());
             }
             catch (Exception err)
             {

@@ -12,6 +12,8 @@ namespace CryoAOP
     {
         private static void Main(string[] args)
         {
+            //Debugger.Launch();
+
             if (args == null || args.Length == 0)
             {
                 WriteUsage();
@@ -43,42 +45,47 @@ namespace CryoAOP
                     currentLineCount++;
                     var currentLine = reader.ReadLine();
 
-                    if (AssemblyLine.IsAssembly(currentLine))
+                    if (currentLine.ToLower().Trim().Equals("break;")) break;
+                    if (currentLine.ToLower().Trim().Equals("return;")) return;
+                    if (!currentLine.ToLower().Trim().StartsWith("//"))
                     {
-                        var assemblyLine = new AssemblyLine(currentLineCount, currentLine);
-                        assemblyLines.Add(assemblyLine);
-                    }
-                    else if (TypeLine.IsType(currentLine))
-                    {
-                        if (assemblyLines.Count == 0)
+                        if (AssemblyLine.IsAssembly(currentLine))
                         {
-                            "Error! Could not find matching assembly tag for type ... ".Error(currentLineCount);
-                            "{0}".Error(currentLineCount, currentLine);
-                            WriteUsage();
-                            return;
+                            var assemblyLine = new AssemblyLine(currentLineCount, currentLine);
+                            assemblyLines.Add(assemblyLine);
                         }
-
-                        var typeLine = new TypeLine(currentLineCount, currentLine);
-                        assemblyLines.Last().Types.Add(typeLine);
-                        typeLines.Add(typeLine);
-                    }
-                    else if (MethodLine.IsMethod(currentLine))
-                    {
-                        if (assemblyLines.Count == 0 && typeLines.Count == 0)
+                        else if (TypeLine.IsType(currentLine))
                         {
-                            "Error! Could not find matching type tag for method ... ".Error(currentLineCount);
-                            "{0}".Error(currentLineCount, currentLine);
-                            WriteUsage();
-                            return;
-                        }
+                            if (assemblyLines.Count == 0)
+                            {
+                                "Error! Could not find matching assembly tag for type ... ".Error(currentLineCount);
+                                "{0}".Error(currentLineCount, currentLine);
+                                WriteUsage();
+                                return;
+                            }
 
-                        var methodLine = new MethodLine(currentLineCount, currentLine);
-                        typeLines.Last().Methods.Add(methodLine);
-                    }
-                    else
-                    {
-                        "Warning! Ignoring line because entry appears to be invalid ... ".Error(currentLineCount);
-                        "{0}".FormatWith(currentLineCount, currentLine);
+                            var typeLine = new TypeLine(currentLineCount, currentLine);
+                            assemblyLines.Last().Types.Add(typeLine);
+                            typeLines.Add(typeLine);
+                        }
+                        else if (MethodLine.IsMethod(currentLine))
+                        {
+                            if (assemblyLines.Count == 0 && typeLines.Count == 0)
+                            {
+                                "Error! Could not find matching type tag for method ... ".Error(currentLineCount);
+                                "{0}".Error(currentLineCount, currentLine);
+                                WriteUsage();
+                                return;
+                            }
+
+                            var methodLine = new MethodLine(currentLineCount, currentLine);
+                            typeLines.Last().Methods.Add(methodLine);
+                        }
+                        else
+                        {
+                            "Warning! Ignoring line because entry appears to be invalid ... ".Error(currentLineCount);
+                            "{0}".FormatWith(currentLineCount, currentLine);
+                        }
                     }
                 }
             }

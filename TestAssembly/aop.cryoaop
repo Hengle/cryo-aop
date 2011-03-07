@@ -1,0 +1,4 @@
+Assembly: .\CryoAOP.TestAssembly.dll
+	Type: CryoAOP.TestAssembly.TestMethodInterceptorType
+		Method<deep>: HavingMethodWithNoArgsAndNoReturnType
+		Method<shallow>: HavingMethodWithNoArgsAndInt32ReturnType

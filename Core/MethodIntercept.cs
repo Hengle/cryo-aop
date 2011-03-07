@@ -125,7 +125,35 @@ namespace CryoAOP.Core
 
             // Inteceptor: Initialise Method Invocation
             var methodInvocationTypRef = importerFactory.Import(typeof (MethodInvocation));
-            var methodInvocationConstructor = methodInvocationTypRef.Resolve().Methods.Where(m => m.IsConstructor).First();
+
+            var methodInvocationConstructors =
+                methodInvocationTypRef
+                    .Resolve()
+                    .Methods
+                    .Where(m => m.IsConstructor)
+                    .ToList();
+
+            // Interceptor: Get instance or static based constructor
+            MethodDefinition methodInvocationConstructor;
+            if (renamedMethod.IsStatic)
+            {
+                // If static
+                methodInvocationConstructor =
+                    methodInvocationConstructors
+                        .Where(c => c.Parameters[0].ParameterType.Name.ToLower().IndexOf("type") != -1)
+                        .First();
+            }
+            else
+            {
+                // If instance
+                methodInvocationConstructor =
+                    methodInvocationConstructors
+                        .Where(c => c.Parameters[0].ParameterType.Name.ToLower().IndexOf("object") != -1)
+                        .First();
+
+                // Load 'this'
+                il.Append(il.Create(OpCodes.Ldarg_0));
+            }
 
             il.Append(new[]
                           {
@@ -254,15 +282,27 @@ namespace CryoAOP.Core
             il.Append(il.Create(OpCodes.Ret));
 
             // If deep intercept, replace internals with call to renamed method
+            ApplyDeepScope(renamedMethod, interceptorMethod, il, interceptionScope);
+        }
+
+        private void ApplyDeepScope(MethodDefinition renamedMethod, MethodDefinition interceptorMethod, ILProcessor il, MethodInterceptionScope interceptionScope)
+        {
             if (interceptionScope == MethodInterceptionScope.Deep)
             {
                 foreach (var module in TypeIntercept.AssemblyIntercept.Definition.Modules)
                 {
                     foreach (var type in module.Types.ToList())
                     {
+                        if (type.Methods == null || type.Methods.Count == 0) continue;
                         foreach (var method in type.Methods.ToList())
                         {
                             if (HasInterceptMarker(method)) continue;
+                            
+                            if (method == null 
+                                || method.Body == null 
+                                || method.Body.Instructions == null 
+                                || method.Body.Instructions.Count() == 0)
+                                continue;
 
                             foreach (var instruction in method.Body.Instructions.ToList())
                             {
@@ -281,7 +321,12 @@ namespace CryoAOP.Core
 
         private static bool HasInterceptMarker(MethodDefinition method)
         {
-            if (method.Body.Instructions.ToList().Count < 2) return false;
+            if (method == null 
+                || method.Body == null 
+                || method.Body.Instructions == null
+                || method.Body.Instructions.Count <= 2)
+                return false;
+
             var interceptMarker = method.Body.Instructions.ToList().Take(2).ToArray();
             var firstInstruction = interceptMarker.First();
             return 

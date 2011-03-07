@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using CryoAOP.Core.Extensions;
 
 namespace CryoAOP.Core
 {
@@ -22,7 +23,13 @@ namespace CryoAOP.Core
             InvocationType = MethodInvocationType.BeforeInvocation;
         }
 
+        public MethodInvocation(object instance, Type type, MethodInfo method, params object[] parameterValues) : this (type, method, parameterValues)
+        {
+            Instance = instance;
+        }
+
         public Type Type { private set; get; }
+        public object Instance { private set; get; }
         public bool CanInvoke { private set; get; }
         public MethodInfo Method { private set; get; }
         public bool InvocationCancelled { private set; get; }
@@ -59,7 +66,7 @@ namespace CryoAOP.Core
 
         public override string ToString()
         {
-            return string.Format("InvocationType: {4}, Type: {2}, Method: {3}, CanInvoke: {5}, ParameterValues: {1}, Result: {0}", Result, string.Join(",", parameterValues), Type, Method, InvocationType, CanInvoke);
+            return string.Format("InvocationType: {4}, Type: {2}, Method: {3}, CanInvoke: {5}, ParameterValues: {1}, Result: {0}", Result, parameterValues.JoinWith(","), Type, Method, InvocationType, CanInvoke);
         }
     }
 }
