@@ -328,8 +328,8 @@ Global
 		{D68133BD-1E63-496E-9EDE-4FBDBF77B486}.Debug x64|x86.Build.0 = net_4_0_Debug|Any CPU
 		{D68133BD-1E63-496E-9EDE-4FBDBF77B486}.Debug x86|Any CPU.ActiveCfg = winphone_Release|Any CPU
 		{D68133BD-1E63-496E-9EDE-4FBDBF77B486}.Debug x86|Any CPU.Build.0 = winphone_Release|Any CPU
-		{D68133BD-1E63-496E-9EDE-4FBDBF77B486}.Debug x86|Mixed Platforms.ActiveCfg = winphone_Release|Any CPU
-		{D68133BD-1E63-496E-9EDE-4FBDBF77B486}.Debug x86|Mixed Platforms.Build.0 = winphone_Release|Any CPU
+		{D68133BD-1E63-496E-9EDE-4FBDBF77B486}.Debug x86|Mixed Platforms.ActiveCfg = net_3_5_Debug|Any CPU
+		{D68133BD-1E63-496E-9EDE-4FBDBF77B486}.Debug x86|Mixed Platforms.Build.0 = net_3_5_Debug|Any CPU
 		{D68133BD-1E63-496E-9EDE-4FBDBF77B486}.Debug x86|x86.ActiveCfg = net_4_0_Debug|Any CPU
 		{D68133BD-1E63-496E-9EDE-4FBDBF77B486}.Debug x86|x86.Build.0 = net_4_0_Debug|Any CPU
 		{D68133BD-1E63-496E-9EDE-4FBDBF77B486}.net_2_0_Debug|Any CPU.ActiveCfg = net_2_0_Debug|Any CPU

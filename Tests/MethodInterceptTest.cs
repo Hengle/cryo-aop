@@ -9,6 +9,27 @@ namespace CryoAOP.Tests
     public class MethodInterceptTest : MethodInterceptTestBase
     {
         [Test]
+        public void Should_have_instance_when_calling_instance_method()
+        {
+            if (IsDebugging) return;
+
+            var info =
+                new MethodInterceptTestMethodGenericInfo(
+                    type: typeof(TestMethodInterceptorType),
+                    methodName: "GenericMethodWithInvertedParams",
+                    genericTypes: new[] { typeof(MethodParameterClass) },
+                    methodArgs: new object[] { 1, new MethodParameterClass() },
+                    invocation: (invocation) =>
+                    {
+                        Assert.That(invocation.Instance, Is.Not.Null);
+                    },
+                    assertion: (result) => { });
+
+
+            InterceptedAssembly.AssertResultsFor(info);
+        }
+
+        [Test]
         public void Should_call_generic_method_where_value_type_is_first_parameter()
         {
             if (IsDebugging) return;

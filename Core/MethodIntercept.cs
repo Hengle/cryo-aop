@@ -125,7 +125,35 @@ namespace CryoAOP.Core
 
             // Inteceptor: Initialise Method Invocation
             var methodInvocationTypRef = importerFactory.Import(typeof (MethodInvocation));
-            var methodInvocationConstructor = methodInvocationTypRef.Resolve().Methods.Where(m => m.IsConstructor).First();
+
+            var methodInvocationConstructors =
+                methodInvocationTypRef
+                    .Resolve()
+                    .Methods
+                    .Where(m => m.IsConstructor)
+                    .ToList();
+
+            // Interceptor: Get instance or static based constructor
+            MethodDefinition methodInvocationConstructor;
+            if (renamedMethod.IsStatic)
+            {
+                // If static
+                methodInvocationConstructor =
+                    methodInvocationConstructors
+                        .Where(c => c.Parameters[0].ParameterType.Name.ToLower().IndexOf("type") != -1)
+                        .First();
+            }
+            else
+            {
+                // If instance
+                methodInvocationConstructor =
+                    methodInvocationConstructors
+                        .Where(c => c.Parameters[0].ParameterType.Name.ToLower().IndexOf("object") != -1)
+                        .First();
+
+                // Load 'this'
+                il.Append(il.Create(OpCodes.Ldarg_0));
+            }
 
             il.Append(new[]
                           {

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CryoAOP.Core.Extensions
 {
@@ -8,6 +10,11 @@ namespace CryoAOP.Core.Extensions
         {
             if (args == null || args.Length == 0) throw new ArgumentNullException("args");
             return string.Format(s, args);
+        }
+
+        public static string JoinWith<T>(this IEnumerable<T> items, string delimeter)
+        {
+            return string.Join(delimeter, items.Cast<string>().ToArray());
         }
     }
 }
