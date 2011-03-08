@@ -111,6 +111,8 @@ namespace CryoAOP
 
                 Intercept.SaveAssembly(assembly.OutputAssembly);
             }
+
+            Console.WriteLine("Finished!");
         }
 
         private static void WriteUsage()
