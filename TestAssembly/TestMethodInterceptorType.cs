@@ -8,11 +8,6 @@ namespace CryoAOP.TestAssembly
     {
         public void HavingMethodWithNoArgsAndNoReturnType()
         {
-            var methodInvocation = new MethodInvocation(typeof (TestMethodInterceptorType), null, null);
-            methodInvocation.CancelInvocation();
-
-            if (methodInvocation.CanInvoke)
-                HavingMethodWithNoArgsAndInt32ReturnType();
         }
 
         public int HavingMethodWithNoArgsAndInt32ReturnType()

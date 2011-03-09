@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using CryoAOP.Core.Exceptions;
 using CryoAOP.Core.Extensions;
 using Mono.Cecil;
+using Mono.Cecil.Pdb;
 
 namespace CryoAOP.Core
 {
@@ -69,7 +70,10 @@ namespace CryoAOP.Core
 
         public virtual void Write(string path)
         {
-            Definition.Write(path);
+            var @params = new WriterParameters();
+            @params.WriteSymbols = true;
+            @params.SymbolWriterProvider = new PdbWriterProvider();
+            Definition.Write(path, @params);
         }
 
         public override string ToString()

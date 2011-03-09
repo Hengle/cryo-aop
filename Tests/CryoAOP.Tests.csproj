@@ -215,6 +215,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="MethodInterceptTestBase.cs" />
+    <Compile Include="MethodInterceptTestDebugging.cs" />
     <Compile Include="MethodInterceptTestMethodGenericInfo.cs" />
     <Compile Include="MethodInterceptTest.cs" />
     <Compile Include="MethodInterceptTestExtensions.cs" />
