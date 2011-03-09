@@ -207,6 +207,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyIntercept.cs" />
+    <Compile Include="AssemblyInterceptParams.cs" />
     <Compile Include="Exceptions\AssemblyNotFoundException.cs" />
     <Compile Include="Exceptions\MethodNotFoundException.cs" />
     <Compile Include="Exceptions\TypeNotFoundException.cs" />

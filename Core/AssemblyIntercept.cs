@@ -5,25 +5,30 @@ using System.Runtime.InteropServices;
 using CryoAOP.Core.Exceptions;
 using CryoAOP.Core.Extensions;
 using Mono.Cecil;
-using Mono.Cecil.Pdb;
 
 namespace CryoAOP.Core
 {
-    public class AssemblyIntercept
+    internal class AssemblyIntercept
     {
         public readonly AssemblyDefinition Definition;
         private readonly string assemblyPath = "";
+
 
         public AssemblyIntercept(Assembly assembly)
             : this(assembly
                        .CodeBase
                        .Replace("file:///", "")
-                       .Replace("/", @"\"))
+                       .Replace("/", @"\"),
+                   AssemblyInterceptParams
+                       .DeferredLoad)
         {
         }
 
-        public AssemblyIntercept(string assemblyPath)
+        public AssemblyIntercept(string assemblyPath, ReaderParameters @params = null)
         {
+            if (@params == null)
+                @params = AssemblyInterceptParams.ReadSymbols;
+
             if (assemblyPath == null) throw new ArgumentNullException("assemblyPath");
             this.assemblyPath =
                 !assemblyPath.ToLower().EndsWith(".dll")
@@ -32,13 +37,17 @@ namespace CryoAOP.Core
 
             try
             {
-                Definition = AssemblyDefinition
-                    .ReadAssembly(
-                        this.assemblyPath,
-                        new ReaderParameters(ReadingMode.Deferred));
+                Definition =
+                    AssemblyDefinition
+                        .ReadAssembly(
+                            this.assemblyPath,
+                            @params);
 
-                (GlobalAssemblyResolver.Instance as DefaultAssemblyResolver)
-                    .AddSearchDirectory(RuntimeEnvironment.GetRuntimeDirectory());
+                AssemblyInterceptParams
+                    .AssemblyResolver
+                    .AddSearchDirectory(
+                        RuntimeEnvironment
+                            .GetRuntimeDirectory());
             }
             catch (Exception err)
             {
@@ -70,10 +79,7 @@ namespace CryoAOP.Core
 
         public virtual void Write(string path)
         {
-            var @params = new WriterParameters();
-            @params.WriteSymbols = true;
-            @params.SymbolWriterProvider = new PdbWriterProvider();
-            Definition.Write(path, @params);
+            Definition.Write(path, AssemblyInterceptParams.WriterParameters);
         }
 
         public override string ToString()

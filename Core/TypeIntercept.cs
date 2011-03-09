@@ -7,7 +7,7 @@ using Mono.Cecil;
 
 namespace CryoAOP.Core
 {
-    public class TypeIntercept
+    internal class TypeIntercept
     {
         public readonly TypeDefinition Definition;
         public readonly AssemblyIntercept AssemblyIntercept;

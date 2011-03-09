@@ -14,7 +14,7 @@ namespace CryoAOP.Core
         Shallow
     }
 
-    public class MethodIntercept
+    internal class MethodIntercept
     {
         public readonly MethodDefinition Definition;
         public readonly TypeIntercept TypeIntercept;

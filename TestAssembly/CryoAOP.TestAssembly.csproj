@@ -268,8 +268,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ILExample.cs" />
-    <Compile Include="TestMethodInterceptorTypeDeepScope.cs" />
     <Compile Include="TestMethodInterceptorType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

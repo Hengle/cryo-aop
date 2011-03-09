@@ -1,4 +1,22 @@
-Assembly: .\CryoAOP.TestAssembly.dll
-	Type: CryoAOP.TestAssembly.TestMethodInterceptorType
-		Method<deep>: HavingMethodWithNoArgsAndNoReturnType
+Assembly<shallow>: .\CryoAOP.TestAssembly.dll
+	Type<shallow>: CryoAOP.TestAssembly.TestMethodInterceptorType
+		Method<shallow>: HavingMethodWithNoArgsAndNoReturnType
 		Method<shallow>: HavingMethodWithNoArgsAndInt32ReturnType
+		Method<shallow>: HavingMethodWithArgsAndNoReturnType
+		Method<shallow>: HavingMethodWithArgsAndStringReturnType
+		Method<shallow>: HavingMethodWithClassArgsAndNoReturnType
+		Method<shallow>: HavingMethodWithClassArgsAndClassReturnType
+		Method<shallow>: GenericMethod
+		Method<shallow>: GenericMethodWithGenericParameters
+		Method<shallow>: GenericMethodWithGenericParametersAndGenericReturnType
+		Method<shallow>: GenericMethodWithGenericParametersAndValueTypeArgs
+		Method<shallow>: GenericMethodWithGenericParamsAndValueReturnType
+		Method<shallow>: GenericMethodWithInvertedParams
+		Method<shallow>: GenericMethodWithInvertedParamsAndValueReturnType
+		Method<shallow>: GenericMethodWithTwoGenericParameters
+		Method<shallow>: StaticMethodWithNoArgsAndNoReturnType
+		Method<shallow>: StaticMethodWithArgsAndNoReturnType
+		Method<shallow>: StaticMethodWithGenericAndValueTypeArgsAndNoReturnType
+		Method<shallow>: StaticMethodWithGenericAndValueTypeArgsAndValueReturnType
+		Method<shallow>: StaticMethodWithGenericAndValueTypeArgsAndGenericReturnType
+		Method<deep>: InterceptMethod

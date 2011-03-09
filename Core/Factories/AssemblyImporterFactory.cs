@@ -4,7 +4,7 @@ using Mono.Cecil;
 
 namespace CryoAOP.Core.Factories
 {
-    public class AssemblyImporterFactory
+    internal class AssemblyImporterFactory
     {
         private readonly AssemblyDefinition definition;
 

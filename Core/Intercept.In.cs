@@ -2,7 +2,7 @@ namespace CryoAOP.Core
 {
     public partial class Intercept
     {
-        public static AssemblyIntercept Assembly;
+        internal static AssemblyIntercept Assembly;
 
         public static void LoadAssembly(string assemblyPath)
         {

@@ -27,12 +27,11 @@ namespace CryoAOP.TestAssembly
 
         public void HavingMethodWithClassArgsAndNoReturnType(MethodParameterClass arg1)
         {
-            Intercept.HandleInvocation(new MethodInvocation(typeof (TestMethodInterceptorType), null, null));
         }
 
         public MethodParameterClass HavingMethodWithClassArgsAndClassReturnType(MethodParameterClass arg1)
         {
-            return new MethodParameterClass();
+            return arg1;
         }
 
         public void GenericMethod<T>()
@@ -54,7 +53,6 @@ namespace CryoAOP.TestAssembly
 
         public double GenericMethodWithGenericParamsAndValueReturnType<T>(T t, int i, double j)
         {
-            Console.WriteLine("GenericMethodWithGenericParamsAndValueReturnType(t={0},i={1},j={2})".FormatWith(t, i, j));
             return j;
         }
 
@@ -93,6 +91,14 @@ namespace CryoAOP.TestAssembly
             return t;
         }
 
+        public void InterceptMethod()
+        {
+        }
+
+        public void CallToIntercept()
+        {
+            InterceptMethod();
+        }
     }
 
     public class MethodParameterClass

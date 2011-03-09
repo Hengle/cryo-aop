@@ -103,21 +103,25 @@ namespace CryoAOP
                             foreach (var method in type.Methods)
                             {
                                 Intercept.InterceptMethod(type.FullTypeName, method.MethodName, method.MethodScope);
+                                Console.WriteLine("CryoAOP -> Intercepted {0}\\{1}\\{2}".FormatWith(assembly.InputAssembly, type.FullTypeName, method.MethodName));
                             }
                         }
-                        else 
+                        else
+                        {
                             Intercept.InterceptType(type.FullTypeName, type.MethodScope);
+                            Console.WriteLine("CryoAOP -> Intercepted {0}\\{1}\\*".FormatWith(assembly.InputAssembly, type.FullTypeName));
+                        }
                     }
                 }
                 else
                 {
                     Intercept.InterceptAll(assembly.MethodScope);
+                    Console.WriteLine("CryoAOP -> Intercepted {0}\\*\\*".FormatWith(assembly.InputAssembly));
                 }
 
                 Intercept.SaveAssembly(assembly.OutputAssembly);
             }
-
-            Console.WriteLine("Finished!");
+            Console.WriteLine("CryoAOP -> Finished!");
         }
 
         private static void WriteUsage()

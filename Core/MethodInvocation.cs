@@ -10,7 +10,6 @@ namespace CryoAOP.Core
         AfterInvocation
     }
 
-    // TODO: If there is an instance we should really have a property for that
     public class MethodInvocation : Invocation
     {
         private readonly object[] parameterValues;

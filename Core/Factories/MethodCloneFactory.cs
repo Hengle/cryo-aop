@@ -4,7 +4,7 @@ using Mono.Cecil;
 
 namespace CryoAOP.Core.Factories
 {
-    public class MethodCloneFactory
+    internal class MethodCloneFactory
     {
         public MethodDefinition Clone(MethodDefinition sourceMethod)
         {

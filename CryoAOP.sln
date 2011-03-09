@@ -14,6 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{7E4A66
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryoAOP.TestAssembly", "TestAssembly\CryoAOP.TestAssembly.csproj", "{0E534898-AA45-405E-9411-9D302F1E4278}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A9C22D19-786A-4C99-BFB6-715F710FA3A9} = {A9C22D19-786A-4C99-BFB6-715F710FA3A9}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryoAOP", "CryoAOP\CryoAOP.csproj", "{A9C22D19-786A-4C99-BFB6-715F710FA3A9}"
 EndProject
