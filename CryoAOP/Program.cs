@@ -13,7 +13,7 @@ namespace CryoAOP
     {
         private static void Main(string[] args)
         {
-            Debugger.Launch();
+            //Debugger.Launch();
             Console.WriteLine("CryoAOP -> Starting up!");
             if (args == null || args.Length == 0)
             {

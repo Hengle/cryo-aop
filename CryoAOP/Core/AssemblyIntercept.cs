@@ -30,10 +30,7 @@ namespace CryoAOP.Core
                 @params = AssemblyInterceptParams.ReadSymbols;
 
             if (assemblyPath == null) throw new ArgumentNullException("assemblyPath");
-            this.assemblyPath =
-                !assemblyPath.ToLower().EndsWith(".dll")
-                    ? "{0}.dll".FormatWith(assemblyPath)
-                    : assemblyPath;
+            this.assemblyPath = assemblyPath;
 
             try
             {
