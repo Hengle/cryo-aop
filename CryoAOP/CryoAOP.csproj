@@ -82,8 +82,7 @@
   <PropertyGroup>
     <PostBuildEvent>copy .\*.exe "..\..\..\bin\$(ConfigurationName)\"
 copy .\*.dll "..\..\..\bin\$(ConfigurationName)\"
-copy .\*.pdb "..\..\..\bin\$(ConfigurationName)\"
-del "..\..\..\bin\$(ConfigurationName)\CryoAOP.vshost.exe"</PostBuildEvent>
+copy .\*.pdb "..\..\..\bin\$(ConfigurationName)\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
