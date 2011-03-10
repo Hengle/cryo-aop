@@ -26,7 +26,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'net_3_5_Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\net_3_5_Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisLogFile>bin\Debug\CryoAOP.Tests.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
@@ -57,17 +57,14 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="MethodInterceptTest.cs" />
+    <Compile Include="MethodInterceptorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyInterceptorTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\cecil\Mono.Cecil.csproj">
-      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
-      <Name>Mono.Cecil</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Core\CryoAOP.Core.csproj">
-      <Project>{A9F21F60-C68B-4C35-8260-A0BCC07634F0}</Project>
-      <Name>CryoAOP.Core</Name>
+    <ProjectReference Include="..\CryoAOP\CryoAOP.csproj">
+      <Project>{A9C22D19-786A-4C99-BFB6-715F710FA3A9}</Project>
+      <Name>CryoAOP</Name>
     </ProjectReference>
     <ProjectReference Include="..\TestAssembly\CryoAOP.TestAssembly.csproj">
       <Project>{0E534898-AA45-405E-9411-9D302F1E4278}</Project>

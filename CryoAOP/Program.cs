@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using CryoAOP.Core;
 using CryoAOP.Core.Extensions;
+using CryoAOP.Exec;
 
 namespace CryoAOP
 {
@@ -12,8 +13,8 @@ namespace CryoAOP
     {
         private static void Main(string[] args)
         {
-            //Debugger.Launch();
-
+            Debugger.Launch();
+            Console.WriteLine("CryoAOP -> Starting up!");
             if (args == null || args.Length == 0)
             {
                 WriteUsage();

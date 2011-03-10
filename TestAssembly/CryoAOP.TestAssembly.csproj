@@ -26,7 +26,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'net_3_5_Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\net_3_5_Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisLogFile>bin\Debug\CryoAOP.TestAssembly.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
@@ -51,22 +51,23 @@
   <ItemGroup>
     <Compile Include="MethodInterceptorTarget.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Core\CryoAOP.Core.csproj">
-      <Project>{A9F21F60-C68B-4C35-8260-A0BCC07634F0}</Project>
-      <Name>CryoAOP.Core</Name>
-    </ProjectReference>
+    <Compile Include="PropertyInterceptorTarget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="aop.cryoaop">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CryoAOP\CryoAOP.csproj">
+      <Project>{A9C22D19-786A-4C99-BFB6-715F710FA3A9}</Project>
+      <Name>CryoAOP</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy .\*.dll "..\..\..\bin\$(ConfigurationName)"
-..\..\..\bin\$(ConfigurationName)\CryoAOP /i .\aop.cryoaop</PostBuildEvent>
+..\..\..\bin\$(ConfigurationName)\CryoAOP.exe /i .\aop.cryoaop</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

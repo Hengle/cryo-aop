@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace CryoAOP.Tests
 {
     [TestFixture]
-    public class MethodInterceptTest
+    public class MethodInterceptorTests
     {
         public MethodInterceptorTarget InterceptInstance = new MethodInterceptorTarget();
 

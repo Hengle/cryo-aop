@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CryoAOP</RootNamespace>
     <AssemblyName>CryoAOP</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -22,6 +22,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'net_3_5_Debug|AnyCPU'">
     <OutputPath>bin\net_3_5_Debug\</OutputPath>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -32,22 +33,48 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyLine.cs" />
-    <Compile Include="ConfigLine.cs" />
-    <Compile Include="ErrorExtensions.cs" />
-    <Compile Include="MethodLine.cs" />
+    <Compile Include="Exec\AssemblyLine.cs" />
+    <Compile Include="Exec\ConfigLine.cs" />
+    <Compile Include="Exec\ErrorExtensions.cs" />
+    <Compile Include="Exec\MethodLine.cs" />
+    <Compile Include="Core\AssemblyIntercept.cs" />
+    <Compile Include="Core\AssemblyInterceptParams.cs" />
+    <Compile Include="Core\Exceptions\AssemblyNotFoundException.cs" />
+    <Compile Include="Core\Exceptions\FormattableExceptionBase.cs" />
+    <Compile Include="Core\Exceptions\MethodNotFoundException.cs" />
+    <Compile Include="Core\Exceptions\TypeNotFoundException.cs" />
+    <Compile Include="Core\Exceptions\TypeReferenceNotFoundException.cs" />
+    <Compile Include="Core\Extensions\CryoAOPExtensions.cs" />
+    <Compile Include="Core\Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Core\Extensions\ILProcessorExtensions.cs" />
+    <Compile Include="Core\Extensions\MethodReferenceExtensions.cs" />
+    <Compile Include="Core\Extensions\ReflectionExtensions.cs" />
+    <Compile Include="Core\Extensions\StringExtensions.cs" />
+    <Compile Include="Core\Factories\AssemblyImporterFactory.cs" />
+    <Compile Include="Core\Factories\MethodCloneFactory.cs" />
+    <Compile Include="Core\Factories\StringAliasFactory.cs" />
+    <Compile Include="Core\Intercept.In.cs" />
+    <Compile Include="Core\Intercept.Out.cs" />
+    <Compile Include="Core\Invocation.cs" />
+    <Compile Include="Core\MethodIntercept.cs" />
+    <Compile Include="Core\MethodInvocation.cs" />
+    <Compile Include="Core\TypeIntercept.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TypeLine.cs" />
+    <Compile Include="Exec\TypeLine.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\cecil\Mono.Cecil.csproj">
+      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
+      <Name>Mono.Cecil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\cecil\symbols\pdb\Mono.Cecil.Pdb.csproj">
+      <Project>{63E6915C-7EA4-4D76-AB28-0D7191EEA626}</Project>
+      <Name>Mono.Cecil.Pdb</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Core\CryoAOP.Core.csproj">
-      <Project>{A9F21F60-C68B-4C35-8260-A0BCC07634F0}</Project>
-      <Name>CryoAOP.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
