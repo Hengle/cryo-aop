@@ -7,7 +7,7 @@ namespace CryoAOP.Tests
     [TestFixture]
     public class MethodInterceptTest
     {
-        public TestMethodInterceptorType InterceptInstance = new TestMethodInterceptorType();
+        public MethodInterceptorTarget InterceptInstance = new MethodInterceptorTarget();
 
         [SetUp]
         public void Should_clear_intercepts_between_calls()
@@ -313,7 +313,7 @@ namespace CryoAOP.Tests
                         interceptorWasCalled = true;
                     };
 
-            TestMethodInterceptorType.StaticMethodWithNoArgsAndNoReturnType();
+            MethodInterceptorTarget.StaticMethodWithNoArgsAndNoReturnType();
             Assert.That(interceptorWasCalled);
         }
 
@@ -330,7 +330,7 @@ namespace CryoAOP.Tests
                         Assert.That((int)invocation.ParameterValues[0] == 1);
                     };
 
-            TestMethodInterceptorType.StaticMethodWithArgsAndNoReturnType(a);
+            MethodInterceptorTarget.StaticMethodWithArgsAndNoReturnType(a);
             Assert.That(interceptorWasCalled);
         }
 
@@ -348,7 +348,7 @@ namespace CryoAOP.Tests
                         Assert.That(invocation.ParameterValues[1] == a);
                     };
 
-            var result = TestMethodInterceptorType.StaticMethodWithGenericAndValueTypeArgsAndGenericReturnType(1, a);
+            var result = MethodInterceptorTarget.StaticMethodWithGenericAndValueTypeArgsAndGenericReturnType(1, a);
             Assert.That(result == a);
             Assert.That(interceptorWasCalled);
         }
@@ -367,7 +367,7 @@ namespace CryoAOP.Tests
                         Assert.That(invocation.ParameterValues[1] == a);
                     };
 
-            TestMethodInterceptorType.StaticMethodWithGenericAndValueTypeArgsAndNoReturnType(1,a);
+            MethodInterceptorTarget.StaticMethodWithGenericAndValueTypeArgsAndNoReturnType(1,a);
             Assert.That(interceptorWasCalled);
         }
 
@@ -385,7 +385,7 @@ namespace CryoAOP.Tests
                         Assert.That(invocation.ParameterValues[1] == a);
                     };
 
-            var result = TestMethodInterceptorType.StaticMethodWithGenericAndValueTypeArgsAndValueReturnType(1, a);
+            var result = MethodInterceptorTarget.StaticMethodWithGenericAndValueTypeArgsAndValueReturnType(1, a);
             Assert.That((int)result == 1); 
             Assert.That(interceptorWasCalled);
         }

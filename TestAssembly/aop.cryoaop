@@ -1,5 +1,5 @@
 Assembly<shallow>: .\CryoAOP.TestAssembly.dll
-	Type<shallow>: CryoAOP.TestAssembly.TestMethodInterceptorType
+	Type<shallow>: CryoAOP.TestAssembly.MethodInterceptorTarget
 		Method<shallow>: HavingMethodWithNoArgsAndNoReturnType
 		Method<shallow>: HavingMethodWithNoArgsAndInt32ReturnType
 		Method<shallow>: HavingMethodWithArgsAndNoReturnType

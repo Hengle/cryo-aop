@@ -1,10 +1,8 @@
-﻿using System;
-using CryoAOP.Core;
-using CryoAOP.Core.Extensions;
+﻿using CryoAOP.Core.Extensions;
 
 namespace CryoAOP.TestAssembly
 {
-    public class TestMethodInterceptorType
+    public class MethodInterceptorTarget
     {
         public void HavingMethodWithNoArgsAndNoReturnType()
         {
