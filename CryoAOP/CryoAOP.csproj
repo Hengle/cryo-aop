@@ -38,6 +38,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Core\Exceptions\MethodSignatureViolationException.cs" />
     <Compile Include="Exec\AssemblyLine.cs" />
     <Compile Include="Exec\ConfigLine.cs" />
     <Compile Include="Exec\ErrorExtensions.cs" />

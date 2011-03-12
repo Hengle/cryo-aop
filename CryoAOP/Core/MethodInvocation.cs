@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using CryoAOP.Core.Exceptions;
 using CryoAOP.Core.Extensions;
 
 namespace CryoAOP.Core
@@ -45,7 +46,27 @@ namespace CryoAOP.Core
             get { return parameterValues; }
         }
 
-        public object Result { get; set; }
+        private object result = null;
+        public object Result
+        {
+            get { return result; }
+            set
+            {
+                result = value;
+
+                if (result != null && Method.ReturnType == typeof(void))
+                    throw new MethodSignatureViolationException(
+                        "You have assigned and incorrect type a return type! Please use explicit cast. Got '{0}' but expected 'Void'.",
+                        result.GetType().FullName);
+                
+                if (result != null 
+                    && Method.ReturnType != null 
+                    && !Method.ReturnType.IsAssignableFrom(result.GetType()))
+                    throw new MethodSignatureViolationException(
+                        "You have assigned and incorrect type a return type! Please use explicit cast. Got '{0}' but expected '{1}'.", 
+                        result.GetType().FullName, Method.ReturnType.FullName);
+            }
+        }
 
         public virtual void ContinueInvocation()
         {

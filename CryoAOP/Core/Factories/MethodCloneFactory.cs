@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using CryoAOP.Core.Extensions;
 using Mono.Cecil;
 
