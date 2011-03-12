@@ -53,19 +53,7 @@ namespace CryoAOP.Core
             set
             {
                 result = value;
-
-                if (result != null && Method.ReturnType == typeof(void))
-                    throw new MethodSignatureViolationException(
-                        "You have assigned and incorrect type a return type! Please use explicit cast. Got '{0}' but expected 'Void'.",
-                        result.GetType().FullName);
-                
-                if (result != null 
-                    && Method.ReturnType != null 
-                    && !Method.ReturnType.IsAssignableFrom(result.GetType())
-                    && !Method.ReturnType.IsGenericParameter)
-                    throw new MethodSignatureViolationException(
-                        "You have assigned and incorrect type a return type! Please use explicit cast. Got '{0}' but expected '{1}'.", 
-                        result.GetType().FullName, Method.ReturnType.FullName);
+                ValidateResult();
             }
         }
 
@@ -79,6 +67,22 @@ namespace CryoAOP.Core
         {
             CanInvoke = false;
             InvocationCancelled = InvocationType == MethodInvocationType.BeforeInvocation;
+        }
+
+        protected virtual void ValidateResult()
+        {
+            if (result != null && Method.ReturnType == typeof(void))
+                throw new MethodSignatureViolationException(
+                    "You have assigned and incorrect type a return type! Please use explicit cast. Got '{0}' but expected 'Void'.",
+                    result.GetType().FullName);
+
+            if (result != null
+                && Method.ReturnType != null
+                && !Method.ReturnType.IsAssignableFrom(result.GetType())
+                && !Method.ReturnType.IsGenericParameter)
+                throw new MethodSignatureViolationException(
+                    "You have assigned and incorrect type a return type! Please use explicit cast. Got '{0}' but expected '{1}'.",
+                    result.GetType().FullName, Method.ReturnType.FullName);
         }
 
         public override string ToString()
