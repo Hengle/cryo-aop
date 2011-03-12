@@ -37,19 +37,19 @@ namespace CryoAOP.Exec
             }
         }
 
-        public MethodInterceptionScope MethodScope
+        public MethodInterceptionScopeType MethodScope
         {
             get
             {
                 if (Scope.ToLower() == "shallow")
-                    return MethodInterceptionScope.Shallow;
+                    return MethodInterceptionScopeType.Shallow;
                 if (Scope.ToLower() == "deep")
-                    return MethodInterceptionScope.Deep;
+                    return MethodInterceptionScopeType.Deep;
 
                 "Could not resolve interception scope! Defaulting to 'shallow' ... ".Error(LineNumber);
                 Line.Error();
 
-                return MethodInterceptionScope.Shallow;
+                return MethodInterceptionScopeType.Shallow;
             }
         }
     }

@@ -61,7 +61,8 @@ namespace CryoAOP.Core
                 
                 if (result != null 
                     && Method.ReturnType != null 
-                    && !Method.ReturnType.IsAssignableFrom(result.GetType()))
+                    && !Method.ReturnType.IsAssignableFrom(result.GetType())
+                    && !Method.ReturnType.IsGenericParameter)
                     throw new MethodSignatureViolationException(
                         "You have assigned and incorrect type a return type! Please use explicit cast. Got '{0}' but expected '{1}'.", 
                         result.GetType().FullName, Method.ReturnType.FullName);

@@ -38,7 +38,12 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Core\AssemblyLoader.cs" />
+    <Compile Include="Core\Attributes\MixinMethodAttribute.cs" />
     <Compile Include="Core\Exceptions\MethodSignatureViolationException.cs" />
+    <Compile Include="Core\MethodInterceptExtension.cs" />
+    <Compile Include="Core\MethodInterceptMixinExtension.cs" />
+    <Compile Include="Core\MethodInterceptScopingExtension.cs" />
     <Compile Include="Exec\AssemblyLine.cs" />
     <Compile Include="Exec\ConfigLine.cs" />
     <Compile Include="Exec\ErrorExtensions.cs" />

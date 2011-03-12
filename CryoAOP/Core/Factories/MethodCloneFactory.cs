@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Linq;
+﻿using System.Linq;
 using CryoAOP.Core.Extensions;
 using Mono.Cecil;
 
@@ -7,74 +6,96 @@ namespace CryoAOP.Core.Factories
 {
     internal class MethodCloneFactory
     {
-        public MethodDefinition Clone(MethodDefinition sourceMethod)
+        public MethodDefinition Clone(MethodReference sourceMethod)
         {
-            var clonedMethod = new MethodDefinition(sourceMethod.Name, sourceMethod.Attributes, sourceMethod.ReturnType);
-            sourceMethod.DeclaringType.Methods.Add(clonedMethod);
-
-            CloneMethodProperties(clonedMethod, sourceMethod);
-            CloneMethodAttributes(clonedMethod, sourceMethod);
-            CloneMethodParameters(sourceMethod, clonedMethod);
-            CloneGenericParameters(sourceMethod, clonedMethod);
-
-            return clonedMethod;
+            return CloneIntoType(sourceMethod, sourceMethod.Resolve().DeclaringType);
         }
 
-        private static void CloneMethodParameters(MethodDefinition sourceMethod, MethodDefinition clonedMethod)
+        public MethodDefinition CloneIntoType(MethodReference sourceMethod, TypeDefinition type)
+        {
+            var s = sourceMethod.Resolve();
+            var c = new MethodDefinition(s.Name, s.Attributes, s.ReturnType);
+            type.Methods.Add(c);
+
+            CloneMethodProperties(c, s);
+            CloneMethodAttributes(c, s);
+            CloneMethodParameters(s, c);
+            CloneGenericParameters(s, c);
+
+            return c;
+        }
+
+        private void CloneMethodParameters(MethodReference sourceMethod, MethodReference clonedMethod)
         {
             if (sourceMethod.HasParameters)
+            {
+                var importer = new AssemblyImporterFactory(clonedMethod.Module.Assembly);
                 foreach (var parameter in sourceMethod.Parameters.ToList())
-                    clonedMethod.Parameters.Add(parameter);
+                {
+                    var importedParameterType = importer.Import(parameter.ParameterType);
+                    var parameterDef = 
+                        new ParameterDefinition(
+                            parameter.Name, 
+                            parameter.Attributes,
+                            importedParameterType);
+
+                    clonedMethod.Parameters.Add(parameterDef);
+                }
+            }
         }
 
-        private static void CloneMethodAttributes(MethodDefinition sourceMethod, MethodDefinition clonedMethod)
+        private static void CloneMethodAttributes(MethodReference sourceMethod, MethodReference clonedMethod)
         {
-            clonedMethod.CallingConvention = sourceMethod.CallingConvention;
-            clonedMethod.SemanticsAttributes = sourceMethod.SemanticsAttributes;
-            sourceMethod.CustomAttributes.ToList().ForEach(a => clonedMethod.CustomAttributes.Add(a));
-            sourceMethod.SecurityDeclarations.ToList().ForEach(s => clonedMethod.SecurityDeclarations.Add(s));
+            var s = sourceMethod.Resolve();
+            var c = clonedMethod.Resolve();
+            c.CallingConvention = s.CallingConvention;
+            c.SemanticsAttributes = s.SemanticsAttributes;
+            s.CustomAttributes.ToList().ForEach(a => c.CustomAttributes.Add(a));
+            s.SecurityDeclarations.ToList().ForEach(sd => c.SecurityDeclarations.Add(sd));
         }
 
-        private static void CloneMethodProperties(MethodDefinition sourceMethod, MethodDefinition clonedMethod)
+        private static void CloneMethodProperties(MethodReference sourceMethod, MethodReference clonedMethod)
         {
-            clonedMethod.IsAbstract = sourceMethod.IsAbstract;
-            clonedMethod.IsAddOn = sourceMethod.IsAddOn;
-            clonedMethod.IsAssembly = sourceMethod.IsAssembly;
-            clonedMethod.IsCheckAccessOnOverride = sourceMethod.IsCheckAccessOnOverride;
-            clonedMethod.IsCompilerControlled = sourceMethod.IsCompilerControlled;
-            clonedMethod.IsFamily = sourceMethod.IsFamily;
-            clonedMethod.IsFamilyAndAssembly = sourceMethod.IsFamilyAndAssembly;
-            clonedMethod.IsFamilyOrAssembly = sourceMethod.IsFamilyOrAssembly;
-            clonedMethod.IsFinal = sourceMethod.IsFinal;
-            clonedMethod.IsFire = sourceMethod.IsFire;
-            clonedMethod.IsForwardRef = sourceMethod.IsForwardRef;
-            clonedMethod.IsGetter = sourceMethod.IsGetter;
-            clonedMethod.IsHideBySig = sourceMethod.IsHideBySig;
-            clonedMethod.IsIL = sourceMethod.IsIL;
-            clonedMethod.IsInternalCall = sourceMethod.IsInternalCall;
-            clonedMethod.IsManaged = sourceMethod.IsManaged;
-            clonedMethod.IsNative = sourceMethod.IsNative;
-            clonedMethod.IsNewSlot = sourceMethod.IsNewSlot;
-            clonedMethod.IsPInvokeImpl = sourceMethod.IsPInvokeImpl;
-            clonedMethod.IsPreserveSig = sourceMethod.IsPreserveSig;
-            clonedMethod.IsPrivate = sourceMethod.IsPrivate;
-            clonedMethod.IsPublic = sourceMethod.IsPublic;
-            clonedMethod.IsRemoveOn = sourceMethod.IsRemoveOn;
-            clonedMethod.IsReuseSlot = sourceMethod.IsReuseSlot;
-            clonedMethod.IsRuntime = sourceMethod.IsRuntime;
-            clonedMethod.IsRuntimeSpecialName = sourceMethod.IsRuntimeSpecialName;
-            clonedMethod.IsSetter = sourceMethod.IsSetter;
-            clonedMethod.IsSpecialName = sourceMethod.IsSpecialName;
-            clonedMethod.IsStatic = sourceMethod.IsStatic;
-            clonedMethod.IsSynchronized = sourceMethod.IsSynchronized;
-            clonedMethod.IsUnmanaged = sourceMethod.IsUnmanaged;
-            clonedMethod.IsUnmanagedExport = sourceMethod.IsUnmanagedExport;
-            clonedMethod.IsVirtual = sourceMethod.IsVirtual;
-            clonedMethod.NoInlining = sourceMethod.NoInlining;
-            clonedMethod.NoOptimization = sourceMethod.NoOptimization;
+            var s = sourceMethod.Resolve();
+            var c = clonedMethod.Resolve();
+            c.IsAbstract = s.IsAbstract;
+            c.IsAddOn = s.IsAddOn;
+            c.IsAssembly = s.IsAssembly;
+            c.IsCheckAccessOnOverride = s.IsCheckAccessOnOverride;
+            c.IsCompilerControlled = s.IsCompilerControlled;
+            c.IsFamily = s.IsFamily;
+            c.IsFamilyAndAssembly = s.IsFamilyAndAssembly;
+            c.IsFamilyOrAssembly = s.IsFamilyOrAssembly;
+            c.IsFinal = s.IsFinal;
+            c.IsFire = s.IsFire;
+            c.IsForwardRef = s.IsForwardRef;
+            c.IsGetter = s.IsGetter;
+            c.IsHideBySig = s.IsHideBySig;
+            c.IsIL = s.IsIL;
+            c.IsInternalCall = s.IsInternalCall;
+            c.IsManaged = s.IsManaged;
+            c.IsNative = s.IsNative;
+            c.IsNewSlot = s.IsNewSlot;
+            c.IsPInvokeImpl = s.IsPInvokeImpl;
+            c.IsPreserveSig = s.IsPreserveSig;
+            c.IsPrivate = s.IsPrivate;
+            c.IsPublic = s.IsPublic;
+            c.IsRemoveOn = s.IsRemoveOn;
+            c.IsReuseSlot = s.IsReuseSlot;
+            c.IsRuntime = s.IsRuntime;
+            c.IsRuntimeSpecialName = s.IsRuntimeSpecialName;
+            c.IsSetter = s.IsSetter;
+            c.IsSpecialName = s.IsSpecialName;
+            c.IsStatic = s.IsStatic;
+            c.IsSynchronized = s.IsSynchronized;
+            c.IsUnmanaged = s.IsUnmanaged;
+            c.IsUnmanagedExport = s.IsUnmanagedExport;
+            c.IsVirtual = s.IsVirtual;
+            c.NoInlining = s.NoInlining;
+            c.NoOptimization = s.NoOptimization;
         }
 
-        private static void CloneGenericParameters(MethodDefinition sourceMethod, MethodDefinition clonedMethod)
+        private void CloneGenericParameters(MethodReference sourceMethod, MethodReference clonedMethod)
         {
             if (sourceMethod.HasGenericParameters)
             {

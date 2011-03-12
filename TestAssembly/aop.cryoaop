@@ -1,28 +1,43 @@
 Assembly<shallow>: .\CryoAOP.TestAssembly.dll
+
+	// *** MethodParameterClass ***
+	// ----------------------------
+	
+	Type<shallow>: CryoAOP.TestAssembly.MethodParameterClass
+
+		// * Method aspects *
+		// ------------------
+		
+		Method<shallow>: AdditionalMixinTesting
+
+	// *** MethodInterceptorTarget ***
+	// -------------------------------
+	
 	Type<shallow>: CryoAOP.TestAssembly.MethodInterceptorTarget
 		
-		// Methods aspects
+		// * Method aspects *
+		// ------------------
 		Method<shallow>: privateMethodThatBreaksReflectionWhenTryingToGetMethodInfoUsingGetMethod
 
-		Method<shallow>: HavingMethodWithNoArgsAndNoReturnType
-		Method<shallow>: HavingMethodWithNoArgsAndInt32ReturnType
-		Method<shallow>: HavingMethodWithArgsAndNoReturnType
-		Method<shallow>: HavingMethodWithArgsAndStringReturnType
-		Method<shallow>: HavingMethodWithClassArgsAndNoReturnType
-		Method<shallow>: HavingMethodWithClassArgsAndClassReturnType
+        Method<shallow>: HavingMethodWithNoArgsAndNoReturnType
+        Method<shallow>: HavingMethodWithNoArgsAndInt32ReturnType
+        Method<shallow>: HavingMethodWithArgsAndNoReturnType
+        Method<shallow>: HavingMethodWithArgsAndStringReturnType
+        Method<shallow>: HavingMethodWithClassArgsAndNoReturnType
+        Method<shallow>: HavingMethodWithClassArgsAndClassReturnType
 		
-		Method<shallow>: GenericMethod
-		Method<shallow>: GenericMethodWithGenericParameters
-		Method<shallow>: GenericMethodWithGenericParametersAndGenericReturnType
-		Method<shallow>: GenericMethodWithGenericParametersAndValueTypeArgs
-		Method<shallow>: GenericMethodWithGenericParamsAndValueReturnType
-		Method<shallow>: GenericMethodWithInvertedParams
-		Method<shallow>: GenericMethodWithInvertedParamsAndValueReturnType
-		Method<shallow>: GenericMethodWithTwoGenericParameters
+        Method<shallow>: GenericMethod
+        Method<shallow>: GenericMethodWithGenericParameters
+        Method<shallow>: GenericMethodWithGenericParametersAndGenericReturnType
+        Method<shallow>: GenericMethodWithGenericParametersAndValueTypeArgs
+        Method<shallow>: GenericMethodWithGenericParamsAndValueReturnType
+        Method<shallow>: GenericMethodWithInvertedParams
+        Method<shallow>: GenericMethodWithInvertedParamsAndValueReturnType
+        Method<shallow>: GenericMethodWithTwoGenericParameters
 		
-		Method<shallow>: StaticMethodWithNoArgsAndNoReturnType
-		Method<shallow>: StaticMethodWithArgsAndNoReturnType
-		Method<shallow>: StaticMethodWithGenericAndValueTypeArgsAndNoReturnType
-		Method<shallow>: StaticMethodWithGenericAndValueTypeArgsAndValueReturnType
-		Method<shallow>: StaticMethodWithGenericAndValueTypeArgsAndGenericReturnType
-		Method<deep>: InterceptMethod
+        Method<shallow>: StaticMethodWithNoArgsAndNoReturnType
+        Method<shallow>: StaticMethodWithArgsAndNoReturnType
+        Method<shallow>: StaticMethodWithGenericAndValueTypeArgsAndNoReturnType
+        Method<shallow>: StaticMethodWithGenericAndValueTypeArgsAndValueReturnType
+        Method<shallow>: StaticMethodWithGenericAndValueTypeArgsAndGenericReturnType
+        Method<deep>: InterceptMethod

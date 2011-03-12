@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using CryoAOP.Core;
 using CryoAOP.TestAssembly;
 using NUnit.Framework;
@@ -28,15 +27,18 @@ namespace CryoAOP.Tests
             var b = new MethodParameterClass();
             var interceptorWasCalled = false;
 
-            Intercept.Call +=
-                (invocation) =>
+            InterceptInstance
+                .WhenMethodCalled(
+                    (invocation) =>
                     {
                         interceptorWasCalled = true;
-                        Assert.That(a, Is.EqualTo((int) invocation.ParameterValues[0]));
+                        Assert.That(a, Is.EqualTo((int)invocation.ParameterValues[0]));
                         Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
-                    };
+                    });
+
 
             InterceptInstance.GenericMethodWithInvertedParams(1, b);
+
             Assert.That(interceptorWasCalled);
         }
 
@@ -332,12 +334,12 @@ namespace CryoAOP.Tests
             var a = 1;
             var interceptorWasCalled = false;
 
-            Intercept.Call +=
+            MethodInterceptorTarget.WhenStaticMethodCalled(
                 (invocation) =>
                     {
                         interceptorWasCalled = true;
                         Assert.That((int) invocation.ParameterValues[0] == 1);
-                    };
+                    });
 
             MethodInterceptorTarget.StaticMethodWithArgsAndNoReturnType(a);
             Assert.That(interceptorWasCalled);

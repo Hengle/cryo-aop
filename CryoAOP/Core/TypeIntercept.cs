@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using CryoAOP.Core.Exceptions;
 using CryoAOP.Core.Extensions;
@@ -9,8 +8,8 @@ namespace CryoAOP.Core
 {
     internal class TypeIntercept
     {
-        public readonly TypeDefinition Definition;
         public readonly AssemblyIntercept AssemblyIntercept;
+        public readonly TypeDefinition Definition;
 
         public TypeIntercept(AssemblyIntercept assemblyIntercept, TypeDefinition definition)
         {
@@ -18,7 +17,8 @@ namespace CryoAOP.Core
             Definition = definition;
         }
 
-        public virtual void InterceptAll(MethodInterceptionScope interceptionScope = MethodInterceptionScope.Shallow)
+        public virtual void InterceptAll(
+            MethodInterceptionScopeType interceptionScope = MethodInterceptionScopeType.Shallow)
         {
             foreach (var method in Definition.Methods.ToList())
             {
@@ -38,7 +38,7 @@ namespace CryoAOP.Core
         {
             if (Definition.HasMethods)
             {
-                foreach (var method in Definition.Methods) 
+                foreach (var method in Definition.Methods)
                     if (method.Name == methodName)
                         return new MethodIntercept(this, method);
             }

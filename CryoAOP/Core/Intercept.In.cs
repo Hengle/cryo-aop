@@ -14,7 +14,7 @@ namespace CryoAOP.Core
             Assembly.Write(assemblyPath);
         }
 
-        public static void InterceptAll(MethodInterceptionScope interceptionScope)
+        public static void InterceptAll(MethodInterceptionScopeType interceptionScope)
         {
             foreach (var module in Assembly.Definition.Modules)
             {
@@ -26,13 +26,13 @@ namespace CryoAOP.Core
             }
         }
 
-        public static void InterceptType(string fullTypeName, MethodInterceptionScope interceptionScope)
+        public static void InterceptType(string fullTypeName, MethodInterceptionScopeType interceptionScope)
         {
             var typeInspector = Assembly.FindType(fullTypeName);
             typeInspector.InterceptAll(interceptionScope);
         }
 
-        public static void InterceptMethod(string fullTypeName, string methodName, MethodInterceptionScope interceptionScope)
+        public static void InterceptMethod(string fullTypeName, string methodName, MethodInterceptionScopeType interceptionScope)
         {
             var typeInspector = Assembly.FindType(fullTypeName);
             typeInspector.FindMethod(methodName).InterceptMethod(interceptionScope);

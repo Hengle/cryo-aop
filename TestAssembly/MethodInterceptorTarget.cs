@@ -103,22 +103,14 @@ namespace CryoAOP.TestAssembly
         {
             InterceptMethod();
         }
-
-        public static void WhenCalled(Action<MethodInvocation> call)
-        {
-            Intercept.Call += 
-                (invocation) =>
-                {
-                    if (invocation.Type == typeof(MethodInterceptorTarget))
-                    {
-                        call(invocation);
-                    }
-                };
-        }
     }
 
     public class MethodParameterClass
     {
         public int Arg1 = -1;
+
+        public void AdditionalMixinTesting()
+        {
+        }
     }
 }

@@ -20,12 +20,22 @@ namespace CryoAOP.Core.Factories
             this.definition = intercept.TypeIntercept.AssemblyIntercept.Definition;
         }
 
-        public virtual MethodReference Import(MethodDefinition method)
+        public virtual FieldReference Import(FieldReference field)
+        {
+            return definition.MainModule.Import(field);
+        }
+
+        public virtual TypeReference Import(PropertyReference property)
+        {
+            return definition.MainModule.Import(property.PropertyType);
+        }
+
+        public virtual MethodReference Import(MethodReference method)
         {
             return definition.MainModule.Import(method);
         }
 
-        public virtual TypeReference Import(TypeDefinition type)
+        public virtual TypeReference Import(TypeReference type)
         {
             return definition.MainModule.Import(type);
         }
