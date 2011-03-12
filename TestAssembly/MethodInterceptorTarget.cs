@@ -1,9 +1,15 @@
-﻿using CryoAOP.Core.Extensions;
+﻿using System;
+using CryoAOP.Core;
+using CryoAOP.Core.Extensions;
 
 namespace CryoAOP.TestAssembly
 {
     public class MethodInterceptorTarget
     {
+        private void privateMethodThatBreaksReflectionWhenTryingToGetMethodInfoUsingGetMethod(int a, double b, string c)
+        {
+        }
+
         public void HavingMethodWithNoArgsAndNoReturnType()
         {
         }
@@ -96,6 +102,18 @@ namespace CryoAOP.TestAssembly
         public void CallToIntercept()
         {
             InterceptMethod();
+        }
+
+        public static void WhenCalled(Action<MethodInvocation> call)
+        {
+            Intercept.Call += 
+                (invocation) =>
+                {
+                    if (invocation.Type == typeof(MethodInterceptorTarget))
+                    {
+                        call(invocation);
+                    }
+                };
         }
     }
 

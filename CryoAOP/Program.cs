@@ -46,6 +46,8 @@ namespace CryoAOP
                     currentLineCount++;
                     var currentLine = reader.ReadLine();
 
+                    if (string.IsNullOrEmpty(currentLine)) continue;
+                    if (currentLine.Trim() == "") continue;
                     if (currentLine.ToLower().Trim().Equals("break;")) break;
                     if (currentLine.ToLower().Trim().Equals("return;")) return;
                     if (!currentLine.ToLower().Trim().StartsWith("//"))

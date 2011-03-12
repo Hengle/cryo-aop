@@ -1,4 +1,5 @@
 ﻿using CryoAOP.Core;
+using CryoAOP.TestAssembly;
 using NUnit.Framework;
 
 namespace CryoAOP.Tests

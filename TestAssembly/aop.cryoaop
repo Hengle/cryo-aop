@@ -1,11 +1,16 @@
 Assembly<shallow>: .\CryoAOP.TestAssembly.dll
 	Type<shallow>: CryoAOP.TestAssembly.MethodInterceptorTarget
+		
+		// Methods aspects
+		Method<shallow>: privateMethodThatBreaksReflectionWhenTryingToGetMethodInfoUsingGetMethod
+
 		Method<shallow>: HavingMethodWithNoArgsAndNoReturnType
 		Method<shallow>: HavingMethodWithNoArgsAndInt32ReturnType
 		Method<shallow>: HavingMethodWithArgsAndNoReturnType
 		Method<shallow>: HavingMethodWithArgsAndStringReturnType
 		Method<shallow>: HavingMethodWithClassArgsAndNoReturnType
 		Method<shallow>: HavingMethodWithClassArgsAndClassReturnType
+		
 		Method<shallow>: GenericMethod
 		Method<shallow>: GenericMethodWithGenericParameters
 		Method<shallow>: GenericMethodWithGenericParametersAndGenericReturnType
@@ -14,6 +19,7 @@ Assembly<shallow>: .\CryoAOP.TestAssembly.dll
 		Method<shallow>: GenericMethodWithInvertedParams
 		Method<shallow>: GenericMethodWithInvertedParamsAndValueReturnType
 		Method<shallow>: GenericMethodWithTwoGenericParameters
+		
 		Method<shallow>: StaticMethodWithNoArgsAndNoReturnType
 		Method<shallow>: StaticMethodWithArgsAndNoReturnType
 		Method<shallow>: StaticMethodWithGenericAndValueTypeArgsAndNoReturnType

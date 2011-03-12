@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using CryoAOP.Core.Extensions;
 using CryoAOP.Core.Factories;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using MethodAttributes = Mono.Cecil.MethodAttributes;
+using MethodBody = Mono.Cecil.Cil.MethodBody;
 
 namespace CryoAOP.Core
 {
@@ -86,11 +89,13 @@ namespace CryoAOP.Core
                           });
 
             // Interceptor: Get the method info 
+            var methodReference = importerFactory.Import(typeof (Type), "GetMethod, String, BindingFlags");
             il.Append(new[]
                           {
                               il.Create(OpCodes.Ldloc_0),
                               il.Create(OpCodes.Ldstr, interceptorMethod.Name),
-                              il.Create(OpCodes.Callvirt, importerFactory.Import(typeof (Type), "GetMethod,String")),
+                              il.Create(OpCodes.Ldc_I4_S, (sbyte)60), // BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance
+                              il.Create(OpCodes.Callvirt, methodReference),
                               il.Create(OpCodes.Stloc_1)
                           });
 
@@ -283,6 +288,52 @@ namespace CryoAOP.Core
 
             // If deep intercept, replace internals with call to renamed method
             ApplyDeepScope(renamedMethod, interceptorMethod, il, interceptionScope);
+
+            // Insert when called convenience method
+            InsertWhenCalled();
+        }
+
+        private void InsertWhenCalled()
+        {
+            // TODO: Rather implement code mixin's
+            return;
+
+            // Create method definition 
+            var methodDefinition = new MethodDefinition("WhenCalled", MethodAttributes.Public | MethodAttributes.Static, importerFactory.Import(typeof (void)));
+            TypeIntercept.Definition.Methods.Add(methodDefinition);
+            methodDefinition.Body = new MethodBody(methodDefinition);
+
+            // Create local
+            var invocationType = typeof (Action<MethodInvocation>);
+            var invocationTypeReference = importerFactory.Import(invocationType);
+            var v_0 = new VariableDefinition("class", invocationTypeReference);
+            methodDefinition.Body.Variables.Add(v_0);
+
+            // Create parameter
+            var methodParameter = new ParameterDefinition(invocationTypeReference);
+            methodDefinition.Parameters.Add(methodParameter);
+
+            // Get IL Processor
+            var il = methodDefinition.Body.GetILProcessor();
+
+            // Find invocation type reference constructor 
+            var ctor = invocationTypeReference.Resolve().Methods.Where(m => m.IsConstructor).Single();
+            var ctorReference = importerFactory.Import(ctor);
+
+            // Find the invocation type reference method 'call'
+            foreach (var method in invocationTypeReference.Resolve().Methods)
+                Console.WriteLine("::" + method.Name);
+
+            // Insert wrapped type safe interceptor target 
+            il.Append(new[]
+                          {
+                              il.Create(OpCodes.Newobj, ctorReference),
+                              il.Create(OpCodes.Stloc_0),
+                              //il.Create(OpCodes.Ldloc_0),
+                              //il.Create(OpCodes.Ldarg_0),
+                              //il.Create(OpCodes.Stfld),
+                              il.Create(OpCodes.Ret),
+                          });
         }
 
         private void ApplyDeepScope(MethodDefinition renamedMethod, MethodDefinition interceptorMethod, ILProcessor il, MethodInterceptionScope interceptionScope)
@@ -297,10 +348,10 @@ namespace CryoAOP.Core
                         foreach (var method in type.Methods.ToList())
                         {
                             if (HasInterceptMarker(method)) continue;
-                            
-                            if (method == null 
-                                || method.Body == null 
-                                || method.Body.Instructions == null 
+
+                            if (method == null
+                                || method.Body == null
+                                || method.Body.Instructions == null
                                 || method.Body.Instructions.Count() == 0)
                                 continue;
 
@@ -321,16 +372,16 @@ namespace CryoAOP.Core
 
         private static bool HasInterceptMarker(MethodDefinition method)
         {
-            if (method == null 
-                || method.Body == null 
+            if (method == null
+                || method.Body == null
                 || method.Body.Instructions == null
                 || method.Body.Instructions.Count <= 2)
                 return false;
 
             var interceptMarker = method.Body.Instructions.ToList().Take(2).ToArray();
             var firstInstruction = interceptMarker.First();
-            return 
-                firstInstruction.OpCode == OpCodes.Ldstr 
+            return
+                firstInstruction.OpCode == OpCodes.Ldstr
                 && (firstInstruction.Operand as string) == "CryoAOP -> Intercept";
         }
 

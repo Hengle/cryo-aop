@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using CryoAOP.Core.Exceptions;
 using Mono.Cecil;
 
@@ -41,26 +43,20 @@ namespace CryoAOP.Core.Factories
                 {
                     if (methodName.Contains(","))
                     {
-                        foreach (var paramterType in methodParts)
+                        var notableParams = 
+                            methodParts
+                            .Except(new[] {searchMethodName.Trim()})
+                            .Select(p => p.Trim());
+
+                        var methodParams = 
+                            method
+                            .Parameters
+                            .Select(p => p.ParameterType.Name);
+
+                        if (methodParams.All(mp => notableParams.Contains(mp)))
                         {
-                            if (paramterType == searchMethodName)
-                                continue;
-
-                            var isMatch = true;
-                            foreach (var parameters in method.Parameters)
-                            {
-                                if (parameters.ParameterType.Name != paramterType)
-                                {
-                                    isMatch = false;
-                                    break;
-                                }
-                            }
-
-                            if (isMatch)
-                            {
-                                var methodReference = definition.MainModule.Import(method);
-                                return methodReference;
-                            }
+                            var methodReference = definition.MainModule.Import(method);
+                            return methodReference;
                         }
                     }
                     else
