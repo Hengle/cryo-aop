@@ -38,10 +38,6 @@
     <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CryoAOP.TestAssembly, Version=1.0.4088.37931, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\TestAssembly\bin\net_3_5_Debug\CryoAOP.TestAssembly.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\References\NUnit\2.5.5\nunit.framework.dll</HintPath>
     </Reference>
@@ -68,6 +64,14 @@
     <ProjectReference Include="..\CryoAOP\CryoAOP.csproj">
       <Project>{A9C22D19-786A-4C99-BFB6-715F710FA3A9}</Project>
       <Name>CryoAOP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mixins\CryoAOP.Mixins.csproj">
+      <Project>{578873D9-DCB5-43F3-B2C3-DB080679214C}</Project>
+      <Name>CryoAOP.Mixins</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestAssembly\CryoAOP.TestAssembly.csproj">
+      <Project>{0E534898-AA45-405E-9411-9D302F1E4278}</Project>
+      <Name>CryoAOP.TestAssembly</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
