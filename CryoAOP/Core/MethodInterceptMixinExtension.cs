@@ -191,21 +191,21 @@ namespace CryoAOP.Core
                                 catch (Exception err)
                                 {
                                     "CryoAOP -> Warning! First chance exception ocurred while searching for Mixin Methods. \r\n{0}"
-                                        .Error(err);
+                                        .Warn(err);
                                 }
                             }
                         }
                         catch (Exception err1)
                         {
                             "CryoAOP -> Warning! First chance exception ocurred while searching for Mixin Methods. \r\n{0}"
-                                .Error(err1);
+                                .Warn(err1);
                         }
                     }
                 }
                 catch (Exception err2)
                 {
                     "CryoAOP -> Warning! First chance exception ocurred while searching for Mixin Methods. \r\n{0}"
-                        .Error(err2);
+                        .Warn(err2);
                 }
             }
             return attributesFound;

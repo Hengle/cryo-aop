@@ -13,7 +13,6 @@ namespace CryoAOP
     {
         private static void Main(string[] args)
         {
-            //Debugger.Launch();
             Console.WriteLine("CryoAOP -> Starting up!");
             if (args == null || args.Length == 0)
             {
@@ -36,6 +35,17 @@ namespace CryoAOP
                 return;
             }
 
+            if (args.Any(a => a == "/nowarn"))
+                ErrorExtensions.DisableWarnings = true;
+
+            var assemblyLines = ParseInputFile(inputFile);
+            InterceptMethods(assemblyLines);
+
+            Environment.ExitCode = 0;
+        }
+
+        private static List<AssemblyLine> ParseInputFile(string inputFile)
+        {
             var currentLineCount = 0;
             var typeLines = new List<TypeLine>();
             var assemblyLines = new List<AssemblyLine>();
@@ -49,7 +59,7 @@ namespace CryoAOP
                     if (string.IsNullOrEmpty(currentLine)) continue;
                     if (currentLine.Trim() == "") continue;
                     if (currentLine.ToLower().Trim().Equals("break;")) break;
-                    if (currentLine.ToLower().Trim().Equals("return;")) return;
+                    if (currentLine.ToLower().Trim().Equals("return;")) return assemblyLines;
                     if (!currentLine.ToLower().Trim().StartsWith("//"))
                     {
                         if (AssemblyLine.IsAssembly(currentLine))
@@ -64,7 +74,7 @@ namespace CryoAOP
                                 "Error! Could not find matching assembly tag for type ... ".Error(currentLineCount);
                                 "{0}".Error(currentLineCount, currentLine);
                                 WriteUsage();
-                                return;
+                                return assemblyLines;
                             }
 
                             var typeLine = new TypeLine(currentLineCount, currentLine);
@@ -78,7 +88,7 @@ namespace CryoAOP
                                 "Error! Could not find matching type tag for method ... ".Error(currentLineCount);
                                 "{0}".Error(currentLineCount, currentLine);
                                 WriteUsage();
-                                return;
+                                return assemblyLines;
                             }
 
                             var methodLine = new MethodLine(currentLineCount, currentLine);
@@ -92,7 +102,11 @@ namespace CryoAOP
                     }
                 }
             }
+            return assemblyLines;
+        }
 
+        private static void InterceptMethods(IEnumerable<AssemblyLine> assemblyLines)
+        {
             foreach(var assembly in assemblyLines)
             {
                 Intercept.LoadAssembly(assembly.InputAssembly);
@@ -130,8 +144,10 @@ namespace CryoAOP
         private static void WriteUsage()
         {
             Console.WriteLine("CryoAOP v1.0 by fir3pho3nixx");
-            Console.WriteLine("Usage: CryoAOP /i input.cryoaop");
-            Console.WriteLine("Where: /i input.cryoaop is of the following format.");
+            Console.WriteLine("Usage: CryoAOP /i input.cryoaop /nowarn");
+            Console.WriteLine("Where: ");
+            Console.WriteLine("     /i input.cryoaop -> is of the following format.");
+            Console.WriteLine("     /nowarn          -> is when we do not want to see warnings.");
             Console.WriteLine();
             Console.WriteLine("Example: The scope to the interception can be set for 'Assembly', 'Type' or 'Method'.");
             Console.WriteLine("Assembly: FooAssembly.dll, OutFooAssembly.dll");
