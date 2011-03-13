@@ -28,7 +28,7 @@ namespace CryoAOP.Tests
             var interceptorWasCalled = false;
 
             InterceptInstance
-                .WhenMethodCalled<MethodInterceptorTarget>(
+                .WhenCalled<MethodInterceptorTarget>(
                     (invocation) =>
                     {
                         interceptorWasCalled = true;
@@ -334,7 +334,7 @@ namespace CryoAOP.Tests
             var a = 1;
             var interceptorWasCalled = false;
 
-            MethodInterceptorTarget.WhenStaticMethodCalled<MethodInterceptorTarget>(
+            MethodInterceptorTarget.WhenCalledStatic<MethodInterceptorTarget>(
                 (invocation) =>
                     {
                         interceptorWasCalled = true;

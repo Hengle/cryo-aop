@@ -7,7 +7,7 @@ namespace CryoAOP.Mixins
     public class MethodInterceptorMixins
     {
         [MixinMethod()]
-        public void WhenMethodCalled<T>(Action<MethodInvocation> invocation)
+        public void WhenCalled<T>(Action<MethodInvocation> invocation)
         {
             Intercept.Call +=
                 (i) =>
@@ -18,7 +18,7 @@ namespace CryoAOP.Mixins
         }
 
         [MixinMethod()]
-        public static void WhenStaticMethodCalled<T>(Action<MethodInvocation> invocation)
+        public static void WhenCalledStatic<T>(Action<MethodInvocation> invocation)
         {
             Intercept.Call +=
                 (i) =>

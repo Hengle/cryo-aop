@@ -11,7 +11,7 @@ namespace CryoAOP.Tests
         {
             var wasIntercepted = false;
             var aspectTypeA = new AspectTypeA();
-            aspectTypeA.WhenMethodCalled<AspectTypeA>((i) => wasIntercepted = true);
+            aspectTypeA.WhenCalled<AspectTypeA>((i) => wasIntercepted = true);
             aspectTypeA.Method();
             Assert.That(wasIntercepted);
         }
@@ -21,11 +21,11 @@ namespace CryoAOP.Tests
         {
             var aspectAWasIntercepted = false;
             var aspectTypeA = new AspectTypeA();
-            aspectTypeA.WhenMethodCalled<AspectTypeA>((i) => aspectAWasIntercepted = true);
+            aspectTypeA.WhenCalled<AspectTypeA>((i) => aspectAWasIntercepted = true);
 
             var aspectBWasIntercepted = false;
             var aspectTypeB = new AspectTypeA();
-            aspectTypeB.WhenMethodCalled<AspectTypeB>((i) => aspectBWasIntercepted = true);
+            aspectTypeB.WhenCalled<AspectTypeB>((i) => aspectBWasIntercepted = true);
 
             aspectTypeA.Method();
 
