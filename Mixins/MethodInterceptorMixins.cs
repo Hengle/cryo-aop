@@ -9,6 +9,7 @@ namespace CryoAOP.Mixins
         [MixinMethod()]
         public void WhenCalled<T>(Action<MethodInvocation> invocation)
         {
+            Intercept.Clear();
             Intercept.Call +=
                 (i) =>
                     {
@@ -20,6 +21,7 @@ namespace CryoAOP.Mixins
         [MixinMethod()]
         public static void WhenCalledStatic<T>(Action<MethodInvocation> invocation)
         {
+            Intercept.Clear();
             Intercept.Call +=
                 (i) =>
                 {
