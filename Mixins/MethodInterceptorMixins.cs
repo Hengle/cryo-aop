@@ -1,6 +1,6 @@
 ﻿using System;
+using CryoAOP.Aspects;
 using CryoAOP.Core;
-using CryoAOP.Core.Attributes;
 
 namespace CryoAOP.Mixins
 {

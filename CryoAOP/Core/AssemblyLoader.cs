@@ -36,8 +36,8 @@ namespace CryoAOP.Core
                                    var lowerCaseFileName = f.ToLower();
                                    return (lowerCaseFileName.EndsWith(".dll") || lowerCaseFileName.EndsWith(".exe"))
                                           && lowerCaseFileName.IndexOf("cryoaop.exe") == -1
-                                          && lowerCaseFileName.IndexOf("mono.cecil.dll") == -1
-                                          && lowerCaseFileName.IndexOf("mono.cecil.pdb") == -1;
+                                          && lowerCaseFileName.IndexOf("cryoaop.aspects.dll") == -1
+                                          && lowerCaseFileName.IndexOf("mono.cecil.dll") == -1;
                                }
                     )
                     .ToList();

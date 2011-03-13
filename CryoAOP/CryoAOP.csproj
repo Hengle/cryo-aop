@@ -41,8 +41,6 @@
     <Compile Include="Core\AssemblyLoader.cs" />
     <Compile Include="Core\AttributeFinder.cs" />
     <Compile Include="Core\AttributeResult.cs" />
-    <Compile Include="Core\Attributes\InterceptAttribute.cs" />
-    <Compile Include="Core\Attributes\MixinMethodAttribute.cs" />
     <Compile Include="Core\Exceptions\IncorrectAttributeResultUsageException.cs" />
     <Compile Include="Core\Exceptions\MethodSignatureViolationException.cs" />
     <Compile Include="Core\Extensions\FileExtensions.cs" />
@@ -79,6 +77,10 @@
     <Compile Include="Exec\TypeLine.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Aspects\CryoAOP.Aspects.csproj">
+      <Project>{D361862D-5205-49CB-A50E-C9ED943AEBAB}</Project>
+      <Name>CryoAOP.Aspects</Name>
+    </ProjectReference>
     <ProjectReference Include="..\cecil\Mono.Cecil.csproj">
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
       <Name>Mono.Cecil</Name>

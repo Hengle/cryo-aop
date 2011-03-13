@@ -1,4 +1,4 @@
-﻿using CryoAOP.Core.Attributes;
+﻿using CryoAOP.Aspects;
 
 namespace CryoAOP.TestAssembly.Aspects
 {

@@ -1,16 +1,11 @@
 ﻿using System.Linq;
+using CryoAOP.Aspects;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using CryoAOP.Core.Extensions;
 
 namespace CryoAOP.Core
 {
-    public enum MethodInterceptionScopeType
-    {
-        Deep,
-        Shallow
-    }
-
     internal class MethodInterceptScopingExtension : MethodInterceptExtension
     {
         public MethodInterceptScopingExtension(MethodIntercept methodIntercept) : base(methodIntercept)

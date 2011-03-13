@@ -62,6 +62,10 @@
     <Compile Include="PropertyInterceptorTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Aspects\CryoAOP.Aspects.csproj">
+      <Project>{D361862D-5205-49CB-A50E-C9ED943AEBAB}</Project>
+      <Name>CryoAOP.Aspects</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CryoAOP\CryoAOP.csproj">
       <Project>{A9C22D19-786A-4C99-BFB6-715F710FA3A9}</Project>
       <Name>CryoAOP</Name>

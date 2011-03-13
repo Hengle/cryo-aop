@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CryoAOP.Core.Attributes
+namespace CryoAOP.Aspects
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
     public class InterceptAttribute : Attribute
