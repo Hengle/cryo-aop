@@ -1,17 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 
 namespace CryoAOP.Core
 {
-    public class AssemblyLoader
+    internal class ShadowAssemblyType
     {
-        public static List<Assembly> Assemblies = new List<Assembly>();
+        public readonly Assembly ShadowAssembly;
+        public readonly string OriginalAssemblyPath;
 
-        public static Assembly[] GetShadowAssemblies()
+        public ShadowAssemblyType(Assembly shadowAssembly, string originalAssemblyPath)
+        {
+            ShadowAssembly = shadowAssembly;
+            OriginalAssemblyPath = originalAssemblyPath;
+        }
+    }
+
+    internal class AssemblyLoader
+    {
+        public static List<ShadowAssemblyType> Assemblies = new List<ShadowAssemblyType>();
+
+        public ShadowAssemblyType[] GetShadowAssemblies()
         {
             if (Assemblies.Count == 0)
             {
@@ -23,12 +34,12 @@ namespace CryoAOP.Core
                     .Where(f =>
                                {
                                    var lowerCaseFileName = f.ToLower();
-                                   return (lowerCaseFileName.EndsWith(".dll")|| lowerCaseFileName.EndsWith(".exe"))
+                                   return (lowerCaseFileName.EndsWith(".dll") || lowerCaseFileName.EndsWith(".exe"))
                                           && lowerCaseFileName.IndexOf("cryoaop.exe") == -1
                                           && lowerCaseFileName.IndexOf("mono.cecil.dll") == -1
-                                          && lowerCaseFileName.IndexOf("mono.cecil.pdb.dll") == -1;
+                                          && lowerCaseFileName.IndexOf("mono.cecil.pdb") == -1;
                                }
-                        )
+                    )
                     .ToList();
 
                 foreach (var file in fileList)
@@ -39,7 +50,9 @@ namespace CryoAOP.Core
 
                     File.Copy(file, temporaryFile);
                     var assembly = Assembly.LoadFrom(temporaryFile);
-                    Assemblies.Add(assembly);
+
+                    var shadow = new ShadowAssemblyType(assembly, file);
+                    Assemblies.Add(shadow);
                 }
             }
             return Assemblies.ToArray();

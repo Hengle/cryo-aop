@@ -1,3 +1,10 @@
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using CryoAOP.Core.Attributes;
+using CryoAOP.Core.Extensions;
+
 namespace CryoAOP.Core
 {
     public partial class Intercept
@@ -36,6 +43,43 @@ namespace CryoAOP.Core
         {
             var typeInspector = Assembly.FindType(fullTypeName);
             typeInspector.FindMethod(methodName).InterceptMethod(interceptionScope);
+        }
+
+        public static void InterceptAspects()
+        {
+            var attributeFinder = new AttributeFinder();
+            var results = attributeFinder.FindAttributes<InterceptAttribute>();
+
+            var groupedByAssembly = results.GroupBy(r => r.Type.Assembly);
+            foreach (var group in groupedByAssembly)
+            {
+                var shadowAssembly = group.First().ShadowAssembly;
+                LoadAssembly(shadowAssembly.OriginalAssemblyPath);
+                foreach (var result in group)
+                {
+                    if (result.IsForType())
+                    {
+                        InterceptType(result.TypeName, result.Attribute.Scope);
+                        Console.WriteLine(
+                            "CryoAOP -> Intercepted {0}\\{1}\\*"
+                                .FormatWith(
+                                    Path.GetFileName(
+                                    shadowAssembly.OriginalAssemblyPath), 
+                                    result.TypeName)); 
+                    }
+                    if (result.IsForMethod())
+                    {
+                        InterceptMethod(result.TypeName, result.MethodName, result.Attribute.Scope);
+                        Console.WriteLine(
+                            "CryoAOP -> Intercepted {0}\\{1}\\{2}"
+                                .FormatWith(
+                                    Path.GetFileName(shadowAssembly.OriginalAssemblyPath), 
+                                    result.TypeName, 
+                                    result.MethodName)); 
+                    }
+                }
+                SaveAssembly(shadowAssembly.OriginalAssemblyPath);
+            }
         }
     }
 }

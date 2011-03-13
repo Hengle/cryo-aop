@@ -1,37 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using CryoAOP.Core.Attributes;
 using CryoAOP.Core.Extensions;
-using CryoAOP.Exec;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 namespace CryoAOP.Core
 {
-    internal class MethodMixinInfo
-    {
-        public MethodMixinInfo(MethodInfo method, MixinMethodAttribute attribute)
-        {
-            Method = method;
-            Attribute = attribute;
-        }
-
-        public MethodInfo Method { get; private set; }
-        public MixinMethodAttribute Attribute { get; private set; }
-    }
-
     internal class MethodInterceptMixinExtension : MethodInterceptExtension
     {
+        private readonly AttributeFinder attributeFinder = new AttributeFinder();
+
         public MethodInterceptMixinExtension(MethodIntercept methodIntercept) : base(methodIntercept)
         {
         }
 
         public void InsertCodeMixins()
         {
-            var methods = FindMethodAttributes();
+            var methods =
+                attributeFinder
+                    .FindAttributes<MixinMethodAttribute>();
+
             foreach (var methodInfo in methods)
             {
                 var methodSearchString =
@@ -42,11 +32,12 @@ namespace CryoAOP.Core
                                 p => p.ParameterType.Name).JoinWith(", "));
 
                 // Mixin: Check if the attribute is type specific 
-                if (methodInfo.Attribute.IsTypeSpecific && !methodInfo.Attribute.IsForType(TypeIntercept.Definition.Name))
+                if (methodInfo.Attribute.IsTypeSpecific &&
+                    !methodInfo.Attribute.IsForType(TypeIntercept.Definition.Name))
                     continue;
 
                 // Mixin: Check if the method has already been mixed in 
-                MethodMixinInfo info = methodInfo;
+                var info = methodInfo;
                 var methodAlreadyMixedIn =
                     TypeIntercept
                         .Definition
@@ -65,17 +56,6 @@ namespace CryoAOP.Core
                 // Mixin: Clone the method signature
                 var mixinMethod = ImporterFactory.Import(methodInfo.Method.DeclaringType, methodSearchString);
                 var cloneOfMixinMethod = CloneFactory.CloneIntoType(mixinMethod, TypeIntercept.Definition);
-
-                // Mixin: Clone the variables
-                foreach (var mixinVariable in mixinMethod.Resolve().Body.Variables)
-                {
-                    var cloneOfMixinVariable =
-                        new VariableDefinition(
-                            mixinVariable.Name,
-                            ImporterFactory.Import(mixinVariable.VariableType));
-
-                    cloneOfMixinMethod.Body.Variables.Add(cloneOfMixinVariable);
-                }
 
                 // Mixin: Init locals?
                 cloneOfMixinMethod.Body.InitLocals = mixinMethod.Resolve().Body.InitLocals;
@@ -104,7 +84,6 @@ namespace CryoAOP.Core
                             {
                                 il.Create(OpCodes.Newobj, ImporterFactory.Import(mixinConstructorRef))
                             });
-
                 }
 
                 // Mixin: Load the arguments 
@@ -113,7 +92,14 @@ namespace CryoAOP.Core
 
                 // Mixin: Check for generic params 
                 if (cloneOfMixinMethod.HasGenericParameters)
-                    il.Append(il.Create(OpCodes.Call, mixinMethod.MakeGeneric(cloneOfMixinMethod.GenericParameters.ToArray())));
+                    il.Append(
+                        il.Create(
+                            OpCodes.Call,
+                            mixinMethod.MakeGeneric(
+                                cloneOfMixinMethod
+                                    .GenericParameters
+                                    .ToArray())));
+
                 else
                     il.Append(il.Create(OpCodes.Call, mixinMethod));
 
@@ -148,72 +134,6 @@ namespace CryoAOP.Core
             return
                 firstInstruction.OpCode == OpCodes.Ldstr
                 && (firstInstruction.Operand as string) == "CryoAOP -> Mixin";
-        }
-
-        private static IEnumerable<MethodMixinInfo> FindMethodAttributes()
-        {
-            var assemblies = LoadAssemblyList();
-            var attributesFound = new List<MethodMixinInfo>();
-            foreach (var assembly in assemblies)
-            {
-                try
-                {
-                    foreach (var type in assembly.GetTypes())
-                    {
-                        try
-                        {
-                            var methods =
-                                type.GetMethods(
-                                    BindingFlags.Public
-                                    | BindingFlags.NonPublic
-                                    | BindingFlags.Static
-                                    | BindingFlags.Instance);
-
-                            foreach (var method in methods)
-                            {
-                                try
-                                {
-                                    var methodMixinAttributes =
-                                        method
-                                            .GetCustomAttributes(true)
-                                            .Where(
-                                                attr =>
-                                                attr.GetType().FullName == typeof (MixinMethodAttribute).FullName)
-                                            .ToList();
-
-                                    if (methodMixinAttributes.Count > 0)
-                                    {
-                                        var attribute = methodMixinAttributes.Cast<MixinMethodAttribute>().First();
-                                        var info = new MethodMixinInfo(method, attribute);
-                                        attributesFound.Add(info);
-                                    }
-                                }
-                                catch (Exception err)
-                                {
-                                    "CryoAOP -> Warning! First chance exception ocurred while searching for Mixin Methods. \r\n{0}"
-                                        .Warn(err);
-                                }
-                            }
-                        }
-                        catch (Exception err1)
-                        {
-                            "CryoAOP -> Warning! First chance exception ocurred while searching for Mixin Methods. \r\n{0}"
-                                .Warn(err1);
-                        }
-                    }
-                }
-                catch (Exception err2)
-                {
-                    "CryoAOP -> Warning! First chance exception ocurred while searching for Mixin Methods. \r\n{0}"
-                        .Warn(err2);
-                }
-            }
-            return attributesFound;
-        }
-
-        private static IEnumerable<Assembly> LoadAssemblyList()
-        {
-            return AssemblyLoader.GetShadowAssemblies();
         }
     }
 }

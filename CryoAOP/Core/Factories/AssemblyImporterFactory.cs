@@ -40,11 +40,16 @@ namespace CryoAOP.Core.Factories
             return definition.MainModule.Import(type);
         }
 
+        public virtual TypeReference Import(TypeReference type, TypeReference context)
+        {
+            return definition.MainModule.Import(type, context);
+        }
+
         public virtual MethodReference Import(Type searchType, string methodName)
         {
             var typeReference = Import(searchType);
 
-            foreach (var method in typeReference.Resolve().Methods)
+            foreach (var method in typeReference.Resolve().Methods.ToList())
             {
                 var methodParts = methodName.Split(',');
                 var searchMethodName = methodParts[0];
@@ -87,7 +92,7 @@ namespace CryoAOP.Core.Factories
         {
             var assemblyRef = new AssemblyIntercept(searchType.Assembly);
             TypeDefinition type = null;
-            foreach (var currentType in assemblyRef.Definition.MainModule.Types)
+            foreach (var currentType in assemblyRef.Definition.MainModule.Types.ToList())
             {
                 if (searchType.IsArray && currentType.Name == searchType.BaseType.Name)
                 {

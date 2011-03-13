@@ -52,7 +52,10 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Aspects\AspectTypeC.cs" />
     <Compile Include="MethodInterceptorTarget.cs" />
+    <Compile Include="Aspects\AspectTypeA.cs" />
+    <Compile Include="Aspects\AspectTypeB.cs" />
     <Compile Include="PropertyInterceptorTarget.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -72,7 +75,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>..\..\..\bin\$(ConfigurationName)\CryoAOP.exe /i .\aop.cryoaop</PostBuildEvent>
+    <PostBuildEvent>..\..\..\bin\$(ConfigurationName)\CryoAOP.exe /i .\aop.cryoaop /aspects</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
