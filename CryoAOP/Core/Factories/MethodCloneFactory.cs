@@ -6,6 +6,13 @@ namespace CryoAOP.Core.Factories
 {
     internal class MethodCloneFactory
     {
+        private readonly MethodInterceptContext context;
+
+        public MethodCloneFactory(MethodInterceptContext context)
+        {
+            this.context = context;
+        }
+
         public MethodDefinition Clone(MethodReference sourceMethod)
         {
             return CloneIntoType(sourceMethod, sourceMethod.Resolve().DeclaringType);
@@ -29,7 +36,7 @@ namespace CryoAOP.Core.Factories
         {
             if (sourceMethod.HasParameters)
             {
-                var importer = new AssemblyImporterFactory(clonedMethod.Module.Assembly);
+                var importer = new AssemblyImporterFactory(context);
                 foreach (var parameter in sourceMethod.Parameters.ToList())
                 {
                     var importedParameterType = importer.Import(parameter.ParameterType);

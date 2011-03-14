@@ -41,9 +41,12 @@
     <Compile Include="Core\AssemblyLoader.cs" />
     <Compile Include="Core\Attributes\MixinMethodAttribute.cs" />
     <Compile Include="Core\Exceptions\MethodSignatureViolationException.cs" />
+    <Compile Include="Core\MethodInterceptContext.cs" />
     <Compile Include="Core\MethodInterceptExtension.cs" />
+    <Compile Include="Core\MethodInterceptMarker.cs" />
     <Compile Include="Core\MethodInterceptMixinExtension.cs" />
     <Compile Include="Core\MethodInterceptScopingExtension.cs" />
+    <Compile Include="Core\MethodInvocationType.cs" />
     <Compile Include="Exec\AssemblyLine.cs" />
     <Compile Include="Exec\ConfigLine.cs" />
     <Compile Include="Exec\ErrorExtensions.cs" />
@@ -55,7 +58,7 @@
     <Compile Include="Core\Exceptions\MethodNotFoundException.cs" />
     <Compile Include="Core\Exceptions\TypeNotFoundException.cs" />
     <Compile Include="Core\Exceptions\TypeReferenceNotFoundException.cs" />
-    <Compile Include="Core\Extensions\CryoAOPExtensions.cs" />
+    <Compile Include="Core\Extensions\CoreExtensions.cs" />
     <Compile Include="Core\Extensions\EnumerableExtensions.cs" />
     <Compile Include="Core\Extensions\ILProcessorExtensions.cs" />
     <Compile Include="Core\Extensions\MethodReferenceExtensions.cs" />

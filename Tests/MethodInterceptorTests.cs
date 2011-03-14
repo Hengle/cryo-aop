@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using CryoAOP.Core;
+using CryoAOP.Mixins;
 using CryoAOP.TestAssembly;
 using NUnit.Framework;
 

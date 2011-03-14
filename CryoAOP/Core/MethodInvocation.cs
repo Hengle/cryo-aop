@@ -5,12 +5,6 @@ using CryoAOP.Core.Extensions;
 
 namespace CryoAOP.Core
 {
-    public enum MethodInvocationType
-    {
-        BeforeInvocation,
-        AfterInvocation
-    }
-
     public class MethodInvocation : Invocation
     {
         private readonly object[] parameterValues;

@@ -1,23 +1,17 @@
-﻿using CryoAOP.Core.Factories;
-
-namespace CryoAOP.Core
+﻿namespace CryoAOP.Core
 {
     internal class MethodInterceptExtension
     {
-        protected readonly MethodIntercept MethodIntercept;
-        protected readonly MethodCloneFactory CloneFactory;
-        protected readonly AssemblyImporterFactory ImporterFactory;
+        protected readonly MethodInterceptContext Context;
 
-        public MethodInterceptExtension(MethodIntercept methodIntercept)
+        public MethodInterceptExtension(MethodInterceptContext context)
         {
-            this.MethodIntercept = methodIntercept;
-            this.ImporterFactory = new AssemblyImporterFactory(methodIntercept);
-            this.CloneFactory = new MethodCloneFactory();
+            Context = context;
         }
 
         protected TypeIntercept TypeIntercept
         {
-            get { return MethodIntercept.TypeIntercept; }
+            get { return Context.TypeIntercept; }
         }
     }
 }

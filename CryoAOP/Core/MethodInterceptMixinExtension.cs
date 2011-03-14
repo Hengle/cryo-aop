@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using CryoAOP.Core.Attributes;
 using CryoAOP.Core.Extensions;
 using CryoAOP.Exec;
-using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 namespace CryoAOP.Core
@@ -25,11 +23,13 @@ namespace CryoAOP.Core
 
     internal class MethodInterceptMixinExtension : MethodInterceptExtension
     {
-        public MethodInterceptMixinExtension(MethodIntercept methodIntercept) : base(methodIntercept)
+        public const string MethodMarker = "CryoAOP -> Mixin";
+
+        public MethodInterceptMixinExtension(MethodInterceptContext context) : base(context)
         {
         }
 
-        public void InsertCodeMixins()
+        public void InsertMethodMixins()
         {
             var methods = FindMethodAttributes();
             foreach (var methodInfo in methods)
@@ -46,13 +46,13 @@ namespace CryoAOP.Core
                     continue;
 
                 // Mixin: Check if the method has already been mixed in 
-                MethodMixinInfo info = methodInfo;
+                var info = methodInfo;
                 var methodAlreadyMixedIn =
                     TypeIntercept
                         .Definition
                         .Methods
                         .Any(searchMethod =>
-                             HasMixinMarker(searchMethod)
+                             Context.MethodMarker.HasMarker(searchMethod, MethodMarker)
                              && searchMethod.Name == info.Method.Name
                              && searchMethod.IsStatic == info.Method.IsStatic
                              && searchMethod.IsVirtual == info.Method.IsVirtual
@@ -63,8 +63,8 @@ namespace CryoAOP.Core
                     continue;
 
                 // Mixin: Clone the method signature
-                var mixinMethod = ImporterFactory.Import(methodInfo.Method.DeclaringType, methodSearchString);
-                var cloneOfMixinMethod = CloneFactory.CloneIntoType(mixinMethod, TypeIntercept.Definition);
+                var mixinMethod = Context.ImporterFactory.Import(methodInfo.Method.DeclaringType, methodSearchString);
+                var cloneOfMixinMethod = Context.CloneFactory.CloneIntoType(mixinMethod, TypeIntercept.Definition);
 
                 // Mixin: Clone the variables
                 foreach (var mixinVariable in mixinMethod.Resolve().Body.Variables)
@@ -72,7 +72,7 @@ namespace CryoAOP.Core
                     var cloneOfMixinVariable =
                         new VariableDefinition(
                             mixinVariable.Name,
-                            ImporterFactory.Import(mixinVariable.VariableType));
+                            Context.ImporterFactory.Import(mixinVariable.VariableType));
 
                     cloneOfMixinMethod.Body.Variables.Add(cloneOfMixinVariable);
                 }
@@ -81,7 +81,7 @@ namespace CryoAOP.Core
                 cloneOfMixinMethod.Body.InitLocals = mixinMethod.Resolve().Body.InitLocals;
 
                 // Mixin: Insert Mixin Marker
-                CreateMixinMarker(cloneOfMixinMethod);
+                Context.MethodMarker.CreateMarker(cloneOfMixinMethod, MethodMarker);
 
                 // Mixin: Get IL processor
                 var il = cloneOfMixinMethod.Body.GetILProcessor();
@@ -102,9 +102,8 @@ namespace CryoAOP.Core
                     il.Append(
                         new[]
                             {
-                                il.Create(OpCodes.Newobj, ImporterFactory.Import(mixinConstructorRef))
+                                il.Create(OpCodes.Newobj, Context.ImporterFactory.Import(mixinConstructorRef))
                             });
-
                 }
 
                 // Mixin: Load the arguments 
@@ -123,31 +122,6 @@ namespace CryoAOP.Core
                 // Mixin: Done!
                 Console.WriteLine("CryoAOP -> Mixed '{0}' into {1}".FormatWith(mixinMethod, cloneOfMixinMethod));
             }
-        }
-
-        public virtual void CreateMixinMarker(MethodDefinition method)
-        {
-            var il = method.Body.GetILProcessor();
-            il.Append(new[]
-                          {
-                              il.Create(OpCodes.Ldstr, "CryoAOP -> Mixin"),
-                              il.Create(OpCodes.Pop)
-                          });
-        }
-
-        public virtual bool HasMixinMarker(MethodDefinition method)
-        {
-            if (method == null
-                || method.Body == null
-                || method.Body.Instructions == null
-                || method.Body.Instructions.Count <= 2)
-                return false;
-
-            var interceptMarker = method.Body.Instructions.ToList().Take(2).ToArray();
-            var firstInstruction = interceptMarker.First();
-            return
-                firstInstruction.OpCode == OpCodes.Ldstr
-                && (firstInstruction.Operand as string) == "CryoAOP -> Mixin";
         }
 
         private static IEnumerable<MethodMixinInfo> FindMethodAttributes()

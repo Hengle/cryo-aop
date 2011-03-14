@@ -4,6 +4,11 @@ using CryoAOP.Core.Attributes;
 
 namespace CryoAOP.Mixins
 {
+    public interface IMethodInterceptorMixins
+    {
+        void WhenMethodCalled(Action<MethodInvocation> invocation);
+    }
+
     public class MethodInterceptorMixins
     {
         [MixinMethod()]

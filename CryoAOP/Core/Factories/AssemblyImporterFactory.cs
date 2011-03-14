@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using CryoAOP.Core.Exceptions;
 using Mono.Cecil;
@@ -8,36 +7,36 @@ namespace CryoAOP.Core.Factories
 {
     internal class AssemblyImporterFactory
     {
-        private readonly AssemblyDefinition definition;
+        private readonly MethodInterceptContext context;
 
-        public AssemblyImporterFactory(AssemblyDefinition definition)
+        public AssemblyImporterFactory(MethodInterceptContext context)
         {
-            this.definition = definition;
+            this.context = context;
         }
 
-        public AssemblyImporterFactory(MethodIntercept intercept)
+        public AssemblyDefinition AssemblyDefinition
         {
-            this.definition = intercept.TypeIntercept.AssemblyIntercept.Definition;
+            get { return context.AssemblyDefinition; }
         }
 
         public virtual FieldReference Import(FieldReference field)
         {
-            return definition.MainModule.Import(field);
+            return AssemblyDefinition.MainModule.Import(field);
         }
 
         public virtual TypeReference Import(PropertyReference property)
         {
-            return definition.MainModule.Import(property.PropertyType);
+            return AssemblyDefinition.MainModule.Import(property.PropertyType);
         }
 
         public virtual MethodReference Import(MethodReference method)
         {
-            return definition.MainModule.Import(method);
+            return AssemblyDefinition.MainModule.Import(method);
         }
 
         public virtual TypeReference Import(TypeReference type)
         {
-            return definition.MainModule.Import(type);
+            return AssemblyDefinition.MainModule.Import(type);
         }
 
         public virtual MethodReference Import(Type searchType, string methodName)
@@ -53,25 +52,25 @@ namespace CryoAOP.Core.Factories
                 {
                     if (methodName.Contains(","))
                     {
-                        var notableParams = 
+                        var notableParams =
                             methodParts
-                            .Except(new[] {searchMethodName.Trim()})
-                            .Select(p => p.Trim());
+                                .Except(new[] {searchMethodName.Trim()})
+                                .Select(p => p.Trim());
 
-                        var methodParams = 
+                        var methodParams =
                             method
-                            .Parameters
-                            .Select(p => p.ParameterType.Name);
+                                .Parameters
+                                .Select(p => p.ParameterType.Name);
 
                         if (methodParams.All(mp => notableParams.Contains(mp)))
                         {
-                            var methodReference = definition.MainModule.Import(method);
+                            var methodReference = AssemblyDefinition.MainModule.Import(method);
                             return methodReference;
                         }
                     }
                     else
                     {
-                        var methodReference = definition.MainModule.Import(method);
+                        var methodReference = AssemblyDefinition.MainModule.Import(method);
                         return methodReference;
                     }
                 }
@@ -103,7 +102,7 @@ namespace CryoAOP.Core.Factories
             if (type == null)
                 throw new TypeNotFoundException("Could not find type '{0}'", searchType.FullName);
 
-            var typeReference = definition.MainModule.Import(type);
+            var typeReference = AssemblyDefinition.MainModule.Import(type);
             return typeReference;
         }
     }

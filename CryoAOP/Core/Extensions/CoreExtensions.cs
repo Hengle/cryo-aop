@@ -1,6 +1,6 @@
 ﻿namespace CryoAOP.Core.Extensions
 {
-    internal static class CryoAOPExtensions
+    internal static class CoreExtensions
     {
         public static MethodIntercept GetMethod(this string[] args)
         {

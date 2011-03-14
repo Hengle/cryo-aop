@@ -17,8 +17,7 @@ namespace CryoAOP.Core
             Definition = definition;
         }
 
-        public virtual void InterceptAll(
-            MethodInterceptionScopeType interceptionScope = MethodInterceptionScopeType.Shallow)
+        public virtual void InterceptAll(MethodInterceptionScopeType interceptionScope = MethodInterceptionScopeType.Shallow)
         {
             foreach (var method in Definition.Methods.ToList())
             {
