@@ -5,30 +5,23 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{578873D9-DCB5-43F3-B2C3-DB080679214C}</ProjectGuid>
+    <ProjectGuid>{D361862D-5205-49CB-A50E-C9ED943AEBAB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CryoAOP.Mixins</RootNamespace>
-    <AssemblyName>CryoAOP.Mixins</AssemblyName>
+    <RootNamespace>CryoAOP.Aspects</RootNamespace>
+    <AssemblyName>CryoAOP.Aspects</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'net_3_5_Debug|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_3_5_Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
     <OutputPath>bin\net_3_5_Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisLogFile>bin\Debug\CryoAOP.Mixins.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -42,17 +35,9 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="MethodInterceptorMixins.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Aspects\CryoAOP.Aspects.csproj">
-      <Project>{D361862D-5205-49CB-A50E-C9ED943AEBAB}</Project>
-      <Name>CryoAOP.Aspects</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CryoAOP\CryoAOP.csproj">
-      <Project>{A9C22D19-786A-4C99-BFB6-715F710FA3A9}</Project>
-      <Name>CryoAOP</Name>
-    </ProjectReference>
+    <Compile Include="InterceptAttribute.cs" />
+    <Compile Include="MethodInterceptionScopeType.cs" />
+    <Compile Include="MixinMethodAttribute.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -52,7 +52,10 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Aspects\AspectTypeC.cs" />
     <Compile Include="MethodInterceptorTarget.cs" />
+    <Compile Include="Aspects\AspectTypeA.cs" />
+    <Compile Include="Aspects\AspectTypeB.cs" />
     <Compile Include="PropertyInterceptorTarget.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +64,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Aspects\CryoAOP.Aspects.csproj">
+      <Project>{D361862D-5205-49CB-A50E-C9ED943AEBAB}</Project>
+      <Name>CryoAOP.Aspects</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CryoAOP\CryoAOP.csproj">
       <Project>{A9C22D19-786A-4C99-BFB6-715F710FA3A9}</Project>
       <Name>CryoAOP</Name>
@@ -72,7 +79,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>..\..\..\bin\$(ConfigurationName)\CryoAOP.exe /i .\aop.cryoaop</PostBuildEvent>
+    <PostBuildEvent>..\..\..\bin\$(ConfigurationName)\CryoAOP.exe /i .\aop.cryoaop /aspects</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

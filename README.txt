@@ -1,0 +1,1 @@
+Change solution configuration to net_3_5_Debug for a clean build.

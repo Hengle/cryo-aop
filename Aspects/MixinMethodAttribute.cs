@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace CryoAOP.Core.Attributes
+namespace CryoAOP.Aspects
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class MixinMethodAttribute : Attribute

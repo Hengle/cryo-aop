@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using CryoAOP.Core.Extensions;
+using CryoAOP.Core.Methods;
 using Mono.Cecil;
 
 namespace CryoAOP.Core.Factories

@@ -1,6 +1,7 @@
 ﻿using System;
+using CryoAOP.Aspects;
 using CryoAOP.Core;
-using CryoAOP.Core.Attributes;
+using CryoAOP.Core.Methods;
 
 namespace CryoAOP.Mixins
 {
@@ -12,15 +13,25 @@ namespace CryoAOP.Mixins
     public class MethodInterceptorMixins
     {
         [MixinMethod()]
-        public void WhenMethodCalled(Action<MethodInvocation> invocation)
+        public void WhenCalled<T>(Action<MethodInvocation> invocation)
         {
-            Intercept.Call += invocation;
+            Intercept.Call +=
+                (i) =>
+                    {
+                        if (i.Type == typeof(T))
+                            invocation(i);
+                    };
         }
 
         [MixinMethod()]
-        public static void WhenStaticMethodCalled(Action<MethodInvocation> invocation)
+        public static void WhenCalledStatic<T>(Action<MethodInvocation> invocation)
         {
-            Intercept.Call += invocation;
+            Intercept.Call +=
+                (i) =>
+                {
+                    if (i.Type == typeof(T))
+                        invocation(i);
+                };
         }
     }
 }

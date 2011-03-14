@@ -1,4 +1,5 @@
 ﻿using System;
+using CryoAOP.Core.Methods;
 
 namespace CryoAOP.Core
 {

@@ -39,14 +39,17 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Core\AssemblyLoader.cs" />
-    <Compile Include="Core\Attributes\MixinMethodAttribute.cs" />
+    <Compile Include="Core\Attributes\AttributeFinder.cs" />
+    <Compile Include="Core\Attributes\AttributeResult.cs" />
+    <Compile Include="Core\Exceptions\IncorrectAttributeResultUsageException.cs" />
     <Compile Include="Core\Exceptions\MethodSignatureViolationException.cs" />
-    <Compile Include="Core\MethodInterceptContext.cs" />
-    <Compile Include="Core\MethodInterceptExtension.cs" />
-    <Compile Include="Core\MethodInterceptMarker.cs" />
-    <Compile Include="Core\MethodInterceptMixinExtension.cs" />
-    <Compile Include="Core\MethodInterceptScopingExtension.cs" />
-    <Compile Include="Core\MethodInvocationType.cs" />
+    <Compile Include="Core\Methods\MethodInterceptContext.cs" />
+    <Compile Include="Core\Extensions\FileExtensions.cs" />
+    <Compile Include="Core\Methods\MethodInterceptExtension.cs" />
+    <Compile Include="Core\Methods\MethodInterceptMarker.cs" />
+    <Compile Include="Core\Methods\MethodInterceptMixinExtension.cs" />
+    <Compile Include="Core\Methods\MethodInterceptScopingExtension.cs" />
+    <Compile Include="Core\Methods\MethodInvocationType.cs" />
     <Compile Include="Exec\AssemblyLine.cs" />
     <Compile Include="Exec\ConfigLine.cs" />
     <Compile Include="Exec\ErrorExtensions.cs" />
@@ -70,13 +73,17 @@
     <Compile Include="Core\Intercept.In.cs" />
     <Compile Include="Core\Intercept.Out.cs" />
     <Compile Include="Core\Invocation.cs" />
-    <Compile Include="Core\MethodIntercept.cs" />
-    <Compile Include="Core\MethodInvocation.cs" />
+    <Compile Include="Core\Methods\MethodIntercept.cs" />
+    <Compile Include="Core\Methods\MethodInvocation.cs" />
     <Compile Include="Core\TypeIntercept.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Exec\TypeLine.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Aspects\CryoAOP.Aspects.csproj">
+      <Project>{D361862D-5205-49CB-A50E-C9ED943AEBAB}</Project>
+      <Name>CryoAOP.Aspects</Name>
+    </ProjectReference>
     <ProjectReference Include="..\cecil\Mono.Cecil.csproj">
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
       <Name>Mono.Cecil</Name>

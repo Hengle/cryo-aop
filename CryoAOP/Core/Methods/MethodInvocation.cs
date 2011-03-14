@@ -3,7 +3,7 @@ using System.Reflection;
 using CryoAOP.Core.Exceptions;
 using CryoAOP.Core.Extensions;
 
-namespace CryoAOP.Core
+namespace CryoAOP.Core.Methods
 {
     public class MethodInvocation : Invocation
     {

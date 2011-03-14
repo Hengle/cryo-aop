@@ -1,7 +1,7 @@
 ﻿using CryoAOP.Core.Factories;
 using Mono.Cecil;
 
-namespace CryoAOP.Core
+namespace CryoAOP.Core.Methods
 {
     internal class MethodInterceptContext
     {

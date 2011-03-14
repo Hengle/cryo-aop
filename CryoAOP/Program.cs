@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using CryoAOP.Core;
@@ -20,26 +19,32 @@ namespace CryoAOP
                 return;
             }
 
-            var inputFile = args.Where(param => param.ToLower().EndsWith(".cryoaop")).FirstOrDefault();
-            if (inputFile == null)
-            {
-                "Could not find input file parameter!".Error();
-                WriteUsage();
-                return;
-            }
-
-            if (!File.Exists(inputFile))
-            {
-                "'{0}' does not exist!".Error(inputFile);
-                WriteUsage();
-                return;
-            }
-
             if (args.Any(a => a == "/nowarn"))
                 ErrorExtensions.DisableWarnings = true;
 
-            var assemblyLines = ParseInputFile(inputFile);
-            InterceptMethods(assemblyLines);
+            if (args.Any(a => a == "/aspects"))
+                Intercept.InterceptAspects();
+
+            if (args.Any(a => a == "/i"))
+            {
+                var inputFile = args.Where(param => param.ToLower().EndsWith(".cryoaop")).FirstOrDefault();
+                if (inputFile == null)
+                {
+                    "Could not find input file parameter!".Error();
+                    WriteUsage();
+                    return;
+                }
+
+                if (!File.Exists(inputFile))
+                {
+                    "'{0}' does not exist!".Error(inputFile);
+                    WriteUsage();
+                    return;
+                }
+
+                var assemblyLines = ParseInputFile(inputFile);
+                InterceptMethods(assemblyLines);
+            }
 
             Environment.ExitCode = 0;
         }
@@ -107,26 +112,35 @@ namespace CryoAOP
 
         private static void InterceptMethods(IEnumerable<AssemblyLine> assemblyLines)
         {
-            foreach(var assembly in assemblyLines)
+            foreach (var assembly in assemblyLines)
             {
                 Intercept.LoadAssembly(assembly.InputAssembly);
 
                 if (assembly.HasTypes)
                 {
-                    foreach(var type in assembly.Types)
+                    foreach (var type in assembly.Types)
                     {
                         if (type.HasMethods)
                         {
                             foreach (var method in type.Methods)
                             {
                                 Intercept.InterceptMethod(type.FullTypeName, method.MethodName, method.MethodScope);
-                                Console.WriteLine("CryoAOP -> Intercepted {0}\\{1}\\{2}".FormatWith(assembly.InputAssembly, type.FullTypeName, method.MethodName));
+                                Console.WriteLine(
+                                    "CryoAOP -> Intercepted {0}\\{1}\\{2}"
+                                    .FormatWith(
+                                        assembly.InputAssembly,
+                                        type.FullTypeName,
+                                        method.MethodName));
                             }
                         }
                         else
                         {
                             Intercept.InterceptType(type.FullTypeName, type.MethodScope);
-                            Console.WriteLine("CryoAOP -> Intercepted {0}\\{1}\\*".FormatWith(assembly.InputAssembly, type.FullTypeName));
+                            Console.WriteLine(
+                                "CryoAOP -> Intercepted {0}\\{1}\\*"
+                                .FormatWith(
+                                    assembly.InputAssembly,
+                                    type.FullTypeName));
                         }
                     }
                 }
@@ -144,14 +158,15 @@ namespace CryoAOP
         private static void WriteUsage()
         {
             Console.WriteLine("CryoAOP v1.0 by fir3pho3nixx");
-            Console.WriteLine("Usage: CryoAOP /i input.cryoaop /nowarn");
+            Console.WriteLine("Usage: CryoAOP /input input.cryoaop /nowarn");
             Console.WriteLine("Where: ");
-            Console.WriteLine("     /i input.cryoaop -> is of the following format.");
-            Console.WriteLine("     /nowarn          -> is when we do not want to see warnings.");
+            Console.WriteLine("     /input <inputfile.cryoaop> -> is an input file with an extension of '*.cryoaop'.");
+            Console.WriteLine("     /nowarn                    -> is when we do not want to see warnings for assembly load failures.");
+            Console.WriteLine("     /apsects                   -> find 'Intercept' and 'Mixin' attributes.");
             Console.WriteLine();
-            Console.WriteLine("Example: The scope to the interception can be set for 'Assembly', 'Type' or 'Method'.");
-            Console.WriteLine("Assembly: FooAssembly.dll, OutFooAssembly.dll");
-            Console.WriteLine("   Type: Foo.TypeToIntercept");
+            Console.WriteLine("Example: Input File -> The scope to the interception can be set for 'Assembly', 'Type' or 'Method'.");
+            Console.WriteLine("Assembly: InputAssemblyName.dll, OutputAssemblyName.dll");
+            Console.WriteLine("   Type: ExampleNamespace.ExampleClassToIntercept");
             Console.WriteLine("      Method: MethodToIntercept(); /* Where Scope is defaulted to shallow */");
             Console.WriteLine("      Method<shallow>: MethodToIntercept(int); /* Only intercepts external calls to member */");
             Console.WriteLine("      Method<deep>: MethodToIntercept(string,int); /* Intercepts internal calls to member within assembly, incurs performance hit */");

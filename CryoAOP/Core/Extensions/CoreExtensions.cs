@@ -1,4 +1,6 @@
-﻿namespace CryoAOP.Core.Extensions
+﻿using CryoAOP.Core.Methods;
+
+namespace CryoAOP.Core.Extensions
 {
     internal static class CoreExtensions
     {

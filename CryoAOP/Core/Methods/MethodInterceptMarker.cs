@@ -3,7 +3,7 @@ using CryoAOP.Core.Extensions;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
-namespace CryoAOP.Core
+namespace CryoAOP.Core.Methods
 {
     public class MethodInterceptMarker
     {

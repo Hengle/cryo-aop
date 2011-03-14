@@ -1,4 +1,4 @@
-﻿namespace CryoAOP.Core
+﻿namespace CryoAOP.Core.Methods
 {
     internal class MethodInterceptExtension
     {

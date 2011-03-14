@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using CryoAOP.Core;
+using CryoAOP.Core.Methods;
 using CryoAOP.Mixins;
 using CryoAOP.TestAssembly;
 using NUnit.Framework;
@@ -29,7 +30,7 @@ namespace CryoAOP.Tests
             var interceptorWasCalled = false;
 
             InterceptInstance
-                .WhenMethodCalled(
+                .WhenCalled<MethodInterceptorTarget>(
                     (invocation) =>
                     {
                         interceptorWasCalled = true;
@@ -335,7 +336,7 @@ namespace CryoAOP.Tests
             var a = 1;
             var interceptorWasCalled = false;
 
-            MethodInterceptorTarget.WhenStaticMethodCalled(
+            MethodInterceptorTarget.WhenCalledStatic<MethodInterceptorTarget>(
                 (invocation) =>
                     {
                         interceptorWasCalled = true;
