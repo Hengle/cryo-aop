@@ -17,7 +17,7 @@ namespace CryoAOP.Core.Methods
         {
         }
 
-        public void InsertMethodMixins()
+        public void MixinMethods()
         {
             var methods =
                 attributeFinder
@@ -44,7 +44,7 @@ namespace CryoAOP.Core.Methods
                         .Definition
                         .Methods
                         .Any(searchMethod =>
-                             Context.MethodMarker.HasMarker(searchMethod, MethodMarker)
+                             Context.Marker.HasMarker(searchMethod, MethodMarker)
                              && searchMethod.Name == info.Method.Name
                              && searchMethod.IsStatic == info.Method.IsStatic
                              && searchMethod.IsVirtual == info.Method.IsVirtual
@@ -55,14 +55,14 @@ namespace CryoAOP.Core.Methods
                     continue;
 
                 // Mixin: Clone the method signature
-                var mixinMethod = Context.ImporterFactory.Import(methodInfo.Method.DeclaringType, methodSearchString);
-                var cloneOfMixinMethod = Context.CloneFactory.CloneIntoType(mixinMethod, Type.Definition);
+                var mixinMethod = Context.Importer.Import(methodInfo.Method.DeclaringType, methodSearchString);
+                var cloneOfMixinMethod = Context.Cloning.CloneIntoType(mixinMethod, Type.Definition);
 
                 // Mixin: Init locals?
                 cloneOfMixinMethod.Body.InitLocals = mixinMethod.Resolve().Body.InitLocals;
 
                 // Mixin: Insert Mixin Marker
-                Context.MethodMarker.CreateMarker(cloneOfMixinMethod, MethodMarker);
+                Context.Marker.CreateMarker(cloneOfMixinMethod, MethodMarker);
 
                 // Mixin: Get IL processor
                 var il = cloneOfMixinMethod.Body.GetILProcessor();
@@ -83,7 +83,7 @@ namespace CryoAOP.Core.Methods
                     il.Append(
                         new[]
                             {
-                                il.Create(OpCodes.Newobj, Context.ImporterFactory.Import(mixinConstructorRef))
+                                il.Create(OpCodes.Newobj, Context.Importer.Import(mixinConstructorRef))
                             });
                 }
 

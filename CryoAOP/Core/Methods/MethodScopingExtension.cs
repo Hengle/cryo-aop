@@ -7,13 +7,11 @@ namespace CryoAOP.Core.Methods
 {
     internal class MethodScopingExtension : MethodExtension
     {
-
-
         public MethodScopingExtension(MethodContext method) : base(method)
         {
         }
 
-        public void ApplyDeepScope(MethodDefinition renamedMethod, MethodDefinition interceptorMethod, ILProcessor il, MethodInterceptionScopeType interceptionScope)
+        public void ModifyCallScope(MethodDefinition renamedMethod, MethodDefinition interceptorMethod, ILProcessor il, MethodInterceptionScopeType interceptionScope)
         {
             if (interceptionScope == MethodInterceptionScopeType.Deep)
             {
@@ -24,7 +22,7 @@ namespace CryoAOP.Core.Methods
                         if (type.Methods == null || type.Methods.Count == 0) continue;
                         foreach (var method in type.Methods.ToList())
                         {
-                            if (Context.MethodMarker.HasMarker(method, Method.MethodMarker)) continue;
+                            if (Context.Marker.HasMarker(method, Method.MethodMarker)) continue;
 
                             if (method == null
                                 || method.Body == null
