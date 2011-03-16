@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace CryoAOP.Tests
 {
     [TestFixture]
-    public class MethodAspectTests
+    public class AspectTests
     {
         [Test]
         public void Should_intercept_aspects()

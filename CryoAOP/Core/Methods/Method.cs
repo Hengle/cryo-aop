@@ -8,30 +8,30 @@ using Mono.Cecil.Cil;
 
 namespace CryoAOP.Core.Methods
 {
-    internal class MethodIntercept
+    internal class Method
     {
         public const string MethodMarker = "CryoAOP -> Intercept";
-        protected readonly MethodInterceptContext Context;
+        protected readonly MethodContext Context;
 
         public MethodDefinition Definition
         {
             get { return Context.Definition; }
         }
 
-        public TypeIntercept TypeIntercept
+        public Type Type
         {
-            get { return Context.TypeIntercept; }
+            get { return Context.Type; }
         }
 
-        public MethodIntercept(TypeIntercept typeIntercept, MethodDefinition definition)
+        public Method(Type type, MethodDefinition definition)
         {
-            Context = new MethodInterceptContext(typeIntercept, this, definition);
+            Context = new MethodContext(type, this, definition);
         }
 
         public void Write(string assemblyPath)
         {
             Context
-                .AssemblyIntercept
+                .Assembly
                 .Write(assemblyPath);
         }
 
@@ -46,13 +46,13 @@ namespace CryoAOP.Core.Methods
 
             renamedMethod.Name =
                 Context
-                    .StringAliasFactory
+                    .NameAliasFactory
                     .GenerateIdentityName(Context.Definition.Name);
 
             // Insert interceptor code
 
             // Interceptor: Insert variables 
-            var v0 = new VariableDefinition("V_0", Context.ImporterFactory.Import(typeof (Type)));
+            var v0 = new VariableDefinition("V_0", Context.ImporterFactory.Import(typeof (System.Type)));
             interceptorMethod.Body.Variables.Add(v0);
             var v1 = new VariableDefinition("V_1", Context.ImporterFactory.Import(typeof (MethodInfo)));
             interceptorMethod.Body.Variables.Add(v1);
@@ -87,13 +87,13 @@ namespace CryoAOP.Core.Methods
             il.Append(new[]
                           {
                               il.Create(OpCodes.Nop),
-                              il.Create(OpCodes.Ldtoken, Context.TypeIntercept.Definition),
-                              il.Create(OpCodes.Call, Context.ImporterFactory.Import(typeof (Type), "GetTypeFromHandle")),
+                              il.Create(OpCodes.Ldtoken, Context.Type.Definition),
+                              il.Create(OpCodes.Call, Context.ImporterFactory.Import(typeof (System.Type), "GetTypeFromHandle")),
                               il.Create(OpCodes.Stloc_0)
                           });
 
             // Interceptor: Get the method info 
-            var methodReference = Context.ImporterFactory.Import(typeof (Type), "GetMethod, String, BindingFlags");
+            var methodReference = Context.ImporterFactory.Import(typeof (System.Type), "GetMethod, String, BindingFlags");
             il.Append(new[]
                           {
                               il.Create(OpCodes.Ldloc_0),

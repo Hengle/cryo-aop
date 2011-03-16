@@ -5,7 +5,7 @@ using Mono.Cecil.Cil;
 
 namespace CryoAOP.Core.Methods
 {
-    public class MethodInterceptMarker
+    public class MethodMarker
     {
         public virtual bool HasMarker(MethodDefinition method, string markerDefinition)
         {

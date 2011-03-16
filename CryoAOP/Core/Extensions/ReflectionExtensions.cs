@@ -19,7 +19,7 @@ namespace CryoAOP.Core.Extensions
 
         #endregion
 
-        public static Type FindType(this Assembly assembly, string typeName)
+        public static System.Type FindType(this System.Reflection.Assembly assembly, string typeName)
         {
             var type = assembly.GetTypes().Where(t => t.FullName.ToLower().EndsWith(typeName.ToLower())).FirstOrDefault();
             if (type == null)

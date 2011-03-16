@@ -42,7 +42,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="MethodInterceptorMixins.cs" />
+    <Compile Include="MethodMixins.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Aspects\CryoAOP.Aspects.csproj">

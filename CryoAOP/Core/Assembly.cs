@@ -8,26 +8,26 @@ using Mono.Cecil;
 
 namespace CryoAOP.Core
 {
-    internal class AssemblyIntercept
+    internal class Assembly
     {
         public readonly AssemblyDefinition Definition;
         private readonly string assemblyPath = "";
 
 
-        public AssemblyIntercept(Assembly assembly)
+        public Assembly(System.Reflection.Assembly assembly)
             : this(assembly
                        .CodeBase
                        .Replace("file:///", "")
                        .Replace("/", @"\"),
-                   AssemblyInterceptParams
+                   AssemblyParams
                        .DeferredLoad)
         {
         }
 
-        public AssemblyIntercept(string assemblyPath, ReaderParameters @params = null)
+        public Assembly(string assemblyPath, ReaderParameters @params = null)
         {
             if (@params == null)
-                @params = AssemblyInterceptParams.ReadSymbols;
+                @params = AssemblyParams.ReadSymbols;
 
             if (assemblyPath == null) throw new ArgumentNullException("assemblyPath");
             this.assemblyPath = assemblyPath;
@@ -40,7 +40,7 @@ namespace CryoAOP.Core
                             this.assemblyPath,
                             @params);
 
-                AssemblyInterceptParams
+                AssemblyParams
                     .AssemblyResolver
                     .AddSearchDirectory(
                         RuntimeEnvironment
@@ -53,14 +53,14 @@ namespace CryoAOP.Core
             }
         }
 
-        public virtual TypeIntercept FindType(string searchType)
+        public virtual Type FindType(string searchType)
         {
             foreach (var module in Definition.Modules)
             {
                 foreach (var type in module.Types)
                 {
                     if (type.FullName.ToLower().EndsWith(searchType.ToLower()))
-                        return new TypeIntercept(this, type);
+                        return new Type(this, type);
                 }
             }
 
@@ -69,14 +69,14 @@ namespace CryoAOP.Core
                 searchType, Path.GetFileName(assemblyPath));
         }
 
-        public virtual TypeIntercept FindType(Type searchType)
+        public virtual Type FindType(System.Type searchType)
         {
             return FindType(searchType.FullName);
         }
 
         public virtual void Write(string path)
         {
-            Definition.Write(path, AssemblyInterceptParams.WriterParameters);
+            Definition.Write(path, AssemblyParams.WriterParameters);
         }
 
         public override string ToString()

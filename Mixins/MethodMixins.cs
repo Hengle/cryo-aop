@@ -5,12 +5,12 @@ using CryoAOP.Core.Methods;
 
 namespace CryoAOP.Mixins
 {
-    public interface IMethodInterceptorMixins
+    public interface IMethodMixins
     {
         void WhenMethodCalled(Action<MethodInvocation> invocation);
     }
 
-    public class MethodInterceptorMixins
+    public class MethodMixins
     {
         [MixinMethod()]
         public void WhenCalled<T>(Action<MethodInvocation> invocation)

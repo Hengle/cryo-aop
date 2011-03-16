@@ -9,7 +9,7 @@ namespace CryoAOP.Core.Methods
     {
         private readonly object[] parameterValues;
 
-        public MethodInvocation(Type type, MethodInfo method, params object[] parameterValues)
+        public MethodInvocation(System.Type type, MethodInfo method, params object[] parameterValues)
         {
             Type = type;
             Method = method;
@@ -18,12 +18,12 @@ namespace CryoAOP.Core.Methods
             InvocationType = MethodInvocationType.BeforeInvocation;
         }
 
-        public MethodInvocation(object instance, Type type, MethodInfo method, params object[] parameterValues) : this (type, method, parameterValues)
+        public MethodInvocation(object instance, System.Type type, MethodInfo method, params object[] parameterValues) : this (type, method, parameterValues)
         {
             Instance = instance;
         }
 
-        public Type Type { private set; get; }
+        public System.Type Type { private set; get; }
         public object Instance { private set; get; }
         public bool CanInvoke { private set; get; }
         public MethodInfo Method { private set; get; }

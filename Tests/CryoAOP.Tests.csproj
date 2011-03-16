@@ -57,9 +57,9 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="MethodAspectTests.cs" />
-    <Compile Include="MethodInterceptorTests.cs" />
-    <Compile Include="PropertyInterceptorTests.cs" />
+    <Compile Include="AspectTests.cs" />
+    <Compile Include="MethodTests.cs" />
+    <Compile Include="PropertyTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Aspects\CryoAOP.Aspects.csproj">

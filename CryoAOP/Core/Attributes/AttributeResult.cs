@@ -6,14 +6,14 @@ namespace CryoAOP.Core.Attributes
 {
     internal class AttributeResult<T> where T : Attribute
     {
-        public AttributeResult(ShadowAssemblyType shadowAssembly, Type type, T attribute)
+        public AttributeResult(ShadowAssemblyType shadowAssembly, System.Type type, T attribute)
         {
             Type = type;
             Attribute = attribute;
             ShadowAssembly = shadowAssembly;
         }
 
-        public AttributeResult(ShadowAssemblyType shadowAssembly, Type type, MethodInfo method, T attribute)
+        public AttributeResult(ShadowAssemblyType shadowAssembly, System.Type type, MethodInfo method, T attribute)
         {
             Type = type;
             Method = method;
@@ -22,7 +22,7 @@ namespace CryoAOP.Core.Attributes
         }
 
         public T Attribute { get; private set; }
-        public Type Type { get; private set; }
+        public System.Type Type { get; private set; }
         public MethodInfo Method { get; private set; }
         public ShadowAssemblyType ShadowAssembly { get; private set; }
 

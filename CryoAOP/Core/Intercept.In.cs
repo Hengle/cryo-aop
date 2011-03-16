@@ -9,11 +9,11 @@ namespace CryoAOP.Core
 {
     public partial class Intercept
     {
-        internal static AssemblyIntercept Assembly;
+        internal static Assembly Assembly;
 
         public static void LoadAssembly(string assemblyPath)
         {
-            Assembly = new AssemblyIntercept(assemblyPath);
+            Assembly = new Assembly(assemblyPath);
         }
 
         public static void SaveAssembly(string assemblyPath)
@@ -27,7 +27,7 @@ namespace CryoAOP.Core
             {
                 foreach (var type in module.Types)
                 {
-                    var typeInspector = new TypeIntercept(Assembly, type);
+                    var typeInspector = new Type(Assembly, type);
                     typeInspector.InterceptAll(interceptionScope);
                 }
             }

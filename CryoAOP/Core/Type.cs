@@ -8,14 +8,14 @@ using Mono.Cecil;
 
 namespace CryoAOP.Core
 {
-    internal class TypeIntercept
+    internal class Type
     {
-        public readonly AssemblyIntercept AssemblyIntercept;
+        public readonly Assembly Assembly;
         public readonly TypeDefinition Definition;
 
-        public TypeIntercept(AssemblyIntercept assemblyIntercept, TypeDefinition definition)
+        public Type(Assembly assembly, TypeDefinition definition)
         {
-            AssemblyIntercept = assemblyIntercept;
+            Assembly = assembly;
             Definition = definition;
         }
 
@@ -29,19 +29,19 @@ namespace CryoAOP.Core
             }
         }
 
-        public virtual MethodIntercept FindMethod(MethodInfo searchMethod)
+        public virtual Method FindMethod(MethodInfo searchMethod)
         {
             var methodName = searchMethod.Name;
             return FindMethod(methodName);
         }
 
-        public virtual MethodIntercept FindMethod(string methodName)
+        public virtual Method FindMethod(string methodName)
         {
             if (Definition.HasMethods)
             {
                 foreach (var method in Definition.Methods)
                     if (method.Name == methodName)
-                        return new MethodIntercept(this, method);
+                        return new Method(this, method);
             }
             throw new MethodNotFoundException("Could not find method '{0}' in type '{1}'", methodName, Definition.Name);
         }

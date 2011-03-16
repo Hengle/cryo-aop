@@ -4,7 +4,7 @@ using Mono.Cecil.Pdb;
 
 namespace CryoAOP.Core
 {
-    internal class AssemblyInterceptParams
+    internal class AssemblyParams
     {
         public static DefaultAssemblyResolver AssemblyResolver
         {

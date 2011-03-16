@@ -7,9 +7,9 @@ namespace CryoAOP.Core.Factories
 {
     internal class MethodCloneFactory
     {
-        private readonly MethodInterceptContext context;
+        private readonly MethodContext context;
 
-        public MethodCloneFactory(MethodInterceptContext context)
+        public MethodCloneFactory(MethodContext context)
         {
             this.context = context;
         }
@@ -37,7 +37,7 @@ namespace CryoAOP.Core.Factories
         {
             if (sourceMethod.HasParameters)
             {
-                var importer = new AssemblyImporterFactory(context);
+                var importer = new ImporterFactory(context);
                 foreach (var parameter in sourceMethod.Parameters.ToList())
                 {
                     var importedParameterType = importer.Import(parameter.ParameterType);

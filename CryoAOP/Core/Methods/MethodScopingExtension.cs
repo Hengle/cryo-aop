@@ -5,11 +5,11 @@ using Mono.Cecil.Cil;
 
 namespace CryoAOP.Core.Methods
 {
-    internal class MethodInterceptScopingExtension : MethodInterceptExtension
+    internal class MethodScopingExtension : MethodExtension
     {
 
 
-        public MethodInterceptScopingExtension(MethodInterceptContext methodIntercept) : base(methodIntercept)
+        public MethodScopingExtension(MethodContext method) : base(method)
         {
         }
 
@@ -17,14 +17,14 @@ namespace CryoAOP.Core.Methods
         {
             if (interceptionScope == MethodInterceptionScopeType.Deep)
             {
-                foreach (var module in TypeIntercept.AssemblyIntercept.Definition.Modules)
+                foreach (var module in Type.Assembly.Definition.Modules)
                 {
                     foreach (var type in module.Types.ToList())
                     {
                         if (type.Methods == null || type.Methods.Count == 0) continue;
                         foreach (var method in type.Methods.ToList())
                         {
-                            if (Context.MethodMarker.HasMarker(method, MethodIntercept.MethodMarker)) continue;
+                            if (Context.MethodMarker.HasMarker(method, Method.MethodMarker)) continue;
 
                             if (method == null
                                 || method.Body == null

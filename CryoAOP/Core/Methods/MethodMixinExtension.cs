@@ -7,13 +7,13 @@ using Mono.Cecil.Cil;
 
 namespace CryoAOP.Core.Methods
 {
-    internal class MethodInterceptMixinExtension : MethodInterceptExtension
+    internal class MethodMixinExtension : MethodExtension
     {
         public const string MethodMarker = "CryoAOP -> Mixin";
 
         private readonly AttributeFinder attributeFinder = new AttributeFinder();
 
-        public MethodInterceptMixinExtension(MethodInterceptContext context) : base(context)
+        public MethodMixinExtension(MethodContext context) : base(context)
         {
         }
 
@@ -34,13 +34,13 @@ namespace CryoAOP.Core.Methods
 
                 // Mixin: Check if the attribute is type specific 
                 if (methodInfo.Attribute.IsTypeSpecific &&
-                    !methodInfo.Attribute.IsForType(TypeIntercept.Definition.Name))
+                    !methodInfo.Attribute.IsForType(Type.Definition.Name))
                     continue;
 
                 // Mixin: Check if the method has already been mixed in 
                 var info = methodInfo;
                 var methodAlreadyMixedIn =
-                    TypeIntercept
+                    Type
                         .Definition
                         .Methods
                         .Any(searchMethod =>
@@ -56,7 +56,7 @@ namespace CryoAOP.Core.Methods
 
                 // Mixin: Clone the method signature
                 var mixinMethod = Context.ImporterFactory.Import(methodInfo.Method.DeclaringType, methodSearchString);
-                var cloneOfMixinMethod = Context.CloneFactory.CloneIntoType(mixinMethod, TypeIntercept.Definition);
+                var cloneOfMixinMethod = Context.CloneFactory.CloneIntoType(mixinMethod, Type.Definition);
 
                 // Mixin: Init locals?
                 cloneOfMixinMethod.Body.InitLocals = mixinMethod.Resolve().Body.InitLocals;

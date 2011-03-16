@@ -6,11 +6,11 @@ using Mono.Cecil;
 
 namespace CryoAOP.Core.Factories
 {
-    internal class AssemblyImporterFactory
+    internal class ImporterFactory
     {
-        private readonly MethodInterceptContext context;
+        private readonly MethodContext context;
 
-        public AssemblyImporterFactory(MethodInterceptContext context)
+        public ImporterFactory(MethodContext context)
         {
             this.context = context;
         }
@@ -45,7 +45,7 @@ namespace CryoAOP.Core.Factories
             return AssemblyDefinition.MainModule.Import(type, ctx);
         }
 
-        public virtual MethodReference Import(Type searchType, string methodName)
+        public virtual MethodReference Import(System.Type searchType, string methodName)
         {
             var typeReference = Import(searchType);
 
@@ -88,9 +88,9 @@ namespace CryoAOP.Core.Factories
                 methodName, searchType.Name);
         }
 
-        public virtual TypeReference Import(Type searchType)
+        public virtual TypeReference Import(System.Type searchType)
         {
-            var assemblyRef = new AssemblyIntercept(searchType.Assembly);
+            var assemblyRef = new Assembly(searchType.Assembly);
             TypeDefinition type = null;
             foreach (var currentType in assemblyRef.Definition.MainModule.Types.ToList())
             {

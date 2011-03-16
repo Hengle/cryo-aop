@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace CryoAOP.Tests
 {
     [TestFixture]
-    public class MethodInterceptorTests
+    public class MethodTests
     {
         #region Setup/Teardown
 

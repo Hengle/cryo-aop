@@ -33,7 +33,7 @@ namespace CryoAOP.Core.Attributes
             return attributesFound;
         }
 
-        private static void FindMethodAttributes<T>(ShadowAssemblyType shadowAssembly, Type type, List<AttributeResult<T>> attributesFound) where T : Attribute
+        private static void FindMethodAttributes<T>(ShadowAssemblyType shadowAssembly, System.Type type, List<AttributeResult<T>> attributesFound) where T : Attribute
         {
             try
             {
@@ -77,7 +77,7 @@ namespace CryoAOP.Core.Attributes
             }
         }
 
-        private static void FindTypeAttributes<T>(ShadowAssemblyType shadowAssembly, Type type, List<AttributeResult<T>> attributesFound) where T : Attribute
+        private static void FindTypeAttributes<T>(ShadowAssemblyType shadowAssembly, System.Type type, List<AttributeResult<T>> attributesFound) where T : Attribute
         {
             try
             {
