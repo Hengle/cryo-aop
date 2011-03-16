@@ -49,8 +49,8 @@ namespace CryoAOP.Core.Extensions
             var instanceDiffDict = new Dictionary<string, string>();
 
             CompareValues(
-                left, left.GetType().GetFields(),
-                right, right.GetType().GetFields())
+                left, left.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance),
+                right, right.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance))
                 .ForEach(keyValue =>
                              {
                                  if (keyValue.Value != null)
@@ -58,8 +58,8 @@ namespace CryoAOP.Core.Extensions
                              });
 
             CompareValues(
-                left, left.GetType().GetProperties(),
-                right, right.GetType().GetProperties())
+                left, left.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance),
+                right, right.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance))
                 .ForEach(keyValue =>
                              {
                                  if (keyValue.Value != null)

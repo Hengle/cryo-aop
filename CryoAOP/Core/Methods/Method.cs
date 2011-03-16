@@ -98,8 +98,8 @@ namespace CryoAOP.Core.Methods
                           {
                               il.Create(OpCodes.Ldloc_0),
                               il.Create(OpCodes.Ldstr, interceptorMethod.Name),
-                              il.Create(OpCodes.Ldc_I4_S, (sbyte) 60),
                               // BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance
+                              il.Create(OpCodes.Ldc_I4_S, (sbyte) 60),
                               il.Create(OpCodes.Callvirt, methodReference),
                               il.Create(OpCodes.Stloc_1)
                           });
