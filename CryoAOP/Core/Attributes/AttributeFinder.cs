@@ -20,6 +20,7 @@ namespace CryoAOP.Core.Attributes
                 {
                     foreach (var type in assembly.ShadowAssembly.GetTypes())
                     {
+                        FindPropertyAttributes(assembly, type, attributesFound);
                         FindMethodAttributes(assembly, type, attributesFound);
                         FindTypeAttributes(assembly, type, attributesFound);
                     }
@@ -31,6 +32,50 @@ namespace CryoAOP.Core.Attributes
                 }
             }
             return attributesFound;
+        }
+
+        private static void FindPropertyAttributes<T>(ShadowAssemblyType shadowAssembly, System.Type type, List<AttributeResult<T>> attributesFound) where T : Attribute
+        {
+            try
+            {
+                var properties =
+                    type.GetProperties(
+                        BindingFlags.Public
+                        | BindingFlags.NonPublic
+                        | BindingFlags.Static
+                        | BindingFlags.Instance);
+
+                foreach (var property in properties)
+                {
+                    try
+                    {
+                        var propertyAttributes =
+                            property
+                                .GetCustomAttributes(true)
+                                .Where(
+                                    attr =>
+                                    attr.GetType().FullName == typeof(T).FullName)
+                                .ToList();
+
+                        if (propertyAttributes.Count > 0)
+                        {
+                            var attribute = propertyAttributes.Cast<T>().First();
+                            var info = new AttributeResult<T>(shadowAssembly, type, property, attribute);
+                            attributesFound.Add(info);
+                        }
+                    }
+                    catch (Exception err)
+                    {
+                        "CryoAOP -> Warning! First chance exception ocurred while searching for Mixin Methods. \r\n{0}"
+                            .Warn(err);
+                    }
+                }
+            }
+            catch (Exception err2)
+            {
+                "CryoAOP -> Warning! First chance exception ocurred while searching for Mixin Methods. \r\n{0}"
+                    .Warn(err2);
+            }
         }
 
         private static void FindMethodAttributes<T>(ShadowAssemblyType shadowAssembly, System.Type type, List<AttributeResult<T>> attributesFound) where T : Attribute
@@ -53,7 +98,7 @@ namespace CryoAOP.Core.Attributes
                                 .GetCustomAttributes(true)
                                 .Where(
                                     attr =>
-                                    attr.GetType().FullName == typeof (T).FullName)
+                                    attr.GetType().FullName == typeof(T).FullName)
                                 .ToList();
 
                         if (methodAttributes.Count > 0)

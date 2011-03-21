@@ -29,11 +29,11 @@ namespace CryoAOP.TestAssembly
             return result;
         }
 
-        public void HavingMethodWithClassArgsAndNoReturnType(MethodParameterClass arg1)
+        public void HavingMethodWithClassArgsAndNoReturnType(MethodInterceptorTargetParameter arg1)
         {
         }
 
-        public MethodParameterClass HavingMethodWithClassArgsAndClassReturnType(MethodParameterClass arg1)
+        public MethodInterceptorTargetParameter HavingMethodWithClassArgsAndClassReturnType(MethodInterceptorTargetParameter arg1)
         {
             return arg1;
         }
@@ -102,15 +102,6 @@ namespace CryoAOP.TestAssembly
         public void CallToIntercept()
         {
             InterceptMethod();
-        }
-    }
-
-    public class MethodParameterClass
-    {
-        public int Arg1 = -1;
-
-        public void AdditionalMixinTesting()
-        {
         }
     }
 }

@@ -45,6 +45,12 @@ namespace CryoAOP.Core
             typeInspector.FindMethod(methodName).InterceptMethod(interceptionScope);
         }
 
+        public static void InterceptProperty(string fullTypeName, string propertyName, MethodInterceptionScopeType interceptionScope)
+        {
+            var typeInspector = Assembly.FindType(fullTypeName);
+            typeInspector.FindProperty(propertyName).InterceptProperty(interceptionScope);
+        }
+
         public static void InterceptAspects()
         {
             var attributeFinder = new AttributeFinder();
@@ -76,6 +82,16 @@ namespace CryoAOP.Core
                                     Path.GetFileName(shadowAssembly.OriginalAssemblyPath), 
                                     result.TypeName, 
                                     result.MethodName)); 
+                    }
+                    if (result.IsForProperty())
+                    {
+                        InterceptProperty(result.TypeName, result.PropertyName, result.Attribute.Scope);
+                        Console.WriteLine(
+                            "CryoAOP -> Intercepted {0}\\{1}\\{2}"
+                                .FormatWith(
+                                    Path.GetFileName(shadowAssembly.OriginalAssemblyPath),
+                                    result.TypeName,
+                                    result.PropertyName));
                     }
                 }
                 SaveAssembly(shadowAssembly.OriginalAssemblyPath);

@@ -1,4 +1,6 @@
-﻿namespace CryoAOP.TestAssembly
+﻿using CryoAOP.Aspects;
+
+namespace CryoAOP.TestAssembly
 {
     public class PropertyInterceptorTarget
     {
@@ -8,5 +10,8 @@
             get { return someInteger; }
             set { someInteger = value; }
         }
+
+        [Intercept]
+        public int SomeIntegerWithAttribute { get; set; }
     }
 }

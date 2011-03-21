@@ -12,5 +12,37 @@ namespace CryoAOP.Tests
         {
             Intercept.Clear();
         }
+
+        [Test]
+        public void Should_intercept_property_which_is_a_value_type()
+        {
+            var interceptorWasCalled = false;
+            Intercept.Call +=
+                (invocation) =>
+                    {
+                        interceptorWasCalled = true;
+                    };
+
+            var instance = new PropertyInterceptorTarget();
+            instance.SomeInteger = 1;
+
+            Assert.That(interceptorWasCalled);
+        }
+
+        [Test]
+        public void Should_intercept_property_which_is_a_value_type_defined_by_attribute()
+        {
+            var interceptorWasCalled = false;
+            Intercept.Call +=
+                (invocation) =>
+                {
+                    interceptorWasCalled = true;
+                };
+
+            var instance = new PropertyInterceptorTarget();
+            instance.SomeIntegerWithAttribute = 1;
+
+            Assert.That(interceptorWasCalled);
+        }
     }
 }

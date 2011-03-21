@@ -21,9 +21,18 @@ namespace CryoAOP.Core.Attributes
             ShadowAssembly = shadowAssembly;
         }
 
+        public AttributeResult(ShadowAssemblyType shadowAssembly, System.Type type, PropertyInfo property, T attribute)
+        {
+            Type = type;
+            Property = property;
+            Attribute = attribute;
+            ShadowAssembly = shadowAssembly;
+        }
+
         public T Attribute { get; private set; }
         public System.Type Type { get; private set; }
         public MethodInfo Method { get; private set; }
+        public PropertyInfo Property { get; private set; }
         public ShadowAssemblyType ShadowAssembly { get; private set; }
 
         public string TypeName
@@ -45,6 +54,17 @@ namespace CryoAOP.Core.Attributes
             }
         }
 
+        public string PropertyName
+        {
+            get
+            {
+                if (IsForProperty())
+                    return Property.Name;
+                throw new IncorrectAttributeResultUsageException(
+                    "This attribute result applies to types only and cannot be used for properties.");
+            }
+        }
+
         public bool IsForType()
         {
             return Type != null && Method == null;
@@ -53,6 +73,11 @@ namespace CryoAOP.Core.Attributes
         public bool IsForMethod()
         {
             return Method != null;
+        }
+
+        public bool IsForProperty()
+        {
+            return Property != null;
         }
     }
 }

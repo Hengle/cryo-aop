@@ -4,6 +4,7 @@ using CryoAOP.Aspects;
 using CryoAOP.Core.Exceptions;
 using CryoAOP.Core.Extensions;
 using CryoAOP.Core.Methods;
+using CryoAOP.Core.Properties;
 using Mono.Cecil;
 
 namespace CryoAOP.Core
@@ -24,8 +25,13 @@ namespace CryoAOP.Core
             foreach (var method in Definition.Methods.ToList())
             {
                 var methodInspector = FindMethod(method.Name);
-                if (!methodInspector.Definition.IsConstructor)
+                if (!methodInspector.MethodDefinition.IsConstructor)
                     methodInspector.InterceptMethod(interceptionScope);
+            }
+            foreach (var property in Definition.Properties.ToList())
+            {
+                var propertyInspector = FindProperty(property.Name);
+                propertyInspector.InterceptProperty(interceptionScope);
             }
         }
 
@@ -44,6 +50,17 @@ namespace CryoAOP.Core
                         return new Method(this, method);
             }
             throw new MethodNotFoundException("Could not find method '{0}' in type '{1}'", methodName, Definition.Name);
+        }
+
+        public virtual Property FindProperty(string propertyName)
+        {
+            if (Definition.HasProperties)
+            {
+                foreach (var property in Definition.Properties)
+                    if (property.Name == propertyName)
+                        return new Property(this, property);
+            }
+            throw new PropertyNotFoundException("Could not find method '{0}' in type '{1}'", propertyName, Definition.Name);
         }
 
         public override string ToString()

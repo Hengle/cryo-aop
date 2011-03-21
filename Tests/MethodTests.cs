@@ -26,7 +26,7 @@ namespace CryoAOP.Tests
         public void Should_call_generic_method_where_value_type_is_first_parameter()
         {
             var a = 1;
-            var b = new MethodParameterClass();
+            var b = new MethodInterceptorTargetParameter();
             var interceptorWasCalled = false;
 
             InterceptInstance
@@ -48,7 +48,7 @@ namespace CryoAOP.Tests
         public void Should_call_generic_method_where_value_type_is_first_parameter_and_has_value_return_type()
         {
             var a = 1;
-            var b = new MethodParameterClass();
+            var b = new MethodInterceptorTargetParameter();
             var interceptorWasCalled = false;
 
             Intercept.Call +=
@@ -67,7 +67,7 @@ namespace CryoAOP.Tests
         public void Should_call_generic_method_with_two_generic_parameters()
         {
             var a = 1;
-            var b = new MethodParameterClass();
+            var b = new MethodInterceptorTargetParameter();
             var interceptorWasCalled = false;
 
             Intercept.Call +=
@@ -87,7 +87,7 @@ namespace CryoAOP.Tests
         {
             var a = 1;
             double b = 2;
-            var parameterClass = new MethodParameterClass();
+            var parameterClass = new MethodInterceptorTargetParameter();
             var interceptorWasCalled = false;
 
             Intercept.Call +=
@@ -98,7 +98,7 @@ namespace CryoAOP.Tests
                         Assert.That(b == (double) invocation.ParameterValues[2]);
                         Assert.That(parameterClass == invocation.ParameterValues[0]);
 
-                        if (invocation.InvocationType == MethodInvocationType.AfterInvocation)
+                        if (invocation.InvocationType == InvocationType.AfterInvocation)
                             Assert.That(invocation.Result, Is.EqualTo(b));
                     };
 
@@ -114,14 +114,14 @@ namespace CryoAOP.Tests
             Intercept.Call +=
                 (invocation) => { interceptorWasCalled = true; };
 
-            InterceptInstance.GenericMethod<MethodParameterClass>();
+            InterceptInstance.GenericMethod<MethodInterceptorTargetParameter>();
             Assert.That(interceptorWasCalled);
         }
 
         [Test]
         public void Should_call_to_generic_method_with_generic_parameters()
         {
-            var a = new MethodParameterClass();
+            var a = new MethodInterceptorTargetParameter();
             var interceptorWasCalled = false;
 
             Intercept.Call +=
@@ -138,7 +138,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_call_to_generic_method_with_generic_parameters_and_generic_return_type()
         {
-            var a = new MethodParameterClass();
+            var a = new MethodInterceptorTargetParameter();
             var interceptorWasCalled = false;
 
             Intercept.Call +=
@@ -147,7 +147,7 @@ namespace CryoAOP.Tests
                         interceptorWasCalled = true;
                         Assert.That(a, Is.EqualTo(invocation.ParameterValues[0]));
 
-                        if (invocation.InvocationType == MethodInvocationType.AfterInvocation)
+                        if (invocation.InvocationType == InvocationType.AfterInvocation)
                             Assert.That(invocation.Result, Is.EqualTo(a));
                     };
 
@@ -160,7 +160,7 @@ namespace CryoAOP.Tests
         {
             var a = 1;
             double b = 2;
-            var parameterClass = new MethodParameterClass();
+            var parameterClass = new MethodInterceptorTargetParameter();
             var interceptorWasCalled = false;
 
             Intercept.Call +=
@@ -171,7 +171,7 @@ namespace CryoAOP.Tests
                         Assert.That(b, Is.EqualTo((double) invocation.ParameterValues[2]));
                         Assert.That(parameterClass, Is.EqualTo(invocation.ParameterValues[0]));
 
-                        if (invocation.InvocationType == MethodInvocationType.AfterInvocation)
+                        if (invocation.InvocationType == InvocationType.AfterInvocation)
                             Assert.That(invocation.Result, Is.Null);
                     };
 
@@ -183,7 +183,7 @@ namespace CryoAOP.Tests
         public void Should_have_instance_when_calling_instance_method()
         {
             var a = 1;
-            var b = new MethodParameterClass();
+            var b = new MethodInterceptorTargetParameter();
             var interceptorWasCalled = false;
 
             Intercept.Call +=
@@ -225,7 +225,7 @@ namespace CryoAOP.Tests
                         Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
                         Assert.That(c, Is.EqualTo((double) invocation.ParameterValues[2]));
 
-                        if (invocation.InvocationType == MethodInvocationType.AfterInvocation)
+                        if (invocation.InvocationType == InvocationType.AfterInvocation)
                             Assert.That(invocation.Result, Is.Null);
                     };
 
@@ -249,7 +249,7 @@ namespace CryoAOP.Tests
                         Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
                         Assert.That(c, Is.EqualTo((double) invocation.ParameterValues[2]));
 
-                        if (invocation.InvocationType == MethodInvocationType.AfterInvocation)
+                        if (invocation.InvocationType == InvocationType.AfterInvocation)
                             invocation.Result = "Intercepted Result";
                     };
 
@@ -308,7 +308,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_intercept_method_with_class_args_and_call()
         {
-            var a = new MethodParameterClass();
+            var a = new MethodInterceptorTargetParameter();
             var interceptorWasCalled = false;
 
             Intercept.Call +=
@@ -350,7 +350,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_invoke_static_method_with_value_and_generic_with_generic_return_type()
         {
-            var a = new MethodParameterClass();
+            var a = new MethodInterceptorTargetParameter();
             var interceptorWasCalled = false;
 
             Intercept.Call +=
@@ -369,7 +369,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_invoke_static_method_with_value_and_generic_with_no_return_type()
         {
-            var a = new MethodParameterClass();
+            var a = new MethodInterceptorTargetParameter();
             var interceptorWasCalled = false;
 
             Intercept.Call +=
@@ -387,7 +387,7 @@ namespace CryoAOP.Tests
         [Test]
         public void Should_invoke_static_method_with_value_and_generic_with_value_return_type()
         {
-            var a = new MethodParameterClass();
+            var a = new MethodInterceptorTargetParameter();
             var interceptorWasCalled = false;
 
             Intercept.Call +=

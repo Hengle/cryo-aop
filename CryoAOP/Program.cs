@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using CryoAOP.Core;
@@ -30,14 +31,14 @@ namespace CryoAOP
                 var inputFile = args.Where(param => param.ToLower().EndsWith(".cryoaop")).FirstOrDefault();
                 if (inputFile == null)
                 {
-                    "Could not find input file parameter!".Error();
+                    "CryoAOP -> Could not find input file parameter!".Error();
                     WriteUsage();
                     return;
                 }
 
                 if (!File.Exists(inputFile))
                 {
-                    "'{0}' does not exist!".Error(inputFile);
+                    "CryoAOP -> '{0}' does not exist!".Error(inputFile);
                     WriteUsage();
                     return;
                 }
@@ -49,7 +50,7 @@ namespace CryoAOP
             Environment.ExitCode = 0;
         }
 
-        private static List<AssemblyLine> ParseInputFile(string inputFile)
+        private static IEnumerable<AssemblyLine> ParseInputFile(string inputFile)
         {
             var currentLineCount = 0;
             var typeLines = new List<TypeLine>();
@@ -76,8 +77,8 @@ namespace CryoAOP
                         {
                             if (assemblyLines.Count == 0)
                             {
-                                "Error! Could not find matching assembly tag for type ... ".Error(currentLineCount);
-                                "{0}".Error(currentLineCount, currentLine);
+                                "CryoAOP -> Error:{0}! Could not find matching assembly tag for type ... ".Error(currentLineCount.ToString());
+                                "CryoAOP -> '{0}'".Error(currentLine.Trim());
                                 WriteUsage();
                                 return assemblyLines;
                             }
@@ -90,8 +91,8 @@ namespace CryoAOP
                         {
                             if (assemblyLines.Count == 0 && typeLines.Count == 0)
                             {
-                                "Error! Could not find matching type tag for method ... ".Error(currentLineCount);
-                                "{0}".Error(currentLineCount, currentLine);
+                                "CryoAOP -> Error:{0}! Could not find matching type tag for method ... ".Error(currentLineCount.ToString());
+                                "CryoAOP -> '{0}'".Error(currentLine.Trim());
                                 WriteUsage();
                                 return assemblyLines;
                             }
@@ -99,10 +100,23 @@ namespace CryoAOP
                             var methodLine = new MethodLine(currentLineCount, currentLine);
                             typeLines.Last().Methods.Add(methodLine);
                         }
+                        else if (PropertyLine.IsProperty(currentLine))
+                        {
+                            if (assemblyLines.Count == 0 && typeLines.Count == 0)
+                            {
+                                "CryoAOP -> Error:{0}! Could not find matching type tag for property ... ".Error(currentLineCount.ToString());
+                                "CryoAOP -> '{0}'".Error(currentLine.Trim());
+                                WriteUsage();
+                                return assemblyLines;
+                            }
+
+                            var propertyLine = new PropertyLine(currentLineCount, currentLine);
+                            typeLines.Last().Properties.Add(propertyLine);
+                        }
                         else
                         {
-                            "Warning! Ignoring line because entry appears to be invalid ... ".Error(currentLineCount);
-                            "{0}".FormatWith(currentLineCount, currentLine);
+                            "CryoAOP -> Warning:{0}! Ignoring line because entry appears to be invalid ... ".Warn(currentLineCount);
+                            "CryoAOP -> '{0}'".Warn(currentLine.Trim());
                         }
                     }
                 }
@@ -131,6 +145,19 @@ namespace CryoAOP
                                         assembly.InputAssembly,
                                         type.FullTypeName,
                                         method.MethodName));
+                            }
+                        }
+                        else if (type.HasProperties)
+                        {
+                            foreach (var property in type.Properties)
+                            {
+                                Intercept.InterceptProperty(type.FullTypeName, property.PropertyName, property.MethodScope);
+                                Console.WriteLine(
+                                    "CryoAOP -> Intercepted {0}\\{1}\\{2}"
+                                    .FormatWith(
+                                        assembly.InputAssembly,
+                                        type.FullTypeName,
+                                        property.PropertyName));
                             }
                         }
                         else

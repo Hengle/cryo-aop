@@ -1,28 +1,87 @@
 ﻿using System.Reflection;
+using CryoAOP.Core.Exceptions;
+using CryoAOP.Core.Extensions;
+using CryoAOP.Core.Methods;
 
 namespace CryoAOP.Core
 {
-    public class Invocation
+    public class Invocation 
     {
-    }
+        private readonly object[] parameterValues;
 
-    public class PropertyInvocation : Invocation
-    {
-        public PropertyInvocation(PropertyInfo property)
+        public Invocation(System.Type type, MethodInfo method, params object[] parameterValues)
         {
-            Property = property;
+            Type = type;
+            Method = method;
+            CanInvoke = true;
+            this.parameterValues = parameterValues;
+            InvocationType = Core.InvocationType.BeforeInvocation;
         }
 
-        public PropertyInfo Property { private set; get; }
-    }
-
-    public class FieldInvocation : Invocation
-    {
-        public FieldInvocation(FieldInfo field)
+        public Invocation(object instance, System.Type type, MethodInfo method, params object[] parameterValues) : this (type, method, parameterValues)
         {
-            Field = field;
+            Instance = instance;
         }
 
-        public FieldInfo Field { private set; get; }
+        public System.Type Type { private set; get; }
+        public object Instance { private set; get; }
+        public bool CanInvoke { private set; get; }
+        public MethodInfo Method { private set; get; }
+        public bool InvocationCancelled { private set; get; }
+        public InvocationType InvocationType { private set; get; }
+
+        public ParameterInfo[] Parameters
+        {
+            get { return Method.GetParameters(); }
+        }
+
+        public object[] ParameterValues
+        {
+            get { return parameterValues; }
+        }
+
+        private object result = null;
+        public object Result
+        {
+            get { return result; }
+            set
+            {
+                result = value;
+                ValidateResult();
+            }
+        }
+
+        public virtual void ContinueInvocation()
+        {
+            CanInvoke = false;
+            InvocationType = InvocationType.AfterInvocation;
+        }
+
+        public virtual void CancelInvocation()
+        {
+            CanInvoke = false;
+            InvocationCancelled = InvocationType == InvocationType.BeforeInvocation;
+        }
+
+        protected virtual void ValidateResult()
+        {
+            if (result != null && Method.ReturnType == typeof(void))
+                throw new MethodSignatureViolationException(
+                    "You have assigned and incorrect type a return type! Please use explicit cast. Got '{0}' but expected 'Void'.",
+                    result.GetType().FullName);
+
+            if (result != null
+                && Method.ReturnType != null
+                && !Method.ReturnType.IsAssignableFrom(result.GetType())
+                && !Method.ReturnType.IsGenericParameter)
+                throw new MethodSignatureViolationException(
+                    "You have assigned and incorrect type a return type! Please use explicit cast. Got '{0}' but expected '{1}'.",
+                    result.GetType().FullName, Method.ReturnType.FullName);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("InvocationType: {4}, Type: {2}, Method: {3}, CanInvoke: {5}, ParameterValues: {1}, Result: {0}", Result, parameterValues.JoinWith(","), Type, Method, InvocationType, CanInvoke);
+        }
     }
 }

@@ -10,9 +10,9 @@ namespace CryoAOP.Exec
         public static void Error(this string message, params object[] args)
         {
             if (args == null || args.Length == 0)
-                Console.WriteLine("Error:{0}".FormatWith(message));
+                Console.WriteLine(message);
             else
-                Console.WriteLine("Error:{0}".FormatWith(message.FormatWith(args)));
+                Console.WriteLine(message.FormatWith(args));
         }
 
         public static void Warn(this string message, params object[] args)
@@ -20,17 +20,9 @@ namespace CryoAOP.Exec
             if (DisableWarnings) return;
 
             if (args == null || args.Length == 0)
-                Console.WriteLine("Warning:{0}".FormatWith(message));
+                Console.WriteLine(message);
             else
-                Console.WriteLine("Warning:{0}".FormatWith(message.FormatWith(args)));
-        }
-
-        public static void Error(string message, int lineNumber, params object[] args)
-        {
-            if (args == null || args.Length == 0)
-                Console.WriteLine("Line:{0} - {1}".FormatWith(lineNumber, message));
-            else
-                Console.WriteLine("Line:{0} - {1}".FormatWith(lineNumber, message.FormatWith(args)));
+                Console.WriteLine(message.FormatWith(args));
         }
     }
 }

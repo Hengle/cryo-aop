@@ -1,46 +1,54 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reflection;
 using CryoAOP.Aspects;
+using CryoAOP.Core.Methods;
 using CryoAOP.Core.Extensions;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
-namespace CryoAOP.Core.Methods
+namespace CryoAOP.Core.Properties
 {
-    internal class Method
+    internal class Property
     {
         public const string MethodMarker = "CryoAOP -> Intercept";
         protected readonly MethodContext Context;
 
-        public MethodDefinition MethodDefinition
+        public Property(Type type, PropertyDefinition definition)
         {
-            get { return Context.MethodDefinition; }
+            Context = new MethodContext(type, this, definition);
         }
+
+        public PropertyDefinition Definition { get { return Context.PropertyDefinition; } }
 
         public Type Type
         {
             get { return Context.Type; }
         }
 
-        public Method(Type type, MethodDefinition definition)
+        public void InterceptProperty(MethodInterceptionScopeType interceptionScope = MethodInterceptionScopeType.Shallow)
         {
-            Context = new MethodContext(type, this, definition);
+            if (Definition.GetMethod != null)
+                Definition.GetMethod = InterceptMethod(Definition.GetMethod, interceptionScope);
+
+            if (Definition.SetMethod != null)
+                Definition.SetMethod = InterceptMethod(Definition.SetMethod, interceptionScope);
+
+            // Insert code mixins into intercepted types
+            Context.Mixin.MixinMethods();
         }
 
-        public void InterceptMethod(MethodInterceptionScopeType interceptionScope = MethodInterceptionScopeType.Shallow)
+        private MethodDefinition InterceptMethod(MethodDefinition renamedMethod, MethodInterceptionScopeType interceptionScope)
         {
-            var renamedMethod = Context.MethodDefinition;
-
             var interceptorMethod =
                 Context
                     .Cloning
-                    .Clone(Context.MethodDefinition);
+                    .Clone(renamedMethod);
 
             renamedMethod.Name =
                 Context
                     .NameAlias
-                    .GenerateIdentityName(Context.MethodDefinition.Name);
+                    .GenerateIdentityName(renamedMethod.Name);
 
             // Insert interceptor code
 
@@ -209,9 +217,9 @@ namespace CryoAOP.Core.Methods
                 il.Append(il.Create(OpCodes.Ldarg, parameter));
 
             if (renamedMethod.HasGenericParameters)
-                il.Append(il.Create(OpCodes.Call, renamedMethod.MakeGeneric(interceptorMethod.GenericParameters.ToArray())));
+                il.Append(il.Create(OpCodes.Callvirt, renamedMethod.MakeGeneric(interceptorMethod.GenericParameters.ToArray())));
             else
-                il.Append(il.Create(OpCodes.Call, renamedMethod));
+                il.Append(il.Create(OpCodes.Callvirt, renamedMethod));
 
             // Interceptor: Store method return value
             if (interceptorMethod.ReturnType.Name != "Void")
@@ -292,8 +300,7 @@ namespace CryoAOP.Core.Methods
             // If deep intercept, replace internals with call to renamed method
             Context.Scope.ModifyCallScope(renamedMethod, interceptorMethod, il, interceptionScope);
 
-            // Insert code mixins into intercepted types
-            Context.Mixin.MixinMethods();
+            return interceptorMethod;
         }
 
         public override string ToString()
@@ -301,8 +308,5 @@ namespace CryoAOP.Core.Methods
             return "{0}".FormatWith(Context.MethodDefinition.FullName);
         }
     }
-
-    internal static class Mixin
-    {
-    }
 }
+

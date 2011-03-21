@@ -2,7 +2,10 @@
 
 namespace CryoAOP.Aspects
 {
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
+    [AttributeUsage(
+        AttributeTargets.Method 
+        | AttributeTargets.Property 
+        | AttributeTargets.Class)]
     public class InterceptAttribute : Attribute
     {
         private readonly MethodInterceptionScopeType interceptionScope = MethodInterceptionScopeType.Shallow;
