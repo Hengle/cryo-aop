@@ -1,6 +1,21 @@
-﻿using System.Reflection;
+﻿//CryoAOP. Aspect Oriented Framework for .NET.
+//Copyright (C) 2011  Gavin van der Merwe (fir3pho3nixx@gmail.com)
+
+//This program is free software: you can redistribute it and/or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+
+//This program is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU General Public License for more details.
+
+//You should have received a copy of the GNU General Public License
+//along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using System.Reflection;
 using CryoAOP.Core;
-using CryoAOP.Core.Methods;
 using CryoAOP.Mixins;
 using CryoAOP.TestAssembly;
 using NUnit.Framework;
@@ -98,7 +113,7 @@ namespace CryoAOP.Tests
                         Assert.That(b == (double) invocation.ParameterValues[2]);
                         Assert.That(parameterClass == invocation.ParameterValues[0]);
 
-                        if (invocation.InvocationType == InvocationType.AfterInvocation)
+                        if (invocation.InvocationLifecycle == InvocationLifecycleType.AfterInvocation)
                             Assert.That(invocation.Result, Is.EqualTo(b));
                     };
 
@@ -147,7 +162,7 @@ namespace CryoAOP.Tests
                         interceptorWasCalled = true;
                         Assert.That(a, Is.EqualTo(invocation.ParameterValues[0]));
 
-                        if (invocation.InvocationType == InvocationType.AfterInvocation)
+                        if (invocation.InvocationLifecycle == InvocationLifecycleType.AfterInvocation)
                             Assert.That(invocation.Result, Is.EqualTo(a));
                     };
 
@@ -171,7 +186,7 @@ namespace CryoAOP.Tests
                         Assert.That(b, Is.EqualTo((double) invocation.ParameterValues[2]));
                         Assert.That(parameterClass, Is.EqualTo(invocation.ParameterValues[0]));
 
-                        if (invocation.InvocationType == InvocationType.AfterInvocation)
+                        if (invocation.InvocationLifecycle == InvocationLifecycleType.AfterInvocation)
                             Assert.That(invocation.Result, Is.Null);
                     };
 
@@ -225,7 +240,7 @@ namespace CryoAOP.Tests
                         Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
                         Assert.That(c, Is.EqualTo((double) invocation.ParameterValues[2]));
 
-                        if (invocation.InvocationType == InvocationType.AfterInvocation)
+                        if (invocation.InvocationLifecycle == InvocationLifecycleType.AfterInvocation)
                             Assert.That(invocation.Result, Is.Null);
                     };
 
@@ -249,7 +264,7 @@ namespace CryoAOP.Tests
                         Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
                         Assert.That(c, Is.EqualTo((double) invocation.ParameterValues[2]));
 
-                        if (invocation.InvocationType == InvocationType.AfterInvocation)
+                        if (invocation.InvocationLifecycle == InvocationLifecycleType.AfterInvocation)
                             invocation.Result = "Intercepted Result";
                     };
 

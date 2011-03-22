@@ -1,13 +1,28 @@
+//CryoAOP. Aspect Oriented Framework for .NET.
+//Copyright (C) 2011  Gavin van der Merwe (fir3pho3nixx@gmail.com)
+
+//This program is free software: you can redistribute it and/or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+
+//This program is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU General Public License for more details.
+
+//You should have received a copy of the GNU General Public License
+//along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 using System;
 using System.Linq;
 using System.Reflection;
 using CryoAOP.Aspects;
-using CryoAOP.Core.Methods;
 using CryoAOP.Core.Extensions;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
-namespace CryoAOP.Core.Properties
+namespace CryoAOP.Core
 {
     internal class Property
     {
@@ -29,16 +44,16 @@ namespace CryoAOP.Core.Properties
         public void InterceptProperty(MethodInterceptionScopeType interceptionScope = MethodInterceptionScopeType.Shallow)
         {
             if (Definition.GetMethod != null)
-                Definition.GetMethod = InterceptMethod(Definition.GetMethod, interceptionScope);
+                Definition.GetMethod = InterceptMethod(Definition, Definition.GetMethod, interceptionScope);
 
             if (Definition.SetMethod != null)
-                Definition.SetMethod = InterceptMethod(Definition.SetMethod, interceptionScope);
+                Definition.SetMethod = InterceptMethod(Definition, Definition.SetMethod, interceptionScope);
 
             // Insert code mixins into intercepted types
             Context.Mixin.MixinMethods();
         }
 
-        private MethodDefinition InterceptMethod(MethodDefinition renamedMethod, MethodInterceptionScopeType interceptionScope)
+        private MethodDefinition InterceptMethod(PropertyDefinition property, MethodDefinition renamedMethod, MethodInterceptionScopeType interceptionScope)
         {
             var interceptorMethod =
                 Context
@@ -61,15 +76,17 @@ namespace CryoAOP.Core.Properties
             interceptorMethod.Body.Variables.Add(v2);
             var v3 = new VariableDefinition("V_3", Context.Importer.Import(typeof (Object[])));
             interceptorMethod.Body.Variables.Add(v3);
-            var v4 = new VariableDefinition("V_4", Context.Importer.Import(typeof (Boolean)));
+            var v4 = new VariableDefinition("V_4", Context.Importer.Import(typeof(Boolean)));
             interceptorMethod.Body.Variables.Add(v4);
+            var v5 = new VariableDefinition("V_5", Context.Importer.Import(typeof(PropertyInfo)));
+            interceptorMethod.Body.Variables.Add(v5);
 
             // Interceptor: If has return type add to local variables
             if (renamedMethod.ReturnType.Name != "Void")
             {
                 interceptorMethod.ReturnType = renamedMethod.ReturnType;
-                var v5 = new VariableDefinition("V_5", interceptorMethod.ReturnType);
-                interceptorMethod.Body.Variables.Add(v5);
+                var v6 = new VariableDefinition("V_6", interceptorMethod.ReturnType);
+                interceptorMethod.Body.Variables.Add(v6);
             }
 
             // Interceptor: Init locals?
@@ -94,7 +111,7 @@ namespace CryoAOP.Core.Properties
                           });
 
             // Interceptor: Get the method info 
-            var methodReference = Context.Importer.Import(typeof (System.Type), "GetMethod, String, BindingFlags");
+            var methodReference = Context.Importer.Import(typeof(System.Type), "GetMethod, String, BindingFlags");
             il.Append(new[]
                           {
                               il.Create(OpCodes.Ldloc_0),
@@ -105,6 +122,17 @@ namespace CryoAOP.Core.Properties
                               il.Create(OpCodes.Stloc_1)
                           });
 
+            // Interceptor: Get the method info 
+            var propertyReference = Context.Importer.Import(typeof(System.Type), "GetProperty, String, BindingFlags");
+            il.Append(new[]
+                          {
+                              il.Create(OpCodes.Ldloc_0),
+                              il.Create(OpCodes.Ldstr, property.Name),
+                              // BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance
+                              il.Create(OpCodes.Ldc_I4_S, (sbyte) 60),
+                              il.Create(OpCodes.Callvirt, propertyReference),
+                              il.Create(OpCodes.Stloc, 5)
+                          });
 
             // Interceptor: Initialise object array for param values 
             il.Append(new[]
@@ -151,7 +179,10 @@ namespace CryoAOP.Core.Properties
                 // If static
                 methodInvocationConstructor =
                     methodInvocationConstructors
-                        .Where(c => c.Parameters[0].ParameterType.Name.ToLower().IndexOf("type") != -1)
+                        .Where(c =>
+                            c.Parameters[0].ParameterType.Name.ToLower().IndexOf("type") != -1
+                            && c.Parameters[1].ParameterType.Name.ToLower().IndexOf("propertyinfo") != -1
+                            && c.Parameters[2].ParameterType.Name.ToLower().IndexOf("methodinfo") != -1)
                         .First();
             }
             else
@@ -159,7 +190,11 @@ namespace CryoAOP.Core.Properties
                 // If instance
                 methodInvocationConstructor =
                     methodInvocationConstructors
-                        .Where(c => c.Parameters[0].ParameterType.Name.ToLower().IndexOf("object") != -1)
+                        .Where(c =>
+                            c.Parameters[0].ParameterType.Name.ToLower().IndexOf("object") != -1
+                            && c.Parameters[1].ParameterType.Name.ToLower().IndexOf("type") != -1
+                            && c.Parameters[2].ParameterType.Name.ToLower().IndexOf("propertyinfo") != -1
+                            && c.Parameters[3].ParameterType.Name.ToLower().IndexOf("methodinfo") != -1)
                         .First();
 
                 // Load 'this'
@@ -169,6 +204,7 @@ namespace CryoAOP.Core.Properties
             il.Append(new[]
                           {
                               il.Create(OpCodes.Ldloc_0),
+                              il.Create(OpCodes.Ldloc,5),
                               il.Create(OpCodes.Ldloc_1),
                               il.Create(OpCodes.Ldloc_3),
                               il.Create(OpCodes.Newobj, Context.Importer.Import(methodInvocationConstructor)),
@@ -189,9 +225,8 @@ namespace CryoAOP.Core.Properties
                 il.Append(new[]
                               {
                                   il.Create(OpCodes.Ldloc_2),
-                                  il.Create(OpCodes.Callvirt,
-                                            Context.Importer.Import(typeof (Invocation), "get_Result")),
-                                  il.Create(OpCodes.Stloc, 5)
+                                  il.Create(OpCodes.Callvirt, Context.Importer.Import(typeof (Invocation), "get_Result")),
+                                  il.Create(OpCodes.Stloc, 6)
                               });
             }
 
@@ -199,8 +234,7 @@ namespace CryoAOP.Core.Properties
             il.Append(new[]
                           {
                               il.Create(OpCodes.Ldloc_2),
-                              il.Create(OpCodes.Callvirt,
-                                        Context.Importer.Import(typeof (Invocation), "get_CanInvoke")),
+                              il.Create(OpCodes.Callvirt, Context.Importer.Import(typeof (Invocation), "get_CanInvoke")),
                               il.Create(OpCodes.Ldc_I4_0),
                               il.Create(OpCodes.Ceq),
                               il.Create(OpCodes.Stloc, 4),
@@ -223,7 +257,7 @@ namespace CryoAOP.Core.Properties
 
             // Interceptor: Store method return value
             if (interceptorMethod.ReturnType.Name != "Void")
-                il.Append(il.Create(OpCodes.Stloc, 5));
+                il.Append(il.Create(OpCodes.Stloc, 6));
 
             // Interceptor: Set return type on MethodInvocation 
             if (interceptorMethod.ReturnType.Name != "Void")
@@ -233,10 +267,9 @@ namespace CryoAOP.Core.Properties
                     il.Append(new[]
                                   {
                                       il.Create(OpCodes.Ldloc_2),
-                                      il.Create(OpCodes.Ldloc, 5),
+                                      il.Create(OpCodes.Ldloc, 6),
                                       il.Create(OpCodes.Box, renamedMethod.ReturnType),
-                                      il.Create(OpCodes.Callvirt,
-                                                Context.Importer.Import(typeof (Invocation), "set_Result"))
+                                      il.Create(OpCodes.Callvirt, Context.Importer.Import(typeof (Invocation), "set_Result"))
                                   });
                 }
                 else
@@ -244,9 +277,8 @@ namespace CryoAOP.Core.Properties
                     il.Append(new[]
                                   {
                                       il.Create(OpCodes.Ldloc_2),
-                                      il.Create(OpCodes.Ldloc, 5),
-                                      il.Create(OpCodes.Callvirt,
-                                                Context.Importer.Import(typeof (Invocation), "set_Result"))
+                                      il.Create(OpCodes.Ldloc, 6),
+                                      il.Create(OpCodes.Callvirt, Context.Importer.Import(typeof (Invocation), "set_Result"))
                                   });
                 }
             }
@@ -255,8 +287,7 @@ namespace CryoAOP.Core.Properties
             il.Append(new[]
                           {
                               il.Create(OpCodes.Ldloc_2),
-                              il.Create(OpCodes.Call,
-                                        Context.Importer.Import(typeof (Invocation), "ContinueInvocation"))
+                              il.Create(OpCodes.Call, Context.Importer.Import(typeof (Invocation), "ContinueInvocation"))
                           });
 
             // Interceptor: Do post invocation call 
@@ -278,8 +309,7 @@ namespace CryoAOP.Core.Properties
                     il.Append(new[]
                                   {
                                       il.Create(OpCodes.Ldloc_2),
-                                      il.Create(OpCodes.Callvirt,
-                                                Context.Importer.Import(typeof (Invocation), "get_Result")),
+                                      il.Create(OpCodes.Callvirt, Context.Importer.Import(typeof (Invocation), "get_Result")),
                                       il.Create(OpCodes.Unbox_Any, interceptorMethod.ReturnType),
                                   });
                 }
@@ -288,8 +318,7 @@ namespace CryoAOP.Core.Properties
                     il.Append(new[]
                                   {
                                       il.Create(OpCodes.Ldloc_2),
-                                      il.Create(OpCodes.Callvirt,
-                                                Context.Importer.Import(typeof (Invocation), "get_Result")),
+                                      il.Create(OpCodes.Callvirt, Context.Importer.Import(typeof (Invocation), "get_Result")),
                                   });
                 }
             }

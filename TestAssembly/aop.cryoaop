@@ -1,23 +1,15 @@
 Assembly<shallow>: .\CryoAOP.TestAssembly.dll
 
 	// *** PropertyInterceptorTarget ***
-	// -------------------------------
-	
 	Type<shallow>: CryoAOP.TestAssembly.PropertyInterceptorTarget
 		
 		// * Property aspects *
-		// ------------------
-
 		property<deep>: SomeInteger
 
 	// *** MethodInterceptorTarget ***
-	// -------------------------------
-	
 	Type<shallow>: CryoAOP.TestAssembly.MethodInterceptorTarget
 		
 		// * Method aspects *
-		// ------------------
-		
 		Method<shallow>: privateMethodThatBreaksReflectionWhenTryingToGetMethodInfoUsingGetMethod
 
         Method<shallow>: HavingMethodWithNoArgsAndNoReturnType
@@ -44,11 +36,7 @@ Assembly<shallow>: .\CryoAOP.TestAssembly.dll
         Method<deep>: InterceptMethod
 
 	// *** MethodInterceptorTargetParameter ***
-	// ----------------------------
-	
 	Type<shallow>: CryoAOP.TestAssembly.MethodInterceptorTargetParameter
 
 		// * Method aspects *
-		// ------------------
-		
 		Method<shallow>: AdditionalMixinTesting

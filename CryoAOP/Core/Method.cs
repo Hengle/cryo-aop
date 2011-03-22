@@ -1,4 +1,20 @@
-﻿using System;
+﻿//CryoAOP. Aspect Oriented Framework for .NET.
+//Copyright (C) 2011  Gavin van der Merwe (fir3pho3nixx@gmail.com)
+
+//This program is free software: you can redistribute it and/or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+
+//This program is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU General Public License for more details.
+
+//You should have received a copy of the GNU General Public License
+//along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using System;
 using System.Linq;
 using System.Reflection;
 using CryoAOP.Aspects;
@@ -6,7 +22,7 @@ using CryoAOP.Core.Extensions;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
-namespace CryoAOP.Core.Methods
+namespace CryoAOP.Core
 {
     internal class Method
     {
@@ -143,7 +159,9 @@ namespace CryoAOP.Core.Methods
                 // If static
                 methodInvocationConstructor =
                     methodInvocationConstructors
-                        .Where(c => c.Parameters[0].ParameterType.Name.ToLower().IndexOf("type") != -1)
+                        .Where(c => 
+                            c.Parameters[0].ParameterType.Name.ToLower().IndexOf("type") != -1
+                            && c.Parameters[1].ParameterType.Name.ToLower().IndexOf("methodinfo") != -1)
                         .First();
             }
             else
@@ -151,7 +169,10 @@ namespace CryoAOP.Core.Methods
                 // If instance
                 methodInvocationConstructor =
                     methodInvocationConstructors
-                        .Where(c => c.Parameters[0].ParameterType.Name.ToLower().IndexOf("object") != -1)
+                        .Where(c => 
+                            c.Parameters[0].ParameterType.Name.ToLower().IndexOf("object") != -1
+                            && c.Parameters[1].ParameterType.Name.ToLower().IndexOf("type") != -1
+                            && c.Parameters[2].ParameterType.Name.ToLower().IndexOf("methodinfo") != -1)
                         .First();
 
                 // Load 'this'

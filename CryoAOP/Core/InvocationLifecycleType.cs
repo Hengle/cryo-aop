@@ -14,23 +14,11 @@
 //You should have received a copy of the GNU General Public License
 //along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace CryoAOP.Exec
+namespace CryoAOP.Core
 {
-    internal class PropertyLine : ConfigLine
+    public enum InvocationLifecycleType
     {
-        public PropertyLine(int lineNumber, string line)
-            : base(lineNumber, line)
-        {
-        }
-
-        public string PropertyName
-        {
-            get { return Value.Trim(); }
-        }
-
-        public static bool IsProperty(string currentLine)
-        {
-            return currentLine.ToLower().Trim().StartsWith("property") && currentLine.Contains(":");
-        }
+        BeforeInvocation,
+        AfterInvocation
     }
 }

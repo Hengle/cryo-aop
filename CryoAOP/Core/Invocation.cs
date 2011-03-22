@@ -1,7 +1,22 @@
-﻿using System.Reflection;
+﻿//CryoAOP. Aspect Oriented Framework for .NET.
+//Copyright (C) 2011  Gavin van der Merwe (fir3pho3nixx@gmail.com)
+
+//This program is free software: you can redistribute it and/or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+
+//This program is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU General Public License for more details.
+
+//You should have received a copy of the GNU General Public License
+//along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using System.Reflection;
 using CryoAOP.Core.Exceptions;
 using CryoAOP.Core.Extensions;
-using CryoAOP.Core.Methods;
 
 namespace CryoAOP.Core
 {
@@ -15,10 +30,29 @@ namespace CryoAOP.Core
             Method = method;
             CanInvoke = true;
             this.parameterValues = parameterValues;
-            InvocationType = Core.InvocationType.BeforeInvocation;
+            InvocationType = InvocationType.Method;
+            InvocationLifecycle = Core.InvocationLifecycleType.BeforeInvocation;
         }
 
-        public Invocation(object instance, System.Type type, MethodInfo method, params object[] parameterValues) : this (type, method, parameterValues)
+        public Invocation(System.Type type, PropertyInfo property, MethodInfo method, params object[] parameterValues)
+        {
+            Type = type;
+            Method = method;
+            Property = property;
+            CanInvoke = true;
+            this.parameterValues = parameterValues;
+            InvocationType = InvocationType.Property;
+            InvocationLifecycle = Core.InvocationLifecycleType.BeforeInvocation;
+        }
+
+        public Invocation(object instance, System.Type type, MethodInfo method, params object[] parameterValues)
+            : this(type, method, parameterValues)
+        {
+            Instance = instance;
+        }
+
+        public Invocation(object instance, System.Type type, PropertyInfo property, MethodInfo method, params object[] parameterValues)
+            : this(type, property, method, parameterValues)
         {
             Instance = instance;
         }
@@ -27,8 +61,10 @@ namespace CryoAOP.Core
         public object Instance { private set; get; }
         public bool CanInvoke { private set; get; }
         public MethodInfo Method { private set; get; }
+        public PropertyInfo Property { private set; get; }
         public bool InvocationCancelled { private set; get; }
         public InvocationType InvocationType { private set; get; }
+        public InvocationLifecycleType InvocationLifecycle { private set; get; }
 
         public ParameterInfo[] Parameters
         {
@@ -54,13 +90,13 @@ namespace CryoAOP.Core
         public virtual void ContinueInvocation()
         {
             CanInvoke = false;
-            InvocationType = InvocationType.AfterInvocation;
+            InvocationLifecycle = InvocationLifecycleType.AfterInvocation;
         }
 
         public virtual void CancelInvocation()
         {
             CanInvoke = false;
-            InvocationCancelled = InvocationType == InvocationType.BeforeInvocation;
+            InvocationCancelled = InvocationLifecycle == InvocationLifecycleType.BeforeInvocation;
         }
 
         protected virtual void ValidateResult()
@@ -81,7 +117,7 @@ namespace CryoAOP.Core
 
         public override string ToString()
         {
-            return string.Format("InvocationType: {4}, Type: {2}, Method: {3}, CanInvoke: {5}, ParameterValues: {1}, Result: {0}", Result, parameterValues.JoinWith(","), Type, Method, InvocationType, CanInvoke);
+            return string.Format("InvocationType: {7}, InvocationLifecycle: {4}, Type: {2}, Property: {6}, Method: {3}, CanInvoke: {5}, ParameterValues: {1}, Result: {0}", Result, parameterValues.JoinWith(","), Type, Method, InvocationLifecycle, CanInvoke, Property, InvocationType);
         }
     }
 }
