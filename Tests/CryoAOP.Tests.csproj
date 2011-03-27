@@ -120,11 +120,8 @@
     <Reference Include="nunit.framework">
       <HintPath>..\References\NUnit\2.5.5\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Rhino.Mocks">
-      <HintPath>..\References\Rhino Mocks\3.6\Rhino.Mocks.dll</HintPath>
-    </Reference>
     <Reference Include="System">
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>

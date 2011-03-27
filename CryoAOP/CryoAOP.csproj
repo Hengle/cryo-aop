@@ -188,7 +188,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy .\*.exe "..\..\..\bin\$(ConfigurationName)\"
+    <PostBuildEvent>del "..\..\..\bin\$(ConfigurationName)\*.*" /f /s /q
+rmdir "..\..\..\bin\$(ConfigurationName)\" /s /q
+mkdir "..\..\..\bin\$(ConfigurationName)\"
+copy .\*.exe "..\..\..\bin\$(ConfigurationName)\"
 copy .\*.dll "..\..\..\bin\$(ConfigurationName)\"
 copy .\*.pdb "..\..\..\bin\$(ConfigurationName)\"</PostBuildEvent>
   </PropertyGroup>
