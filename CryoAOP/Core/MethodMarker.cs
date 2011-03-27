@@ -14,6 +14,7 @@
 //You should have received a copy of the GNU General Public License
 //along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.Collections.Generic;
 using System.Linq;
 using CryoAOP.Core.Extensions;
 using Mono.Cecil;
@@ -21,10 +22,52 @@ using Mono.Cecil.Cil;
 
 namespace CryoAOP.Core
 {
-    public class MethodMarker
+    internal class MethodMarkerCacheItem
+    {
+        public readonly string TypeAndMethodName;
+        public readonly bool HasMarker;
+
+        public MethodMarkerCacheItem(string typeAndMethodName, bool hasMarker)
+        {
+            TypeAndMethodName = typeAndMethodName;
+            HasMarker = hasMarker;
+        }
+
+        public bool Equals(MethodMarkerCacheItem other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(other.TypeAndMethodName, TypeAndMethodName);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != typeof (MethodMarkerCacheItem)) return false;
+            return Equals((MethodMarkerCacheItem) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (TypeAndMethodName != null ? TypeAndMethodName.GetHashCode() : 0);
+        }
+    }
+
+    internal class MethodMarkerCache
+    {
+        public static Dictionary<int, MethodMarkerCacheItem> Cache = new Dictionary<int, MethodMarkerCacheItem>();
+    }
+
+    internal class MethodMarker
     {
         public virtual bool HasMarker(MethodDefinition method, string markerDefinition)
         {
+            var methodTypeAndName = method.DeclaringType.FullName + method.Name;
+            var methodNameHashCode = methodTypeAndName.GetHashCode();
+            if (MethodMarkerCache.Cache.ContainsKey(methodNameHashCode))
+                return MethodMarkerCache.Cache[methodNameHashCode].HasMarker;
+
             if (method == null
                 || method.Body == null
                 || method.Body.Instructions == null
@@ -33,9 +76,13 @@ namespace CryoAOP.Core
 
             var interceptMarker = method.Body.Instructions.ToList().Take(2).ToArray();
             var firstInstruction = interceptMarker.First();
-            return
+            var hasMarker = 
                 firstInstruction.OpCode == OpCodes.Ldstr
                 && (firstInstruction.Operand as string) == markerDefinition;
+
+            if (hasMarker)
+                MethodMarkerCache.Cache.Add(methodNameHashCode, new MethodMarkerCacheItem(methodTypeAndName, hasMarker));
+            return hasMarker;
         }
 
         public virtual void CreateMarker(MethodDefinition method, string markerDefinition)

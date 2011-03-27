@@ -35,6 +35,8 @@ namespace CryoAOP.Core
 
     internal class AssemblyLoader
     {
+        public static bool HasRun = false;
+        public static ShadowAssemblyType[] AssembliesFromPreviousRun;
         public static List<ShadowAssemblyType> Assemblies = new List<ShadowAssemblyType>();
 
         public IEnumerable<string> RestrictedAssemblies
@@ -44,6 +46,9 @@ namespace CryoAOP.Core
 
         public ShadowAssemblyType[] GetShadowAssemblies()
         {
+            if (HasRun)
+                return AssembliesFromPreviousRun;
+
             if (Assemblies.Count == 0)
             {
                 if (!Directory.Exists("C:\\Temp"))
@@ -73,7 +78,12 @@ namespace CryoAOP.Core
                     Assemblies.Add(shadow);
                 }
             }
-            return Assemblies.ToArray();
+            
+            var shadowAssemblyTypes = Assemblies.ToArray();
+            AssembliesFromPreviousRun = shadowAssemblyTypes;
+            HasRun = true;
+
+            return shadowAssemblyTypes;
         }
     }
 }

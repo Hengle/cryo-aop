@@ -29,22 +29,30 @@ namespace CryoAOP.Core.Attributes
         public IEnumerable<AttributeResult<T>> FindAttributes<T>() where T : Attribute
         {
             var assemblies = loader.GetShadowAssemblies();
+
             var attributesFound = new List<AttributeResult<T>>();
             foreach (var assembly in assemblies)
             {
-                try
+                int shadowAssemblyHash = assembly.ShadowAssembly.FullName.GetHashCode();
+                if (AttributeCache<T>.Cache.ContainsKey(shadowAssemblyHash))
+                    attributesFound.AddRange(AttributeCache<T>.Cache[shadowAssemblyHash].Attributes);
+                else
                 {
-                    foreach (var type in assembly.ShadowAssembly.GetTypes())
+                    try
                     {
-                        FindPropertyAttributes(assembly, type, attributesFound);
-                        FindMethodAttributes(assembly, type, attributesFound);
-                        FindTypeAttributes(assembly, type, attributesFound);
+                        foreach (var type in assembly.ShadowAssembly.GetTypes())
+                        {
+                            FindPropertyAttributes(assembly, type, attributesFound);
+                            FindMethodAttributes(assembly, type, attributesFound);
+                            FindTypeAttributes(assembly, type, attributesFound);
+                        }
+                        AttributeCache<T>.Cache.Add(shadowAssemblyHash, new AttributeCacheItem<T>(assembly, attributesFound));
                     }
-                }
-                catch (Exception err3)
-                {
-                    "CryoAOP -> Warning! First chance exception ocurred while searching for Mixin Methods. \r\n{0}"
-                        .Warn(err3);
+                    catch (Exception err3)
+                    {
+                        "CryoAOP -> Warning! First chance exception ocurred while searching for Mixin Methods. \r\n{0}"
+                            .Warn(err3);
+                    }
                 }
             }
             return attributesFound;
@@ -98,7 +106,7 @@ namespace CryoAOP.Core.Attributes
         {
             try
             {
-                var methods =
+                MethodInfo[] methods =
                     type.GetMethods(
                         BindingFlags.Public
                         | BindingFlags.NonPublic

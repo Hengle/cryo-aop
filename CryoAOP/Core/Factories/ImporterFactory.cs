@@ -105,7 +105,7 @@ namespace CryoAOP.Core.Factories
 
         public virtual TypeReference Import(System.Type searchType)
         {
-            var assemblyRef = new Assembly(searchType.Assembly);
+            var assemblyRef = context.Assemblies.CreateAssembly(searchType.Assembly);
             TypeDefinition type = null;
             foreach (var currentType in assemblyRef.Definition.MainModule.Types.ToList())
             {

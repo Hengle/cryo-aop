@@ -25,6 +25,7 @@ namespace CryoAOP.Core
         public readonly MethodDefinition MethodDefinition;
         public readonly PropertyDefinition PropertyDefinition;
 
+        public readonly AssemblyFactory Assemblies;
         public readonly ImporterFactory Importer;
         public readonly MethodCloneFactory Cloning;
         public readonly NameAliasFactory NameAlias;
@@ -47,6 +48,7 @@ namespace CryoAOP.Core
             Cloning = new MethodCloneFactory(this);
             Mixin = new MethodMixinExtension(this);
             Scope = new MethodScopingExtension(this);
+            Assemblies = new AssemblyFactory();
         }
 
         public MethodContext(Type type, Property method, PropertyDefinition methodDefinition)
@@ -60,6 +62,7 @@ namespace CryoAOP.Core
             Cloning = new MethodCloneFactory(this);
             Mixin = new MethodMixinExtension(this);
             Scope = new MethodScopingExtension(this);
+            Assemblies = new AssemblyFactory();
         }
 
         public Assembly Assembly

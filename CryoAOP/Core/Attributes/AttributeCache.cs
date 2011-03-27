@@ -14,19 +14,13 @@
 //You should have received a copy of the GNU General Public License
 //along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using CryoAOP.Core.Factories;
+using System;
+using System.Collections.Generic;
 
-namespace CryoAOP.Core.Extensions
+namespace CryoAOP.Core.Attributes
 {
-    internal static class CoreExtensions
+    internal class AttributeCache<T> where T : Attribute
     {
-        public static Method GetMethod(this string[] args)
-        {
-            var assemblyFactory = new AssemblyFactory();
-            var assemblyInspector = assemblyFactory.CreateAssembly(args[0].Trim());
-            var typeInspector = assemblyInspector.FindType(args[1].Trim());
-            var methodInspector = typeInspector.FindMethod(args[2].Trim());
-            return methodInspector;
-        }
+        internal static Dictionary<int, AttributeCacheItem<T>> Cache = new Dictionary<int, AttributeCacheItem<T>>();
     }
 }
