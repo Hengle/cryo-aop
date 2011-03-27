@@ -1,0 +1,17 @@
+﻿<config Version="1">
+  <OutputFolder>$(AppDir)</OutputFolder>
+  <ReportFolderNetFull>$(SystemRoot)\Temp\EQATECProfilerLogs</ReportFolderNetFull>
+  <ReportFolderNetCF>\Temp\EQATECProfilerLogs</ReportFolderNetCF>
+  <AutoSnapshot>Main OnStop ApplicationEnd</AutoSnapshot>
+  <TinyMethodAction>Skip</TinyMethodAction>
+  <ServerControlHost>localhost</ServerControlHost>
+  <ServerControlPort>4515</ServerControlPort>
+  <RuntimeModuleLogLevel>Errors</RuntimeModuleLogLevel>
+  <ExcludeFiles />
+  <SignActions>
+    <SignAction action="Skip" publickey="ACQAAASAAACUAAAABgIAAAAkAABSU0ExAAQAAAEAAQB5FZl30tA6jmvqei506NGvzJPohRl0lSu0gKEskTRHTQQGJEfDfg5owIBTb888P74v+cl5zpmEdeUG6M6C3VsPNQ3BDpO/Lu7Ph0skdwxQgdvqdEf92voneyLeR9b/6kSWdKT5/M+E0VBpCJOAKE29019Gzf8Sob145O8AZdAW3w==" usedby="C:\CryoAOP\bin\net_3_5_Debug\Mono.Cecil.dll" keyfile="" />
+    <SignAction action="Skip" publickey="ACQAAASAAACUAAAABgIAAAAkAABSU0ExAAQAAAEAAQDPSgu/NUttjQw557xA3QvhajK6nXY+jQT9lZG5LXJp3QnCxl7HVjzjk6ynGRO+oT3Wog1nbtfdxyb4RvzmaAC7A0kDYZobqlIPX3WJRs8rSva6fDENAtCSpc9Rvm1S6IYz9QJHS09GHYULYyGcCaM3OiPXMVbuA9bHs4w20SEfrA==" usedby="C:\CryoAOP\bin\net_3_5_Debug\nunit.framework.dll" keyfile="" />
+  </SignActions>
+  <AppType>FullNet</AppType>
+  <InputFolderOK>true</InputFolderOK>
+</config>
