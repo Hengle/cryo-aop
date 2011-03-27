@@ -15,39 +15,36 @@
 //along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using CryoAOP.Core;
-using CryoAOP.Core.Attributes;
-using Invocation = CryoAOP.Core.Invocation;
+using System.Linq;
 
-namespace CryoAOP.Mixins
+namespace CryoAOP.Core.Attributes
 {
-    public interface IMethodMixins
+    [AttributeUsage(AttributeTargets.Method)]
+    public class MixinMethodAttribute : Attribute
     {
-        void WhenMethodCalled(Action<Invocation> invocation);
-    }
-
-    public class MethodMixins
-    {
-        [MixinMethod()]
-        public void WhenCalled<T>(Action<Invocation> invocation)
+        private readonly System.Type[] types;
+        public System.Type[] Types
         {
-            Intercept.Call +=
-                (i) =>
-                    {
-                        if (i.Type == typeof(T))
-                            invocation(i);
-                    };
+            get { return types; }
         }
 
-        [MixinMethod()]
-        public static void WhenCalledStatic<T>(Action<Invocation> invocation)
+        public MixinMethodAttribute()
         {
-            Intercept.Call +=
-                (i) =>
-                {
-                    if (i.Type == typeof(T))
-                        invocation(i);
-                };
+        }
+
+        public MixinMethodAttribute(params System.Type[] types)
+        {
+            this.types = types;
+        }
+
+        public bool IsTypeSpecific
+        {
+            get { return types != null; }
+        }
+
+        public bool IsForType(string typeName)
+        {
+            return types.Any(t => t.Name == typeName);
         }
     }
 }

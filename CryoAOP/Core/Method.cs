@@ -17,7 +17,6 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using CryoAOP.Aspects;
 using CryoAOP.Core.Extensions;
 using Mono.Cecil;
 using Mono.Cecil.Cil;

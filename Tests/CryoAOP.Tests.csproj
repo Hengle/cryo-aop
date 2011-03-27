@@ -136,10 +136,6 @@
     <Compile Include="PropertyTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Aspects\CryoAOP.Aspects.csproj">
-      <Project>{D361862D-5205-49CB-A50E-C9ED943AEBAB}</Project>
-      <Name>CryoAOP.Aspects</Name>
-    </ProjectReference>
     <ProjectReference Include="..\CryoAOP\CryoAOP.csproj">
       <Project>{A9C22D19-786A-4C99-BFB6-715F710FA3A9}</Project>
       <Name>CryoAOP</Name>
@@ -154,6 +150,10 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>rem "C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\ildasm" CryoAOP.TestAssembly.dll /OUT=CryoAOP.TestAssembly.dll.il /SOURCE
+rem C:\Windows\Microsoft.NET\Framework\v4.0.30319\ilasm CryoAOP.TestAssembly.dll.il /OUTPUT=CryoAOP.TestAssembly.dll /DEBUG /DLL</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -16,7 +16,6 @@
 
 using System;
 using System.Linq;
-using CryoAOP.Aspects;
 using CryoAOP.Core.Attributes;
 using CryoAOP.Core.Extensions;
 using Mono.Cecil.Cil;
@@ -93,7 +92,7 @@ namespace CryoAOP.Core
                             .Resolve()
                             .Methods
                             .Where(m => m.IsConstructor)
-                            .Single();
+                            .First();
 
                     // Mixin: Create object with default constructor
                     il.Append(

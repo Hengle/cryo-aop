@@ -1,4 +1,4 @@
-﻿//CryoAOP. Aspect Oriented Framework for .NET.
+//CryoAOP. Aspect Oriented Framework for .NET.
 //Copyright (C) 2011  Gavin van der Merwe (fir3pho3nixx@gmail.com)
 
 //This program is free software: you can redistribute it and/or modify
@@ -14,30 +14,12 @@
 //You should have received a copy of the GNU General Public License
 //along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-
-namespace CryoAOP.Aspects
+namespace CryoAOP.Core
 {
-    [AttributeUsage(
-        AttributeTargets.Method 
-        | AttributeTargets.Property 
-        | AttributeTargets.Class)]
-    public class InterceptAttribute : Attribute
+    public enum MethodInterceptionScopeType
     {
-        private readonly MethodInterceptionScopeType interceptionScope = MethodInterceptionScopeType.Shallow;
-
-        public InterceptAttribute()
-        {
-        }
-
-        public InterceptAttribute(MethodInterceptionScopeType interceptionScope)
-        {
-            this.interceptionScope = interceptionScope;
-        }
-
-        public MethodInterceptionScopeType Scope
-        {
-            get { return interceptionScope; }
-        }
+        Deep,
+        Shallow
     }
+
 }

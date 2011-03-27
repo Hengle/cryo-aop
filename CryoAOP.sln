@@ -19,8 +19,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryoAOP.Tests", "Tests\Cryo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryoAOP.Mixins", "Mixins\CryoAOP.Mixins.csproj", "{578873D9-DCB5-43F3-B2C3-DB080679214C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryoAOP.Aspects", "Aspects\CryoAOP.Aspects.csproj", "{D361862D-5205-49CB-A50E-C9ED943AEBAB}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -181,30 +179,6 @@ Global
 		{578873D9-DCB5-43F3-B2C3-DB080679214C}.winphone_Debug|Any CPU.Build.0 = net_3_5_Debug|Any CPU
 		{578873D9-DCB5-43F3-B2C3-DB080679214C}.winphone_Release|Any CPU.ActiveCfg = net_3_5_Debug|Any CPU
 		{578873D9-DCB5-43F3-B2C3-DB080679214C}.winphone_Release|Any CPU.Build.0 = net_3_5_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.Debug|Any CPU.ActiveCfg = net_3_5_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.Debug|Any CPU.Build.0 = net_3_5_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.net_2_0_Debug|Any CPU.ActiveCfg = net_2_0_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.net_2_0_Debug|Any CPU.Build.0 = net_2_0_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.net_2_0_Release|Any CPU.ActiveCfg = net_3_5_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.net_2_0_Release|Any CPU.Build.0 = net_3_5_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.net_3_5_Debug|Any CPU.ActiveCfg = net_3_5_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.net_3_5_Debug|Any CPU.Build.0 = net_3_5_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.net_3_5_Release|Any CPU.ActiveCfg = net_3_5_Release|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.net_3_5_Release|Any CPU.Build.0 = net_3_5_Release|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.net_4_0_Debug|Any CPU.ActiveCfg = net_4_0_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.net_4_0_Debug|Any CPU.Build.0 = net_4_0_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.net_4_0_Release|Any CPU.ActiveCfg = net_4_0_Release|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.net_4_0_Release|Any CPU.Build.0 = net_4_0_Release|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.Release|Any CPU.ActiveCfg = net_3_5_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.Release|Any CPU.Build.0 = net_3_5_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.silverlight_Debug|Any CPU.ActiveCfg = net_3_5_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.silverlight_Debug|Any CPU.Build.0 = net_3_5_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.silverlight_Release|Any CPU.ActiveCfg = net_3_5_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.silverlight_Release|Any CPU.Build.0 = net_3_5_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.winphone_Debug|Any CPU.ActiveCfg = net_3_5_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.winphone_Debug|Any CPU.Build.0 = net_3_5_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.winphone_Release|Any CPU.ActiveCfg = net_3_5_Debug|Any CPU
-		{D361862D-5205-49CB-A50E-C9ED943AEBAB}.winphone_Release|Any CPU.Build.0 = net_3_5_Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

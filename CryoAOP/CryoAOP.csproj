@@ -21,6 +21,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_2_0_Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -123,6 +125,9 @@
     <Compile Include="Core\AssemblyLoader.cs" />
     <Compile Include="Core\Attributes\AttributeFinder.cs" />
     <Compile Include="Core\Attributes\AttributeResult.cs" />
+    <Compile Include="Core\Attributes\ExtensionAttribute.cs" />
+    <Compile Include="Core\Attributes\InterceptAttribute.cs" />
+    <Compile Include="Core\Attributes\MixinMethodAttribute.cs" />
     <Compile Include="Core\InvocationType.cs" />
     <Compile Include="Core\Exceptions\IncorrectAttributeResultUsageException.cs" />
     <Compile Include="Core\Exceptions\MethodSignatureViolationException.cs" />
@@ -130,6 +135,7 @@
     <Compile Include="Core\MethodContext.cs" />
     <Compile Include="Core\Extensions\FileExtensions.cs" />
     <Compile Include="Core\MethodExtension.cs" />
+    <Compile Include="Core\MethodInterceptionScopeType.cs" />
     <Compile Include="Core\MethodMarker.cs" />
     <Compile Include="Core\MethodMixinExtension.cs" />
     <Compile Include="Core\MethodScopingExtension.cs" />
@@ -165,10 +171,6 @@
     <Compile Include="Exec\TypeLine.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Aspects\CryoAOP.Aspects.csproj">
-      <Project>{D361862D-5205-49CB-A50E-C9ED943AEBAB}</Project>
-      <Name>CryoAOP.Aspects</Name>
-    </ProjectReference>
     <ProjectReference Include="..\cecil\Mono.Cecil.csproj">
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
       <Name>Mono.Cecil</Name>
@@ -180,6 +182,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

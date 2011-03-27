@@ -133,10 +133,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Aspects\CryoAOP.Aspects.csproj">
-      <Project>{D361862D-5205-49CB-A50E-C9ED943AEBAB}</Project>
-      <Name>CryoAOP.Aspects</Name>
-    </ProjectReference>
     <ProjectReference Include="..\CryoAOP\CryoAOP.csproj">
       <Project>{A9C22D19-786A-4C99-BFB6-715F710FA3A9}</Project>
       <Name>CryoAOP</Name>
@@ -145,6 +141,9 @@
       <Project>{578873D9-DCB5-43F3-B2C3-DB080679214C}</Project>
       <Name>CryoAOP.Mixins</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

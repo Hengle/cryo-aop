@@ -75,5 +75,20 @@ namespace CryoAOP.Tests
 
             Assert.That(interceptorWasCalled);
         }
+
+        [Test]
+        public void Should_intercept_static_property_which_is_a_value_type_using_getter_defined_by_attribute()
+        {
+            var interceptorWasCalled = false;
+            Intercept.Call +=
+                (invocation) =>
+                    {
+                        interceptorWasCalled = true;
+                    };
+            
+            var i = PropertyInterceptorTarget.SomeStaticIntegerWithAttribute;
+            
+            Assert.That(interceptorWasCalled);
+        }
     }
 }

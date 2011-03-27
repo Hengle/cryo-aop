@@ -15,9 +15,9 @@
 //along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using CryoAOP.Aspects;
 using CryoAOP.Core.Extensions;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -251,9 +251,9 @@ namespace CryoAOP.Core
                 il.Append(il.Create(OpCodes.Ldarg, parameter));
 
             if (renamedMethod.HasGenericParameters)
-                il.Append(il.Create(OpCodes.Callvirt, renamedMethod.MakeGeneric(interceptorMethod.GenericParameters.ToArray())));
+                il.Append(il.Create(OpCodes.Call, renamedMethod.MakeGeneric(interceptorMethod.GenericParameters.ToArray())));
             else
-                il.Append(il.Create(OpCodes.Callvirt, renamedMethod));
+                il.Append(il.Create(OpCodes.Call, renamedMethod));
 
             // Interceptor: Store method return value
             if (interceptorMethod.ReturnType.Name != "Void")

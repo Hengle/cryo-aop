@@ -15,36 +15,29 @@
 //along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Linq;
 
-namespace CryoAOP.Aspects
+namespace CryoAOP.Core.Attributes
 {
-    [AttributeUsage(AttributeTargets.Method)]
-    public class MixinMethodAttribute : Attribute
+    [AttributeUsage(
+        AttributeTargets.Method 
+        | AttributeTargets.Property 
+        | AttributeTargets.Class)]
+    public class InterceptAttribute : Attribute
     {
-        private readonly Type[] types;
-        public Type[] Types
-        {
-            get { return types; }
-        }
+        private readonly MethodInterceptionScopeType interceptionScope = MethodInterceptionScopeType.Shallow;
 
-        public MixinMethodAttribute()
+        public InterceptAttribute()
         {
         }
 
-        public MixinMethodAttribute(params Type[] types)
+        public InterceptAttribute(MethodInterceptionScopeType interceptionScope)
         {
-            this.types = types;
+            this.interceptionScope = interceptionScope;
         }
 
-        public bool IsTypeSpecific
+        public MethodInterceptionScopeType Scope
         {
-            get { return types != null; }
-        }
-
-        public bool IsForType(string typeName)
-        {
-            return types.Any(t => t.Name == typeName);
+            get { return interceptionScope; }
         }
     }
 }
