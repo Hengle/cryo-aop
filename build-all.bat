@@ -1,5 +1,5 @@
 @echo off
-set PATH=%PATH%;C:\Windows\Microsoft.NET\Framework\v4.0.30319
+set PATH=C:\Windows\Microsoft.NET\Framework\v4.0.30319;%PATH%
 msbuild .\CryoAOP.sln /t:Rebuild /p:Configuration=net_2_0_Debug;NoWarn="0649;1685" /verbosity:minimal
 .\References\NUnit\2.5.9.10348\nunit-console.exe .\bin\net_2_0_Debug.nunit
 msbuild .\CryoAOP.sln /t:Rebuild /p:Configuration=net_2_0_Release;NoWarn="0649;1685" /verbosity:minimal
