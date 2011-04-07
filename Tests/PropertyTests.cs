@@ -35,9 +35,9 @@ namespace CryoAOP.Tests
             var interceptorWasCalled = false;
             Intercept.Call +=
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                    };
+                {
+                    interceptorWasCalled = true;
+                };
 
             var instance = new PropertyInterceptorTarget();
             instance.SomeInteger = 1;
@@ -82,12 +82,12 @@ namespace CryoAOP.Tests
             var interceptorWasCalled = false;
             Intercept.Call +=
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                    };
-            
+                {
+                    interceptorWasCalled = true;
+                };
+
             var i = PropertyInterceptorTarget.SomeStaticIntegerWithAttribute;
-            
+
             Assert.That(interceptorWasCalled);
         }
     }

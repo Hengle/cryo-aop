@@ -68,11 +68,11 @@ namespace CryoAOP.Tests
 
             Intercept.Call +=
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                        Assert.That(a, Is.EqualTo((int) invocation.ParameterValues[0]));
-                        Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
-                    };
+                {
+                    interceptorWasCalled = true;
+                    Assert.That(a, Is.EqualTo((int)invocation.ParameterValues[0]));
+                    Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
+                };
 
             InterceptInstance.GenericMethodWithInvertedParamsAndValueReturnType(1, b);
             Assert.That(interceptorWasCalled);
@@ -87,11 +87,11 @@ namespace CryoAOP.Tests
 
             Intercept.Call +=
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                        Assert.That(a, Is.EqualTo((int) invocation.ParameterValues[0]));
-                        Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
-                    };
+                {
+                    interceptorWasCalled = true;
+                    Assert.That(a, Is.EqualTo((int)invocation.ParameterValues[0]));
+                    Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
+                };
 
             InterceptInstance.GenericMethodWithTwoGenericParameters(1, b);
             Assert.That(interceptorWasCalled);
@@ -107,15 +107,15 @@ namespace CryoAOP.Tests
 
             Intercept.Call +=
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                        Assert.That(a == (int) invocation.ParameterValues[1]);
-                        Assert.That(b == (double) invocation.ParameterValues[2]);
-                        Assert.That(parameterClass == invocation.ParameterValues[0]);
+                {
+                    interceptorWasCalled = true;
+                    Assert.That(a == (int)invocation.ParameterValues[1]);
+                    Assert.That(b == (double)invocation.ParameterValues[2]);
+                    Assert.That(parameterClass == invocation.ParameterValues[0]);
 
-                        if (invocation.InvocationLifecycle == InvocationLifecycleType.AfterInvocation)
-                            Assert.That(invocation.Result, Is.EqualTo(b));
-                    };
+                    if (invocation.InvocationLifecycle == InvocationLifecycleType.AfterInvocation)
+                        Assert.That(invocation.Result, Is.EqualTo(b));
+                };
 
             InterceptInstance.GenericMethodWithGenericParamsAndValueReturnType(parameterClass, a, b);
             Assert.That(interceptorWasCalled);
@@ -141,10 +141,10 @@ namespace CryoAOP.Tests
 
             Intercept.Call +=
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                        Assert.That(a, Is.EqualTo(invocation.ParameterValues[0]));
-                    };
+                {
+                    interceptorWasCalled = true;
+                    Assert.That(a, Is.EqualTo(invocation.ParameterValues[0]));
+                };
 
             InterceptInstance.GenericMethodWithGenericParameters(a);
             Assert.That(interceptorWasCalled);
@@ -158,13 +158,13 @@ namespace CryoAOP.Tests
 
             Intercept.Call +=
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                        Assert.That(a, Is.EqualTo(invocation.ParameterValues[0]));
+                {
+                    interceptorWasCalled = true;
+                    Assert.That(a, Is.EqualTo(invocation.ParameterValues[0]));
 
-                        if (invocation.InvocationLifecycle == InvocationLifecycleType.AfterInvocation)
-                            Assert.That(invocation.Result, Is.EqualTo(a));
-                    };
+                    if (invocation.InvocationLifecycle == InvocationLifecycleType.AfterInvocation)
+                        Assert.That(invocation.Result, Is.EqualTo(a));
+                };
 
             InterceptInstance.GenericMethodWithGenericParametersAndGenericReturnType(a);
             Assert.That(interceptorWasCalled);
@@ -180,15 +180,15 @@ namespace CryoAOP.Tests
 
             Intercept.Call +=
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                        Assert.That(a, Is.EqualTo((int) invocation.ParameterValues[1]));
-                        Assert.That(b, Is.EqualTo((double) invocation.ParameterValues[2]));
-                        Assert.That(parameterClass, Is.EqualTo(invocation.ParameterValues[0]));
+                {
+                    interceptorWasCalled = true;
+                    Assert.That(a, Is.EqualTo((int)invocation.ParameterValues[1]));
+                    Assert.That(b, Is.EqualTo((double)invocation.ParameterValues[2]));
+                    Assert.That(parameterClass, Is.EqualTo(invocation.ParameterValues[0]));
 
-                        if (invocation.InvocationLifecycle == InvocationLifecycleType.AfterInvocation)
-                            Assert.That(invocation.Result, Is.Null);
-                    };
+                    if (invocation.InvocationLifecycle == InvocationLifecycleType.AfterInvocation)
+                        Assert.That(invocation.Result, Is.Null);
+                };
 
             InterceptInstance.GenericMethodWithGenericParametersAndValueTypeArgs(parameterClass, a, b);
             Assert.That(interceptorWasCalled);
@@ -203,10 +203,10 @@ namespace CryoAOP.Tests
 
             Intercept.Call +=
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                        Assert.That(invocation.Instance, Is.Not.Null);
-                    };
+                {
+                    interceptorWasCalled = true;
+                    Assert.That(invocation.Instance, Is.Not.Null);
+                };
 
             InterceptInstance.GenericMethodWithInvertedParams(a, b);
             Assert.That(interceptorWasCalled);
@@ -234,15 +234,15 @@ namespace CryoAOP.Tests
 
             Intercept.Call +=
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                        Assert.That(a, Is.EqualTo((int) invocation.ParameterValues[0]));
-                        Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
-                        Assert.That(c, Is.EqualTo((double) invocation.ParameterValues[2]));
+                {
+                    interceptorWasCalled = true;
+                    Assert.That(a, Is.EqualTo((int)invocation.ParameterValues[0]));
+                    Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
+                    Assert.That(c, Is.EqualTo((double)invocation.ParameterValues[2]));
 
-                        if (invocation.InvocationLifecycle == InvocationLifecycleType.AfterInvocation)
-                            Assert.That(invocation.Result, Is.Null);
-                    };
+                    if (invocation.InvocationLifecycle == InvocationLifecycleType.AfterInvocation)
+                        Assert.That(invocation.Result, Is.Null);
+                };
 
             InterceptInstance.HavingMethodWithArgsAndNoReturnType(a, b, c);
             Assert.That(interceptorWasCalled);
@@ -258,15 +258,15 @@ namespace CryoAOP.Tests
 
             Intercept.Call +=
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                        Assert.That(a, Is.EqualTo((int) invocation.ParameterValues[0]));
-                        Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
-                        Assert.That(c, Is.EqualTo((double) invocation.ParameterValues[2]));
+                {
+                    interceptorWasCalled = true;
+                    Assert.That(a, Is.EqualTo((int)invocation.ParameterValues[0]));
+                    Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
+                    Assert.That(c, Is.EqualTo((double)invocation.ParameterValues[2]));
 
-                        if (invocation.InvocationLifecycle == InvocationLifecycleType.AfterInvocation)
-                            invocation.Result = "Intercepted Result";
-                    };
+                    if (invocation.InvocationLifecycle == InvocationLifecycleType.AfterInvocation)
+                        invocation.Result = "Intercepted Result";
+                };
 
             var result = InterceptInstance.HavingMethodWithArgsAndStringReturnType(a, b, c);
             Assert.That(result, Is.EqualTo("Intercepted Result"));
@@ -283,12 +283,12 @@ namespace CryoAOP.Tests
 
             Intercept.Call +=
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                        Assert.That(a, Is.EqualTo((int) invocation.ParameterValues[0]));
-                        Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
-                        Assert.That(c, Is.EqualTo((double) invocation.ParameterValues[2]));
-                    };
+                {
+                    interceptorWasCalled = true;
+                    Assert.That(a, Is.EqualTo((int)invocation.ParameterValues[0]));
+                    Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
+                    Assert.That(c, Is.EqualTo((double)invocation.ParameterValues[2]));
+                };
 
             var result = InterceptInstance.HavingMethodWithArgsAndStringReturnType(a, b, c);
             Assert.That(result, Is.EqualTo("1, 2, 3"));
@@ -305,15 +305,15 @@ namespace CryoAOP.Tests
 
             Intercept.Call +=
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                        Assert.That(a, Is.EqualTo((int) invocation.ParameterValues[0]));
-                        Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
-                        Assert.That(c, Is.EqualTo((double) invocation.ParameterValues[2]));
+                {
+                    interceptorWasCalled = true;
+                    Assert.That(a, Is.EqualTo((int)invocation.ParameterValues[0]));
+                    Assert.That(b, Is.EqualTo(invocation.ParameterValues[1]));
+                    Assert.That(c, Is.EqualTo((double)invocation.ParameterValues[2]));
 
-                        invocation.CancelInvocation();
-                        invocation.Result = "Fake Result";
-                    };
+                    invocation.CancelInvocation();
+                    invocation.Result = "Fake Result";
+                };
 
             var result = InterceptInstance.HavingMethodWithArgsAndStringReturnType(a, b, c);
             Assert.That(result, Is.EqualTo("Fake Result"));
@@ -353,10 +353,10 @@ namespace CryoAOP.Tests
 
             MethodInterceptorTarget.WhenCalledStatic<MethodInterceptorTarget>(
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                        Assert.That((int) invocation.ParameterValues[0] == 1);
-                    });
+                {
+                    interceptorWasCalled = true;
+                    Assert.That((int)invocation.ParameterValues[0] == 1);
+                });
 
             MethodInterceptorTarget.StaticMethodWithArgsAndNoReturnType(a);
             Assert.That(interceptorWasCalled);
@@ -370,11 +370,11 @@ namespace CryoAOP.Tests
 
             Intercept.Call +=
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                        Assert.That((int) invocation.ParameterValues[0] == 1);
-                        Assert.That(invocation.ParameterValues[1] == a);
-                    };
+                {
+                    interceptorWasCalled = true;
+                    Assert.That((int)invocation.ParameterValues[0] == 1);
+                    Assert.That(invocation.ParameterValues[1] == a);
+                };
 
             var result = MethodInterceptorTarget.StaticMethodWithGenericAndValueTypeArgsAndGenericReturnType(1, a);
             Assert.That(result == a);
@@ -389,11 +389,11 @@ namespace CryoAOP.Tests
 
             Intercept.Call +=
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                        Assert.That((int) invocation.ParameterValues[0] == 1);
-                        Assert.That(invocation.ParameterValues[1] == a);
-                    };
+                {
+                    interceptorWasCalled = true;
+                    Assert.That((int)invocation.ParameterValues[0] == 1);
+                    Assert.That(invocation.ParameterValues[1] == a);
+                };
 
             MethodInterceptorTarget.StaticMethodWithGenericAndValueTypeArgsAndNoReturnType(1, a);
             Assert.That(interceptorWasCalled);
@@ -407,11 +407,11 @@ namespace CryoAOP.Tests
 
             Intercept.Call +=
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                        Assert.That((int) invocation.ParameterValues[0] == 1);
-                        Assert.That(invocation.ParameterValues[1] == a);
-                    };
+                {
+                    interceptorWasCalled = true;
+                    Assert.That((int)invocation.ParameterValues[0] == 1);
+                    Assert.That(invocation.ParameterValues[1] == a);
+                };
 
             var result = MethodInterceptorTarget.StaticMethodWithGenericAndValueTypeArgsAndValueReturnType(1, a);
             Assert.That(result == 1);
@@ -428,10 +428,10 @@ namespace CryoAOP.Tests
 
             Intercept.Call +=
                 (invocation) =>
-                    {
-                        interceptorWasCalled = true;
-                        Assert.That(invocation.Method, Is.Not.Null);
-                    };
+                {
+                    interceptorWasCalled = true;
+                    Assert.That(invocation.Method, Is.Not.Null);
+                };
 
             var method = InterceptInstance
                 .GetType()
@@ -439,7 +439,7 @@ namespace CryoAOP.Tests
                     "privateMethodThatBreaksReflectionWhenTryingToGetMethodInfoUsingGetMethod",
                     BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
 
-            method.Invoke(InterceptInstance, new object[] {a, b, c});
+            method.Invoke(InterceptInstance, new object[] { a, b, c });
             Assert.That(interceptorWasCalled);
         }
     }

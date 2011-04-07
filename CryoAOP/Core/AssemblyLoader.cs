@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -55,7 +56,7 @@ namespace CryoAOP.Core
                     Directory.CreateDirectory("C:\\Temp");
 
                 var fileList = Directory
-                    .GetFiles(Environment.CurrentDirectory)
+                    .GetFiles(AppDomain.CurrentDomain.BaseDirectory)
                     .Where(f =>
                                {
                                    var lowerCaseFileName = f.ToLower();
