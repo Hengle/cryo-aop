@@ -24,7 +24,7 @@ namespace CryoAOP.Core.Attributes
         | AttributeTargets.Class)]
     public class InterceptAttribute : Attribute
     {
-        private readonly MethodInterceptionScopeType interceptionScope = MethodInterceptionScopeType.Shallow;
+        private readonly MethodInterceptionScopeType interceptionScope = MethodInterceptionScopeType.Deep;
 
         public InterceptAttribute()
         {

@@ -49,7 +49,7 @@ namespace CryoAOP.Exec
                     scope = scope.Split('>')[0];
                     return scope;
                 }
-                return "shallow";
+                return "deep";
             }
         }
 
@@ -65,7 +65,7 @@ namespace CryoAOP.Exec
                 "Could not resolve interception scope! Defaulting to 'shallow' ... ".Error(LineNumber);
                 Line.Error();
 
-                return MethodInterceptionScopeType.Shallow;
+                return MethodInterceptionScopeType.Deep;
             }
         }
     }
