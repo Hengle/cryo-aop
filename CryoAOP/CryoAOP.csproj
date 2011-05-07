@@ -130,6 +130,7 @@
     <Compile Include="Core\Attributes\ExtensionAttribute.cs" />
     <Compile Include="Core\Attributes\InterceptAttribute.cs" />
     <Compile Include="Core\Attributes\MixinMethodAttribute.cs" />
+    <Compile Include="Core\Cache\MemoryCache.cs" />
     <Compile Include="Core\Factories\AssemblyFactory.cs" />
     <Compile Include="Core\InvocationType.cs" />
     <Compile Include="Core\Exceptions\IncorrectAttributeResultUsageException.cs" />

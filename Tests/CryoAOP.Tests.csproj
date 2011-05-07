@@ -130,6 +130,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="AspectTests.cs" />
+    <Compile Include="Core\Cache\MemoryCacheTests.cs" />
     <Compile Include="MethodTests.cs" />
     <Compile Include="PropertyTests.cs" />
   </ItemGroup>
