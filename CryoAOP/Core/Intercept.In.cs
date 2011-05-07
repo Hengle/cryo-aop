@@ -1,21 +1,4 @@
-//CryoAOP. Aspect Oriented Framework for .NET.
-//Copyright (C) 2011  Gavin van der Merwe (fir3pho3nixx@gmail.com)
-
-//This program is free software: you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation, either version 3 of the License, or
-//(at your option) any later version.
-
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU General Public License for more details.
-
-//You should have received a copy of the GNU General Public License
-//along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using CryoAOP.Core.Attributes;
@@ -55,13 +38,15 @@ namespace CryoAOP.Core
             typeInspector.InterceptAll(interceptionScope);
         }
 
-        public static void InterceptMethod(string fullTypeName, string methodName, MethodInterceptionScopeType interceptionScope)
+        public static void InterceptMethod(string fullTypeName, string methodName,
+                                           MethodInterceptionScopeType interceptionScope)
         {
             var typeInspector = Assembly.FindType(fullTypeName);
             typeInspector.FindMethod(methodName).InterceptMethod(interceptionScope);
         }
 
-        public static void InterceptProperty(string fullTypeName, string propertyName, MethodInterceptionScopeType interceptionScope)
+        public static void InterceptProperty(string fullTypeName, string propertyName,
+                                             MethodInterceptionScopeType interceptionScope)
         {
             var typeInspector = Assembly.FindType(fullTypeName);
             typeInspector.FindProperty(propertyName).InterceptProperty(interceptionScope);
@@ -69,7 +54,7 @@ namespace CryoAOP.Core
 
         public static void InterceptAspects()
         {
-            var attributeFinder = new AttributeFinder();
+            var attributeFinder = new AttributeSearch();
             var results = attributeFinder.FindAttributes<InterceptAttribute>();
 
             var groupedByAssembly = results.GroupBy(r => r.Type.Assembly);
@@ -86,8 +71,8 @@ namespace CryoAOP.Core
                             "CryoAOP -> Intercepted {0}\\{1}\\*"
                                 .FormatWith(
                                     Path.GetFileName(
-                                    shadowAssembly.OriginalAssemblyPath), 
-                                    result.TypeName)); 
+                                        shadowAssembly.OriginalAssemblyPath),
+                                    result.TypeName));
                     }
                     if (result.IsForMethod())
                     {
@@ -95,9 +80,9 @@ namespace CryoAOP.Core
                         Console.WriteLine(
                             "CryoAOP -> Intercepted {0}\\{1}\\{2}"
                                 .FormatWith(
-                                    Path.GetFileName(shadowAssembly.OriginalAssemblyPath), 
-                                    result.TypeName, 
-                                    result.MethodName)); 
+                                    Path.GetFileName(shadowAssembly.OriginalAssemblyPath),
+                                    result.TypeName,
+                                    result.MethodName));
                     }
                     if (result.IsForProperty())
                     {

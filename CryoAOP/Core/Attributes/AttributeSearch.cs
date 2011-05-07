@@ -1,29 +1,15 @@
-//CryoAOP. Aspect Oriented Framework for .NET.
-//Copyright (C) 2011  Gavin van der Merwe (fir3pho3nixx@gmail.com)
-
-//This program is free software: you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation, either version 3 of the License, or
-//(at your option) any later version.
-
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU General Public License for more details.
-
-//You should have received a copy of the GNU General Public License
-//along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using CryoAOP.Core.Cache;
 using CryoAOP.Exec;
 
 namespace CryoAOP.Core.Attributes
 {
-    internal class AttributeFinder
+    internal class AttributeSearch
     {
+        private static readonly IMemoryCacheGeneric AttributeCache = new MemoryCacheGeneric();
         private readonly AssemblyLoader loader = new AssemblyLoader();
 
         public IEnumerable<AttributeResult<T>> FindAttributes<T>() where T : Attribute
@@ -33,9 +19,9 @@ namespace CryoAOP.Core.Attributes
             var attributesFound = new List<AttributeResult<T>>();
             foreach (var assembly in assemblies)
             {
-                int shadowAssemblyHash = assembly.ShadowAssembly.FullName.GetHashCode();
-                if (AttributeCache<T>.Cache.ContainsKey(shadowAssemblyHash))
-                    attributesFound.AddRange(AttributeCache<T>.Cache[shadowAssemblyHash].Attributes);
+                var shadowAssemblyHash = assembly.ShadowAssembly.FullName;
+                if (AttributeCache.ContainsKey<AttributeCache<T>>(shadowAssemblyHash))
+                    attributesFound.AddRange(AttributeCache.Get<AttributeCache<T>>(shadowAssemblyHash).Attributes);
                 else
                 {
                     try
@@ -46,7 +32,7 @@ namespace CryoAOP.Core.Attributes
                             FindMethodAttributes(assembly, type, attributesFound);
                             FindTypeAttributes(assembly, type, attributesFound);
                         }
-                        AttributeCache<T>.Cache.Add(shadowAssemblyHash, new AttributeCacheItem<T>(assembly, attributesFound));
+                        AttributeCache.Set(shadowAssemblyHash, new AttributeCache<T>(assembly, attributesFound));
                     }
                     catch (Exception err3)
                     {
@@ -58,7 +44,8 @@ namespace CryoAOP.Core.Attributes
             return attributesFound;
         }
 
-        private static void FindPropertyAttributes<T>(ShadowAssemblyType shadowAssembly, System.Type type, List<AttributeResult<T>> attributesFound) where T : Attribute
+        private static void FindPropertyAttributes<T>(ShadowAssemblyType shadowAssembly, System.Type type,
+                                                      List<AttributeResult<T>> attributesFound) where T : Attribute
         {
             try
             {
@@ -78,7 +65,7 @@ namespace CryoAOP.Core.Attributes
                                 .GetCustomAttributes(true)
                                 .Where(
                                     attr =>
-                                    attr.GetType().FullName == typeof(T).FullName)
+                                    attr.GetType().FullName == typeof (T).FullName)
                                 .ToList();
 
                         if (propertyAttributes.Count > 0)
@@ -102,11 +89,12 @@ namespace CryoAOP.Core.Attributes
             }
         }
 
-        private static void FindMethodAttributes<T>(ShadowAssemblyType shadowAssembly, System.Type type, List<AttributeResult<T>> attributesFound) where T : Attribute
+        private static void FindMethodAttributes<T>(ShadowAssemblyType shadowAssembly, System.Type type,
+                                                    List<AttributeResult<T>> attributesFound) where T : Attribute
         {
             try
             {
-                MethodInfo[] methods =
+                var methods =
                     type.GetMethods(
                         BindingFlags.Public
                         | BindingFlags.NonPublic
@@ -122,7 +110,7 @@ namespace CryoAOP.Core.Attributes
                                 .GetCustomAttributes(true)
                                 .Where(
                                     attr =>
-                                    attr.GetType().FullName == typeof(T).FullName)
+                                    attr.GetType().FullName == typeof (T).FullName)
                                 .ToList();
 
                         if (methodAttributes.Count > 0)
@@ -146,7 +134,8 @@ namespace CryoAOP.Core.Attributes
             }
         }
 
-        private static void FindTypeAttributes<T>(ShadowAssemblyType shadowAssembly, System.Type type, List<AttributeResult<T>> attributesFound) where T : Attribute
+        private static void FindTypeAttributes<T>(ShadowAssemblyType shadowAssembly, System.Type type,
+                                                  List<AttributeResult<T>> attributesFound) where T : Attribute
         {
             try
             {

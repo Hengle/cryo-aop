@@ -124,13 +124,13 @@
     </Compile>
     <Compile Include="Core\AssemblyLoader.cs" />
     <Compile Include="Core\Attributes\AttributeCache.cs" />
-    <Compile Include="Core\Attributes\AttributeCacheItem.cs" />
-    <Compile Include="Core\Attributes\AttributeFinder.cs" />
+    <Compile Include="Core\Attributes\AttributeSearch.cs" />
     <Compile Include="Core\Attributes\AttributeResult.cs" />
     <Compile Include="Core\Attributes\ExtensionAttribute.cs" />
     <Compile Include="Core\Attributes\InterceptAttribute.cs" />
     <Compile Include="Core\Attributes\MixinMethodAttribute.cs" />
     <Compile Include="Core\Cache\MemoryCache.cs" />
+    <Compile Include="Core\Cache\MemoryCacheGeneric.cs" />
     <Compile Include="Core\Factories\AssemblyFactory.cs" />
     <Compile Include="Core\InvocationType.cs" />
     <Compile Include="Core\Exceptions\IncorrectAttributeResultUsageException.cs" />

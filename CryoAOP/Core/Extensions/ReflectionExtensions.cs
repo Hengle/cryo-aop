@@ -1,21 +1,4 @@
-﻿//CryoAOP. Aspect Oriented Framework for .NET.
-//Copyright (C) 2011  Gavin van der Merwe (fir3pho3nixx@gmail.com)
-
-//This program is free software: you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation, either version 3 of the License, or
-//(at your option) any later version.
-
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU General Public License for more details.
-
-//You should have received a copy of the GNU General Public License
-//along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -37,7 +20,8 @@ namespace CryoAOP.Core.Extensions
 
         public static System.Type FindType(this System.Reflection.Assembly assembly, string typeName)
         {
-            var type = assembly.GetTypes().Where(t => t.FullName.ToLower().EndsWith(typeName.ToLower())).FirstOrDefault();
+            var type =
+                assembly.GetTypes().Where(t => t.FullName.ToLower().EndsWith(typeName.ToLower())).FirstOrDefault();
             if (type == null)
                 throw new TypeNotFoundException("Could not find type '{0}' in '{1}'", typeName, assembly.FullName);
             return type;
@@ -65,8 +49,12 @@ namespace CryoAOP.Core.Extensions
             var instanceDiffDict = new Dictionary<string, string>();
 
             CompareValues(
-                left, left.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance),
-                right, right.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance))
+                left,
+                left.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static |
+                                         BindingFlags.Instance),
+                right,
+                right.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static |
+                                          BindingFlags.Instance))
                 .ForEach(keyValue =>
                              {
                                  if (keyValue.Value != null)
@@ -74,8 +62,12 @@ namespace CryoAOP.Core.Extensions
                              });
 
             CompareValues(
-                left, left.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance),
-                right, right.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance))
+                left,
+                left.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static |
+                                             BindingFlags.Instance),
+                right,
+                right.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static |
+                                              BindingFlags.Instance))
                 .ForEach(keyValue =>
                              {
                                  if (keyValue.Value != null)
@@ -143,7 +135,8 @@ namespace CryoAOP.Core.Extensions
             return "{0}.{1}".FormatWith(leftTypeFullName, leftMember);
         }
 
-        private static string GetNewKey(string leftTypeFullName, string leftMember, ref int counter, KeyIncrementType incType = KeyIncrementType.Increment)
+        private static string GetNewKey(string leftTypeFullName, string leftMember, ref int counter,
+                                        KeyIncrementType incType = KeyIncrementType.Increment)
         {
             return "{0}.{1}.{2}"
                 .FormatWith(
@@ -154,13 +147,14 @@ namespace CryoAOP.Core.Extensions
                         : counter);
         }
 
-        private static void CompareValuesAndCompileResult(string valueKey, Dictionary<string, string> results, object leftValue, object rightValue)
+        private static void CompareValuesAndCompileResult(string valueKey, Dictionary<string, string> results,
+                                                          object leftValue, object rightValue)
         {
             if (leftValue != null
                 && rightValue != null
                 && leftValue.Equals(rightValue))
             {
-                results[valueKey] = null;// "{0} equals {1}".FormatWith(leftValue, rightValue);
+                results[valueKey] = null; // "{0} equals {1}".FormatWith(leftValue, rightValue);
             }
             else
             {

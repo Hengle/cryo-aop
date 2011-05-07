@@ -1,20 +1,4 @@
-﻿//CryoAOP. Aspect Oriented Framework for .NET.
-//Copyright (C) 2011  Gavin van der Merwe (fir3pho3nixx@gmail.com)
-
-//This program is free software: you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation, either version 3 of the License, or
-//(at your option) any later version.
-
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU General Public License for more details.
-
-//You should have received a copy of the GNU General Public License
-//along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -92,7 +76,8 @@ namespace CryoAOP
                         {
                             if (assemblyLines.Count == 0)
                             {
-                                "CryoAOP -> Error:{0}! Could not find matching assembly tag for type ... ".Error(currentLineCount.ToString());
+                                "CryoAOP -> Error:{0}! Could not find matching assembly tag for type ... ".Error(
+                                    currentLineCount.ToString());
                                 "CryoAOP -> '{0}'".Error(currentLine.Trim());
                                 WriteUsage();
                                 return assemblyLines;
@@ -106,7 +91,8 @@ namespace CryoAOP
                         {
                             if (assemblyLines.Count == 0 && typeLines.Count == 0)
                             {
-                                "CryoAOP -> Error:{0}! Could not find matching type tag for method ... ".Error(currentLineCount.ToString());
+                                "CryoAOP -> Error:{0}! Could not find matching type tag for method ... ".Error(
+                                    currentLineCount.ToString());
                                 "CryoAOP -> '{0}'".Error(currentLine.Trim());
                                 WriteUsage();
                                 return assemblyLines;
@@ -119,7 +105,8 @@ namespace CryoAOP
                         {
                             if (assemblyLines.Count == 0 && typeLines.Count == 0)
                             {
-                                "CryoAOP -> Error:{0}! Could not find matching type tag for property ... ".Error(currentLineCount.ToString());
+                                "CryoAOP -> Error:{0}! Could not find matching type tag for property ... ".Error(
+                                    currentLineCount.ToString());
                                 "CryoAOP -> '{0}'".Error(currentLine.Trim());
                                 WriteUsage();
                                 return assemblyLines;
@@ -130,7 +117,8 @@ namespace CryoAOP
                         }
                         else
                         {
-                            "CryoAOP -> Warning:{0}! Ignoring line because entry appears to be invalid ... ".Warn(currentLineCount);
+                            "CryoAOP -> Warning:{0}! Ignoring line because entry appears to be invalid ... ".Warn(
+                                currentLineCount);
                             "CryoAOP -> '{0}'".Warn(currentLine.Trim());
                         }
                     }
@@ -156,23 +144,24 @@ namespace CryoAOP
                                 Intercept.InterceptMethod(type.FullTypeName, method.MethodName, method.MethodScope);
                                 Console.WriteLine(
                                     "CryoAOP -> Intercepted {0}\\{1}\\{2}"
-                                    .FormatWith(
-                                        assembly.InputAssembly,
-                                        type.FullTypeName,
-                                        method.MethodName));
+                                        .FormatWith(
+                                            assembly.InputAssembly,
+                                            type.FullTypeName,
+                                            method.MethodName));
                             }
                         }
                         else if (type.HasProperties)
                         {
                             foreach (var property in type.Properties)
                             {
-                                Intercept.InterceptProperty(type.FullTypeName, property.PropertyName, property.MethodScope);
+                                Intercept.InterceptProperty(type.FullTypeName, property.PropertyName,
+                                                            property.MethodScope);
                                 Console.WriteLine(
                                     "CryoAOP -> Intercepted {0}\\{1}\\{2}"
-                                    .FormatWith(
-                                        assembly.InputAssembly,
-                                        type.FullTypeName,
-                                        property.PropertyName));
+                                        .FormatWith(
+                                            assembly.InputAssembly,
+                                            type.FullTypeName,
+                                            property.PropertyName));
                             }
                         }
                         else
@@ -180,9 +169,9 @@ namespace CryoAOP
                             Intercept.InterceptType(type.FullTypeName, type.MethodScope);
                             Console.WriteLine(
                                 "CryoAOP -> Intercepted {0}\\{1}\\*"
-                                .FormatWith(
-                                    assembly.InputAssembly,
-                                    type.FullTypeName));
+                                    .FormatWith(
+                                        assembly.InputAssembly,
+                                        type.FullTypeName));
                         }
                     }
                 }
@@ -203,15 +192,19 @@ namespace CryoAOP
             Console.WriteLine("Usage: CryoAOP /input input.cryoaop /nowarn");
             Console.WriteLine("Where: ");
             Console.WriteLine("     /input <inputfile.cryoaop> -> is an input file with an extension of '*.cryoaop'.");
-            Console.WriteLine("     /nowarn                    -> is when we do not want to see warnings for assembly load failures.");
+            Console.WriteLine(
+                "     /nowarn                    -> is when we do not want to see warnings for assembly load failures.");
             Console.WriteLine("     /apsects                   -> find 'Intercept' and 'Mixin' attributes.");
             Console.WriteLine();
-            Console.WriteLine("Example: Input File -> The scope to the interception can be set for 'Assembly', 'Type' or 'Method'.");
+            Console.WriteLine(
+                "Example: Input File -> The scope to the interception can be set for 'Assembly', 'Type' or 'Method'.");
             Console.WriteLine("Assembly: InputAssemblyName.dll, OutputAssemblyName.dll");
             Console.WriteLine("   Type: ExampleNamespace.ExampleClassToIntercept");
             Console.WriteLine("      Method: MethodToIntercept(); /* Where Scope is defaulted to shallow */");
-            Console.WriteLine("      Method<shallow>: MethodToIntercept(int); /* Only intercepts external calls to member */");
-            Console.WriteLine("      Method<deep>: MethodToIntercept(string,int); /* Intercepts internal calls to member within assembly, incurs performance hit */");
+            Console.WriteLine(
+                "      Method<shallow>: MethodToIntercept(int); /* Only intercepts external calls to member */");
+            Console.WriteLine(
+                "      Method<deep>: MethodToIntercept(string,int); /* Intercepts internal calls to member within assembly, incurs performance hit */");
         }
     }
 }

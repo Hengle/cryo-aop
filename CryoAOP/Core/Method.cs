@@ -1,20 +1,4 @@
-﻿//CryoAOP. Aspect Oriented Framework for .NET.
-//Copyright (C) 2011  Gavin van der Merwe (fir3pho3nixx@gmail.com)
-
-//This program is free software: you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation, either version 3 of the License, or
-//(at your option) any later version.
-
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU General Public License for more details.
-
-//You should have received a copy of the GNU General Public License
-//along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
 using CryoAOP.Core.Extensions;
@@ -28,6 +12,11 @@ namespace CryoAOP.Core
         public const string MethodMarker = "CryoAOP -> Intercept";
         protected readonly MethodContext Context;
 
+        public Method(Type type, MethodDefinition definition)
+        {
+            Context = new MethodContext(type, this, definition);
+        }
+
         public MethodDefinition MethodDefinition
         {
             get { return Context.MethodDefinition; }
@@ -36,11 +25,6 @@ namespace CryoAOP.Core
         public Type Type
         {
             get { return Context.Type; }
-        }
-
-        public Method(Type type, MethodDefinition definition)
-        {
-            Context = new MethodContext(type, this, definition);
         }
 
         public void InterceptMethod(MethodInterceptionScopeType interceptionScope = MethodInterceptionScopeType.Shallow)
@@ -96,7 +80,8 @@ namespace CryoAOP.Core
                           {
                               il.Create(OpCodes.Nop),
                               il.Create(OpCodes.Ldtoken, Context.Type.Definition),
-                              il.Create(OpCodes.Call, Context.Importer.Import(typeof (System.Type), "GetTypeFromHandle")),
+                              il.Create(OpCodes.Call, Context.Importer.Import(typeof (System.Type), "GetTypeFromHandle"))
+                              ,
                               il.Create(OpCodes.Stloc_0)
                           });
 
@@ -158,9 +143,9 @@ namespace CryoAOP.Core
                 // If static
                 methodInvocationConstructor =
                     methodInvocationConstructors
-                        .Where(c => 
-                            c.Parameters[0].ParameterType.Name.ToLower().IndexOf("type") != -1
-                            && c.Parameters[1].ParameterType.Name.ToLower().IndexOf("methodinfo") != -1)
+                        .Where(c =>
+                               c.Parameters[0].ParameterType.Name.ToLower().IndexOf("type") != -1
+                               && c.Parameters[1].ParameterType.Name.ToLower().IndexOf("methodinfo") != -1)
                         .First();
             }
             else
@@ -168,10 +153,10 @@ namespace CryoAOP.Core
                 // If instance
                 methodInvocationConstructor =
                     methodInvocationConstructors
-                        .Where(c => 
-                            c.Parameters[0].ParameterType.Name.ToLower().IndexOf("object") != -1
-                            && c.Parameters[1].ParameterType.Name.ToLower().IndexOf("type") != -1
-                            && c.Parameters[2].ParameterType.Name.ToLower().IndexOf("methodinfo") != -1)
+                        .Where(c =>
+                               c.Parameters[0].ParameterType.Name.ToLower().IndexOf("object") != -1
+                               && c.Parameters[1].ParameterType.Name.ToLower().IndexOf("type") != -1
+                               && c.Parameters[2].ParameterType.Name.ToLower().IndexOf("methodinfo") != -1)
                         .First();
 
                 // Load 'this'
@@ -229,7 +214,8 @@ namespace CryoAOP.Core
                 il.Append(il.Create(OpCodes.Ldarg, parameter));
 
             if (renamedMethod.HasGenericParameters)
-                il.Append(il.Create(OpCodes.Call, renamedMethod.MakeGeneric(interceptorMethod.GenericParameters.ToArray())));
+                il.Append(il.Create(OpCodes.Call,
+                                    renamedMethod.MakeGeneric(interceptorMethod.GenericParameters.ToArray())));
             else
                 il.Append(il.Create(OpCodes.Call, renamedMethod));
 

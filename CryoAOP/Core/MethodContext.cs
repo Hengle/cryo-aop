@@ -1,41 +1,22 @@
-﻿//CryoAOP. Aspect Oriented Framework for .NET.
-//Copyright (C) 2011  Gavin van der Merwe (fir3pho3nixx@gmail.com)
-
-//This program is free software: you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation, either version 3 of the License, or
-//(at your option) any later version.
-
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU General Public License for more details.
-
-//You should have received a copy of the GNU General Public License
-//along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-using CryoAOP.Core.Factories;
+﻿using CryoAOP.Core.Factories;
 using Mono.Cecil;
 
 namespace CryoAOP.Core
 {
     internal class MethodContext
     {
-        public readonly Type Type;
-        public readonly MethodDefinition MethodDefinition;
-        public readonly PropertyDefinition PropertyDefinition;
-
         public readonly AssemblyFactory Assemblies;
-        public readonly ImporterFactory Importer;
         public readonly MethodCloneFactory Cloning;
-        public readonly NameAliasFactory NameAlias;
-        
-        public readonly Method Method;
-        public readonly Property Property;
-
+        public readonly ImporterFactory Importer;
         public readonly MethodMarker Marker;
+        public readonly Method Method;
+        public readonly MethodDefinition MethodDefinition;
         public readonly MethodMixinExtension Mixin;
+        public readonly NameAliasFactory NameAlias;
+        public readonly Property Property;
+        public readonly PropertyDefinition PropertyDefinition;
         public readonly MethodScopingExtension Scope;
+        public readonly Type Type;
 
         public MethodContext(Type type, Method method, MethodDefinition methodDefinition)
         {

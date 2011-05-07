@@ -21,6 +21,7 @@ namespace CryoAOP.Core.Cache
         bool Add<T>(string key, T value, TimeSpan expiresIn);
         bool Set<T>(string key, T value, TimeSpan expiresIn);
         bool Replace<T>(string key, T value, TimeSpan expiresIn);
+        bool ContainsKey(string key);
         void ClearAll();
         IDictionary<string, T> GetAll<T>(IEnumerable<string> keys);
         void SetAll<T>(IDictionary<string, T> values);
@@ -30,97 +31,23 @@ namespace CryoAOP.Core.Cache
     {
         private Dictionary<string, CacheEntry> memory;
 
-        private class CacheEntry
-        {
-            private object cacheValue;
-
-            public CacheEntry(object value, DateTime expiresAt)
-            {
-                Value = value;
-                ExpiresAt = expiresAt;
-                LastModifiedTicks = DateTime.Now.Ticks;
-            }
-
-            internal DateTime ExpiresAt { get; set; }
-
-            internal object Value
-            {
-                get { return cacheValue; }
-                set
-                {
-                    cacheValue = value;
-                    LastModifiedTicks = DateTime.Now.Ticks;
-                }
-            }
-
-            internal long LastModifiedTicks { get; private set; }
-        }
-
         public MemoryCache()
         {
-            this.memory = new Dictionary<string, CacheEntry>();
+            memory = new Dictionary<string, CacheEntry>();
         }
 
-        private bool CacheAdd(string key, object value)
-        {
-            return CacheAdd(key, value, DateTime.MaxValue);
-        }
-
-        private bool CacheAdd(string key, object value, DateTime expiresAt)
-        {
-            CacheEntry entry;
-            if (this.memory.TryGetValue(key, out entry)) return false;
-
-            entry = new CacheEntry(value, expiresAt);
-            this.memory.Add(key, entry);
-
-            return true;
-        }
-
-        private bool CacheSet(string key, object value)
-        {
-            return CacheSet(key, value, DateTime.MaxValue);
-        }
-
-        private bool CacheSet(string key, object value, DateTime expiresAt, long? checkLastModified = null)
-        {
-            CacheEntry entry;
-            if (!this.memory.TryGetValue(key, out entry))
-            {
-                entry = new CacheEntry(value, expiresAt);
-                this.memory.Add(key, entry);
-                return true;
-            }
-
-            if (checkLastModified.HasValue
-                && entry.LastModifiedTicks != checkLastModified.Value) return false;
-
-            entry.Value = value;
-            entry.ExpiresAt = expiresAt;
-
-            return true;
-        }
-
-        private bool CacheReplace(string key, object value)
-        {
-            return CacheReplace(key, value, DateTime.MaxValue);
-        }
-
-        private bool CacheReplace(string key, object value, DateTime expiresAt)
-        {
-            return !CacheSet(key, value, expiresAt);
-        }
+        #region IMemoryCache Members
 
         public void Dispose()
         {
-            this.memory = null;
+            memory = null;
         }
 
         public bool Remove(string key)
         {
-            if (this.memory.ContainsKey(key))
+            if (memory.ContainsKey(key))
             {
-                this.memory.Remove(key);
+                memory.Remove(key);
                 return true;
             }
             return false;
@@ -130,7 +57,7 @@ namespace CryoAOP.Core.Cache
         {
             foreach (var key in keys)
             {
-                this.Remove(key);
+                Remove(key);
             }
         }
 
@@ -143,12 +70,12 @@ namespace CryoAOP.Core.Cache
         public object Get(string key, out long lastModifiedTicks)
         {
             lastModifiedTicks = 0;
-            if (this.memory.ContainsKey(key))
+            if (memory.ContainsKey(key))
             {
-                var cacheEntry = this.memory[key];
+                var cacheEntry = memory[key];
                 if (cacheEntry.ExpiresAt < DateTime.Now)
                 {
-                    this.memory.Remove(key);
+                    memory.Remove(key);
                     return null;
                 }
                 lastModifiedTicks = cacheEntry.LastModifiedTicks;
@@ -160,7 +87,7 @@ namespace CryoAOP.Core.Cache
         public T Get<T>(string key)
         {
             var value = Get(key);
-            if (value != null) return (T)value;
+            if (value != null) return (T) value;
             return default(T);
         }
 
@@ -209,9 +136,14 @@ namespace CryoAOP.Core.Cache
             return CacheReplace(key, value, DateTime.Now.Add(expiresIn));
         }
 
+        public bool ContainsKey(string key)
+        {
+            return memory.ContainsKey(key);
+        }
+
         public void ClearAll()
         {
-            this.memory = new Dictionary<string, CacheEntry>();
+            memory = new Dictionary<string, CacheEntry>();
         }
 
         public IDictionary<string, T> GetAll<T>(IEnumerable<string> keys)
@@ -242,5 +174,87 @@ namespace CryoAOP.Core.Cache
         {
             return GetEnumerator();
         }
+
+        #endregion
+
+        private bool CacheAdd(string key, object value)
+        {
+            return CacheAdd(key, value, DateTime.MaxValue);
+        }
+
+        private bool CacheAdd(string key, object value, DateTime expiresAt)
+        {
+            CacheEntry entry;
+            if (memory.TryGetValue(key, out entry)) return false;
+
+            entry = new CacheEntry(value, expiresAt);
+            memory.Add(key, entry);
+
+            return true;
+        }
+
+        private bool CacheSet(string key, object value)
+        {
+            return CacheSet(key, value, DateTime.MaxValue);
+        }
+
+        private bool CacheSet(string key, object value, DateTime expiresAt, long? checkLastModified = null)
+        {
+            CacheEntry entry;
+            if (!memory.TryGetValue(key, out entry))
+            {
+                entry = new CacheEntry(value, expiresAt);
+                memory.Add(key, entry);
+                return true;
+            }
+
+            if (checkLastModified.HasValue
+                && entry.LastModifiedTicks != checkLastModified.Value) return false;
+
+            entry.Value = value;
+            entry.ExpiresAt = expiresAt;
+
+            return true;
+        }
+
+        private bool CacheReplace(string key, object value)
+        {
+            return CacheReplace(key, value, DateTime.MaxValue);
+        }
+
+        private bool CacheReplace(string key, object value, DateTime expiresAt)
+        {
+            return !CacheSet(key, value, expiresAt);
+        }
+
+        #region Nested type: CacheEntry
+
+        private class CacheEntry
+        {
+            private object cacheValue;
+
+            public CacheEntry(object value, DateTime expiresAt)
+            {
+                Value = value;
+                ExpiresAt = expiresAt;
+                LastModifiedTicks = DateTime.Now.Ticks;
+            }
+
+            internal DateTime ExpiresAt { get; set; }
+
+            internal object Value
+            {
+                get { return cacheValue; }
+                set
+                {
+                    cacheValue = value;
+                    LastModifiedTicks = DateTime.Now.Ticks;
+                }
+            }
+
+            internal long LastModifiedTicks { get; private set; }
+        }
+
+        #endregion
     }
 }
