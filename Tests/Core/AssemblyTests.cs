@@ -4,7 +4,6 @@ using CryoAOP.Core;
 using CryoAOP.Core.Exceptions;
 using CryoAOP.TestAssembly;
 using NUnit.Framework;
-using Rhino.Mocks;
 using Mono.Cecil;
 
 namespace CryoAOP.Tests.Core

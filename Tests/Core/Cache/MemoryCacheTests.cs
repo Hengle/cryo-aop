@@ -1,3 +1,4 @@
+#if NET_3_5 || NET_4_0
 using System;
 using System.Linq;
 using System.Threading;
@@ -80,3 +81,4 @@ namespace CryoAOP.Tests.Core.Cache
         }
     }
 }
+#endif

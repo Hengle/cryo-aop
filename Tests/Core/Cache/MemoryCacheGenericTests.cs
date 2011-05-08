@@ -1,3 +1,5 @@
+#if NET_3_5 || NET_4_0
+
 using System.Linq;
 using CryoAOP.Core.Cache;
 using NUnit.Framework;
@@ -29,3 +31,5 @@ namespace CryoAOP.Tests.Core.Cache
         }
     }
 }
+
+#endif

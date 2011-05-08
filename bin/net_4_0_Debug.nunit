@@ -1,7 +1,7 @@
 ﻿<NUnitProject>
   <Settings activeconfig="Debug" />
-  <Config name="Debug" binpathtype="Auto">
-    <assembly path="net_4_0_Debug\CryoAOP.Tests.dll" />
+  <Config name="Debug" appbase="net_4_0_Debug" binpathtype="Auto">
+    <assembly path="CryoAOP.Tests.dll" />
   </Config>
   <Config name="Release" binpathtype="Auto" />
 </NUnitProject>

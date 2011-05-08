@@ -10,6 +10,8 @@ namespace CryoAOP.Core.Cache
         T Get<T>(string key);
         void Set<T>(string key, T value);
         bool ContainsKey<T>(string key);
+
+
     }
 
     public class MemoryCacheGeneric : IMemoryCacheGeneric
@@ -39,9 +41,16 @@ namespace CryoAOP.Core.Cache
 
         public IEnumerator<string> GetEnumerator()
         {
-            return
-                typeCache.Keys.Select(key => typeCache[key]).SelectMany(memoryCache => memoryCache.ToList()).
-                    GetEnumerator();
+            var items = new List<string>();
+            foreach (var cacheKey in typeCache.Keys)
+            {
+                var cache = typeCache[cacheKey];
+                foreach (var key in cache)
+                {
+                    items.Add(key);
+                }
+            }
+            return items.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

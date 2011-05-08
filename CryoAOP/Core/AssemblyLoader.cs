@@ -73,7 +73,7 @@ namespace CryoAOP.Core
             }
         }
 
-        public virtual List<string> GetFilteredFileList()
+        public virtual IList<string> GetFilteredFileList()
         {
             return Directory
                 .GetFiles(AppDomain.CurrentDomain.BaseDirectory)

@@ -115,6 +115,9 @@
   </PropertyGroup>
   <ItemGroup Condition=" '$(TargetFrameworkVersion)' != 'v2.0' ">
     <Reference Include="System.Core" />
+    <Reference Include="Rhino.Mocks">
+      <HintPath>..\packages\RhinoMocks.3.6\lib\Rhino.Mocks.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="nunit.core">
@@ -133,9 +136,6 @@
     <Reference Include="pnunit.framework">
       <HintPath>..\packages\NUnit.2.5.10.11092\lib\pnunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Rhino.Mocks">
-      <HintPath>..\packages\RhinoMocks.3.6\lib\Rhino.Mocks.dll</HintPath>
-    </Reference>
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
@@ -150,6 +150,7 @@
     <Compile Include="Core\Attributes\AttributeSearchTests.cs" />
     <Compile Include="Core\Cache\MemoryCacheGenericTests.cs" />
     <Compile Include="Core\Cache\MemoryCacheTests.cs" />
+    <Compile Include="Core\InterceptTests.cs" />
     <Compile Include="MethodTests.cs" />
     <Compile Include="PropertyTests.cs" />
   </ItemGroup>

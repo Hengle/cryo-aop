@@ -1,9 +1,12 @@
+#if NET_3_5 || NET_4_0
+
 using System.Collections.Generic;
 using System.Linq;
 using CryoAOP.Core;
 using CryoAOP.Core.Attributes;
 using NUnit.Framework;
 using Rhino.Mocks;
+
 
 namespace CryoAOP.Tests.Core.Attributes
 {
@@ -14,7 +17,7 @@ namespace CryoAOP.Tests.Core.Attributes
         private IEnumerable<AttributeResult<InterceptAttribute>> interceptAttributes;
 
         [TestFixtureSetUp]
-        public void SetUp()
+        public void FixtureSetUp()
         {
             const string assemblyName = "CryoAOP.TestAssembly.dll";
             var assemblyImage = System.Reflection.Assembly.LoadFrom(assemblyName);
@@ -71,3 +74,5 @@ namespace CryoAOP.Tests.Core.Attributes
         }
     }
 }
+
+#endif

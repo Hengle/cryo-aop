@@ -1,4 +1,6 @@
+#if NET_3_5 || NET_4_0
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using CryoAOP.Core;
@@ -43,7 +45,7 @@ namespace CryoAOP.Tests.Core
         [Test]
         public void Loader_should_only_load_files_from_temp_directory_to_avoid_file_locking()
         {
-            var testAssembly = shadowAssemblies.First(a => a.ShadowAssembly.FullName.IndexOf("CryoAOP.TestAssembly") != -1);
+            var testAssembly = shadowAssemblies.First(a => a.ShadowAssembly.FullName.ToLower().IndexOf("cryoaop.testassembly") != -1);
             Assert.That(testAssembly.ShadowAssembly.Location.ToLower(), Is.EqualTo(@"c:\temp\cryoaop.testassembly.dll"));
         }
 
@@ -73,3 +75,5 @@ namespace CryoAOP.Tests.Core
         }
     }
 }
+
+#endif

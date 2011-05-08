@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace CryoAOP.Core.Extensions
@@ -50,6 +51,14 @@ namespace System.Linq
             return found;
         }
 
+        internal static int Count(this IEnumerable items)
+        {
+            int counter = 0;
+            foreach (var item in items)
+                counter++;
+            return counter;
+        }
+
         internal static int Count<T>(this IEnumerable<T> items)
         {
             int counter = 0;
@@ -72,15 +81,15 @@ namespace System.Linq
 
         internal static T First<T>(this IEnumerable<T> items)
         {
-            if (items.Count() > 0)
-                return items.ElementAt(0);
+            if (Count(items) > 0)
+                return ElementAt(items, 0);
             throw new Exception("Value could not be found!");
         }
 
         internal static T Last<T>(this IEnumerable<T> items)
         {
-            if (items.Count() > 0)
-                return items.ElementAt(items.Count()-1);
+            if (Count(items) > 0)
+                return ElementAt(items, Count(items) - 1);
             throw new Exception("Value could not be found!");
         }
 
@@ -94,8 +103,8 @@ namespace System.Linq
 
         internal static T FirstOrDefault<T>(this IEnumerable<T> items)
         {
-            if (items.Count() > 0)
-                return items.ElementAt(0);
+            if (Count(items) > 0)
+                return ElementAt(items, 0);
             return default(T);
         }
 
@@ -165,7 +174,7 @@ namespace System.Linq
         public static T[] ToArray<T>(this IEnumerable<T> items)
         {
             var index = 0;
-            var list = new T[items.Count()];
+            var list = new T[Count(items)];
             foreach (var item in items)
             {
                 list[index++] = item;
@@ -203,6 +212,18 @@ namespace System.Linq
                 list.Add(selected);
             }
             return list;
+        }
+
+        public static IEnumerable<S> SelectMany<T, S>(this IEnumerable<IEnumerable<T>> items, Func<T, S> selector)
+        {
+            var r = new List<S>();
+            foreach (var list in items)
+            foreach (var item in list)
+            {
+                var selected = selector(item);
+                r.Add(selected);
+            }
+            return r;
         }
 
         public static bool Contains<T>(this IEnumerable<T> items, T element)
