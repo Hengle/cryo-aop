@@ -5,6 +5,9 @@ namespace CryoAOP.TestAssembly.Aspects
     public class AspectTypeC
     {
         [Intercept]
+        public int PropertyThatShouldBeIntercepted { get; set; }
+
+        [Intercept]
         public void MethodThatShouldBeIntercepted()
         {
         }

@@ -3,7 +3,7 @@ using Mono.Cecil;
 
 namespace CryoAOP.Core
 {
-    internal class MethodContext
+    public class MethodContext
     {
         public readonly AssemblyFactory Assemblies;
         public readonly MethodCloneFactory Cloning;

@@ -2,7 +2,7 @@
 
 namespace CryoAOP.Exec
 {
-    internal class AssemblyLine : ConfigLine
+    public class AssemblyLine : ConfigLine
     {
         private readonly List<TypeLine> types;
 

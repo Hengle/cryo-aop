@@ -4,7 +4,7 @@ using CryoAOP.Core.Exceptions;
 
 namespace CryoAOP.Core.Attributes
 {
-    internal class AttributeResult<T> where T : Attribute
+    public class AttributeResult<T> where T : Attribute
     {
         public AttributeResult(ShadowAssemblyType shadowAssembly, System.Type type, T attribute)
         {

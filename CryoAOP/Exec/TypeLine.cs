@@ -2,7 +2,7 @@
 
 namespace CryoAOP.Exec
 {
-    internal class TypeLine : ConfigLine
+    public class TypeLine : ConfigLine
     {
         private readonly List<MethodLine> methods;
         private readonly List<PropertyLine> properties;

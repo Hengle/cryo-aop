@@ -6,11 +6,11 @@ using Mono.Cecil.Cil;
 
 namespace CryoAOP.Core
 {
-    internal class MethodMixinExtension : MethodExtension
+    public class MethodMixinExtension : MethodExtension
     {
         public const string MethodMarker = "CryoAOP -> Mixin";
 
-        private readonly AttributeSearch attributeSearch = new AttributeSearch();
+        private readonly AttributeSearch attributeSearch = new AttributeSearch(new AssemblyLoader());
 
         public MethodMixinExtension(MethodContext context) : base(context)
         {

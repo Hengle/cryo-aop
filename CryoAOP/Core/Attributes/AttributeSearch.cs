@@ -7,10 +7,15 @@ using CryoAOP.Exec;
 
 namespace CryoAOP.Core.Attributes
 {
-    internal class AttributeSearch
+    public class AttributeSearch
     {
+        private readonly IAssemblyLoader loader = null;
         private static readonly IMemoryCacheGeneric AttributeCache = new MemoryCacheGeneric();
-        private readonly AssemblyLoader loader = new AssemblyLoader();
+
+        public AttributeSearch(IAssemblyLoader loader)
+        {
+            this.loader = loader;
+        }
 
         public IEnumerable<AttributeResult<T>> FindAttributes<T>() where T : Attribute
         {

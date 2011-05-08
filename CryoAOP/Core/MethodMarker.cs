@@ -7,7 +7,7 @@ using Mono.Cecil.Cil;
 
 namespace CryoAOP.Core
 {
-    internal class MethodMarker
+    public class MethodMarker
     {
         public static readonly IMemoryCacheGeneric cache = new MemoryCacheGeneric();
 

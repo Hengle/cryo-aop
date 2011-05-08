@@ -3,7 +3,7 @@ using CryoAOP.Core.Extensions;
 
 namespace CryoAOP.Core.Factories
 {
-    internal class NameAliasFactory
+    public class NameAliasFactory
     {
         public string GenerateIdentityName(string originalName)
         {

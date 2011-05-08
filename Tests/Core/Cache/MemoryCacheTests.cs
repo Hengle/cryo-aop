@@ -70,5 +70,13 @@ namespace CryoAOP.Tests.Core.Cache
             memoryCache.Set("4", 4);
             Assert.That(memoryCache.Get("4"), Is.EqualTo(4));
         }
+
+        [Test]
+        public void Should_add_value_and_expire_it_using_a_date()
+        {
+            memoryCache.Add("dateExpiry", 10, DateTime.Now.Add(TimeSpan.FromMilliseconds(100)));
+            Thread.Sleep(200);
+            Assert.That(memoryCache.Get("dateExpiry"), Is.Null);
+        }
     }
 }

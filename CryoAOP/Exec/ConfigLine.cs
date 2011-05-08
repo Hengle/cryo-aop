@@ -2,7 +2,7 @@
 
 namespace CryoAOP.Exec
 {
-    internal class ConfigLine
+    public class ConfigLine
     {
         protected readonly string Line;
         protected readonly int LineNumber;

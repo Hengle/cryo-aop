@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CryoAOP.Core.Attributes
 {
-    internal class AttributeCache<T> where T : Attribute
+    public class AttributeCache<T> where T : Attribute
     {
         internal readonly List<AttributeResult<T>> Attributes;
         internal readonly ShadowAssemblyType ShadowAssembly;

@@ -1,6 +1,6 @@
 ﻿namespace CryoAOP.Core
 {
-    internal class MethodExtension
+    public class MethodExtension
     {
         protected readonly MethodContext Context;
 

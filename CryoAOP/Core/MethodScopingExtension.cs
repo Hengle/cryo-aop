@@ -4,7 +4,7 @@ using Mono.Cecil.Cil;
 
 namespace CryoAOP.Core
 {
-    internal class MethodScopingExtension : MethodExtension
+    public class MethodScopingExtension : MethodExtension
     {
         public MethodScopingExtension(MethodContext method) : base(method)
         {

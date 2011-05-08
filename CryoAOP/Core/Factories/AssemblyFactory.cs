@@ -4,7 +4,7 @@ using Mono.Cecil;
 
 namespace CryoAOP.Core.Factories
 {
-    internal class AssemblyFactory
+    public class AssemblyFactory
     {
         private readonly static IMemoryCacheGeneric cache = new MemoryCacheGeneric();
 

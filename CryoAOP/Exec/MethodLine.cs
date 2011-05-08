@@ -2,7 +2,7 @@
 
 namespace CryoAOP.Exec
 {
-    internal class MethodLine : ConfigLine
+    public class MethodLine : ConfigLine
     {
         public MethodLine(int lineNumber, string line) : base(lineNumber, line)
         {

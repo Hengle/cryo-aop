@@ -8,7 +8,7 @@ using CryoAOP.Exec;
 
 namespace CryoAOP
 {
-    internal class Program
+    public class Program
     {
         private static void Main(string[] args)
         {

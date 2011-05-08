@@ -7,7 +7,7 @@ using Mono.Cecil.Cil;
 
 namespace CryoAOP.Core
 {
-    internal class Method
+    public class Method
     {
         public const string MethodMarker = "CryoAOP -> Intercept";
         protected readonly MethodContext Context;

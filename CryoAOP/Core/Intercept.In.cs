@@ -8,7 +8,7 @@ namespace CryoAOP.Core
 {
     public partial class Intercept
     {
-        internal static Assembly Assembly;
+        public static Assembly Assembly;
 
         public static void LoadAssembly(string assemblyPath)
         {
@@ -38,15 +38,13 @@ namespace CryoAOP.Core
             typeInspector.InterceptAll(interceptionScope);
         }
 
-        public static void InterceptMethod(string fullTypeName, string methodName,
-                                           MethodInterceptionScopeType interceptionScope)
+        public static void InterceptMethod(string fullTypeName, string methodName, MethodInterceptionScopeType interceptionScope)
         {
             var typeInspector = Assembly.FindType(fullTypeName);
             typeInspector.FindMethod(methodName).InterceptMethod(interceptionScope);
         }
 
-        public static void InterceptProperty(string fullTypeName, string propertyName,
-                                             MethodInterceptionScopeType interceptionScope)
+        public static void InterceptProperty(string fullTypeName, string propertyName,MethodInterceptionScopeType interceptionScope)
         {
             var typeInspector = Assembly.FindType(fullTypeName);
             typeInspector.FindProperty(propertyName).InterceptProperty(interceptionScope);
@@ -54,7 +52,7 @@ namespace CryoAOP.Core
 
         public static void InterceptAspects()
         {
-            var attributeFinder = new AttributeSearch();
+            var attributeFinder = new AttributeSearch(new AssemblyLoader());
             var results = attributeFinder.FindAttributes<InterceptAttribute>();
 
             var groupedByAssembly = results.GroupBy(r => r.Type.Assembly);

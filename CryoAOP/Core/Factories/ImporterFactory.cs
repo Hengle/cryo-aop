@@ -4,7 +4,7 @@ using Mono.Cecil;
 
 namespace CryoAOP.Core.Factories
 {
-    internal class ImporterFactory
+    public class ImporterFactory
     {
         private readonly MethodContext context;
 

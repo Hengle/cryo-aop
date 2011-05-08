@@ -1,6 +1,6 @@
 ﻿namespace CryoAOP.Exec
 {
-    internal class PropertyLine : ConfigLine
+    public class PropertyLine : ConfigLine
     {
         public PropertyLine(int lineNumber, string line)
             : base(lineNumber, line)

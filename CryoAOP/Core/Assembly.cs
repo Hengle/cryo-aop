@@ -7,12 +7,12 @@ using Mono.Cecil;
 
 namespace CryoAOP.Core
 {
-    internal class Assembly
+    public class Assembly : IEquatable<Assembly>
     {
-        public readonly AssemblyDefinition Definition;
         private readonly string assemblyPath = "";
-
-
+        public AssemblyDefinition Definition { get; private set; }
+        public string FullName { get { return Definition.FullName; } }
+        
         public Assembly(System.Reflection.Assembly assembly)
             : this(assembly
                        .CodeBase
@@ -33,11 +33,7 @@ namespace CryoAOP.Core
 
             try
             {
-                Definition =
-                    AssemblyDefinition
-                        .ReadAssembly(
-                            this.assemblyPath,
-                            @params);
+                LoadAssemblyDefinition(@params);
 
                 AssemblyParams
                     .AssemblyResolver
@@ -50,6 +46,15 @@ namespace CryoAOP.Core
                 throw new AssemblyNotFoundException(
                     "Could not load assembly from '{0}'", err, assemblyPath);
             }
+        }
+
+        public virtual void LoadAssemblyDefinition(ReaderParameters @params)
+        {
+            Definition =
+                AssemblyDefinition
+                    .ReadAssembly(
+                        this.assemblyPath,
+                        @params);
         }
 
         public virtual Type FindType(string searchType)
@@ -78,9 +83,39 @@ namespace CryoAOP.Core
             Definition.Write(path, AssemblyParams.WriterParameters);
         }
 
+        public bool Equals(Assembly other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(other.FullName, FullName);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != typeof (Assembly)) return false;
+            return Equals((Assembly) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (FullName != null ? FullName.GetHashCode() : 0);
+        }
+
+        public static bool operator ==(Assembly left, Assembly right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(Assembly left, Assembly right)
+        {
+            return !Equals(left, right);
+        }
+
         public override string ToString()
         {
-            return "{0}".FormatWith(Definition.FullName);
+            return "{0}".FormatWith(FullName);
         }
     }
 }
